@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="mfN-ug-atB">
+    <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Use Navigation Choice Controller-->
+        <scene sceneID="Elm-P5-Qg6">
+            <objects>
+                <viewController storyboardIdentifier="UseNavigationChoiceController" id="mfN-ug-atB" customClass="UseNavigationChoiceController" customModule="ARMeshNavigation" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2gS-54-WoZ">
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vrc-0d-cBw">
+                                <rect key="frame" x="264" y="463" width="306" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="保存データによるナビゲーション"/>
+                                <connections>
+                                    <action selector="to_SaveDataChoiceController:" destination="mfN-ug-atB" eventType="touchUpInside" id="3ag-wL-BTR"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0if-fN-cc8">
+                                <rect key="frame" x="294.5" y="700" width="245" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="通信によるナビゲーション"/>
+                                <connections>
+                                    <action selector="to_ARColabNavigationController:" destination="mfN-ug-atB" eventType="touchUpInside" id="cuU-ka-kix"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="作成してあるナビゲーションデータから選択してナビゲーションを行います。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NTL-G8-j4V">
+                                <rect key="frame" x="217" y="529" width="400" height="41"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="400" id="o3w-48-S7f"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="別端末と通信を行いナビゲーションの支援を受けることが可能です。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9yD-Vp-67E">
+                                <rect key="frame" x="217" y="766" width="400" height="41"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="400" id="4wx-67-qWP"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f4h-HA-0jn">
+                                <rect key="frame" x="274" y="937" width="286" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="通信によるナビケーション支援"/>
+                                <connections>
+                                    <action selector="to_VRColabNavigationController:" destination="mfN-ug-atB" eventType="touchUpInside" id="dlk-U6-GXH"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="通信によるナビゲーションを指定した端末と通信を行いリアルタイムでの支援が可能です。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ayb-IR-xik">
+                                <rect key="frame" x="217" y="1003" width="400" height="41"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="400" id="EkS-Ca-QvW"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Ec-nt-bI3">
+                                <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="Fkr-Q3-Q55"/>
+                                    <constraint firstAttribute="height" constant="50" id="bHE-kI-GRF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <inset key="titleEdgeInsets" minX="-50" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="5" minY="4" maxX="35" maxY="4"/>
+                                <state key="normal" title="戻る" image="back2">
+                                    <color key="titleColor" name="AccentColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="back:" destination="mfN-ug-atB" eventType="touchUpInside" id="gqs-Jy-q6m"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="BcP-mC-Hxz"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="9yD-Vp-67E" firstAttribute="centerX" secondItem="2gS-54-WoZ" secondAttribute="centerX" id="3V7-OE-2Hl"/>
+                            <constraint firstItem="BcP-mC-Hxz" firstAttribute="bottom" secondItem="ayb-IR-xik" secondAttribute="bottom" constant="130" id="6mM-CJ-wM7"/>
+                            <constraint firstItem="ayb-IR-xik" firstAttribute="top" secondItem="f4h-HA-0jn" secondAttribute="bottom" constant="30" id="ChY-UP-lCo"/>
+                            <constraint firstItem="NTL-G8-j4V" firstAttribute="centerX" secondItem="2gS-54-WoZ" secondAttribute="centerX" id="Ggk-Ro-BNw"/>
+                            <constraint firstItem="9yD-Vp-67E" firstAttribute="top" secondItem="0if-fN-cc8" secondAttribute="bottom" constant="30" id="S4x-4y-GcO"/>
+                            <constraint firstItem="0if-fN-cc8" firstAttribute="top" secondItem="NTL-G8-j4V" secondAttribute="bottom" constant="130" id="Tud-yr-hAX"/>
+                            <constraint firstItem="NTL-G8-j4V" firstAttribute="top" secondItem="Vrc-0d-cBw" secondAttribute="bottom" constant="30" id="WEE-2z-Yhf"/>
+                            <constraint firstItem="f4h-HA-0jn" firstAttribute="centerX" secondItem="2gS-54-WoZ" secondAttribute="centerX" id="biN-YQ-sox"/>
+                            <constraint firstItem="f4h-HA-0jn" firstAttribute="top" secondItem="9yD-Vp-67E" secondAttribute="bottom" constant="130" id="iAW-y0-MAR"/>
+                            <constraint firstItem="Vrc-0d-cBw" firstAttribute="centerX" secondItem="2gS-54-WoZ" secondAttribute="centerX" id="jSb-wu-eC9"/>
+                            <constraint firstItem="ayb-IR-xik" firstAttribute="centerX" secondItem="2gS-54-WoZ" secondAttribute="centerX" id="kw6-vs-W9h"/>
+                            <constraint firstItem="0if-fN-cc8" firstAttribute="centerX" secondItem="2gS-54-WoZ" secondAttribute="centerX" id="rsw-e8-Hwv"/>
+                            <constraint firstItem="4Ec-nt-bI3" firstAttribute="leading" secondItem="BcP-mC-Hxz" secondAttribute="leading" id="s7Z-Yc-9sA"/>
+                            <constraint firstItem="4Ec-nt-bI3" firstAttribute="top" secondItem="BcP-mC-Hxz" secondAttribute="top" id="xbW-km-KA2"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2eA-ra-Cl5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-313.66906474820144" y="3107.5376884422112"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="back2" width="240" height="240"/>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
