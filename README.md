@@ -1,14 +1,14 @@
 # ARSystem
 
-環境設定
+## 環境設定
 
 1, Podファイルを元に必要なフレームワークのインストール
 
-pod install（初回）・・・Podfile.lockを生成（ファイルがあれば参照してインストール）
+pod install（初回）・・・Podfile.lock, Pods/を生成（ファイルがあれば参照してインストール）
 
 pod update（2回目以降）・・・Podfile.lockを参照せずにインストール，Podfile.lockを更新
 
-
+<br>
 
 2, OpenCVのインストール
 
@@ -16,9 +16,11 @@ pod update（2回目以降）・・・Podfile.lockを参照せずにインスト
 
 https://github.com/opencv/opencv/releases
 
-画像の用にインストールしたファイルをプロジェクト内に入れる
+インストールしたファイルをプロジェクト内に入れる
 
 ![スクリーンショット 2021-11-03 14 25 49](https://user-images.githubusercontent.com/61243751/140013533-615a63b6-003f-45b6-8700-5f7f69e06d04.png)
+
+## 機能概要
 
 
 
