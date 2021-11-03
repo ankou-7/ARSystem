@@ -2,8 +2,16 @@
 
 環境設定
 
-1，Pod
+1, Podファイルを元に必要なフレームワークのインストール
 
-pod install・・・Podfile.lockを生成（ファイルがあれば参照してインストール）
+pod install（初回）・・・Podfile.lockを生成（ファイルがあれば参照してインストール）
 
-pod update・・・Podfile.lockを参照せずにインストール，Podfile.lockを更新
+pod update（2回目以降）・・・Podfile.lockを参照せずにインストール，Podfile.lockを更新
+
+2, OpenCVのインストール
+
+下記のリンクからopencv-0.0.0-ios-framework.zipをインストール
+
+https://github.com/opencv/opencv/releases
+
+
