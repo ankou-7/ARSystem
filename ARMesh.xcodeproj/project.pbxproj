@@ -20,8 +20,6 @@
 		26AAA1F82563C802008FE5EB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1F62563C802008FE5EB /* Main.storyboard */; };
 		26AAA1FA2563C804008FE5EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1F92563C804008FE5EB /* Assets.xcassets */; };
 		26AAA1FD2563C804008FE5EB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1FB2563C804008FE5EB /* LaunchScreen.storyboard */; };
-		26AAA2082563C804008FE5EB /* ARMeshNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2072563C804008FE5EB /* ARMeshNavigationTests.swift */; };
-		26AAA2132563C804008FE5EB /* ARMeshNavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2122563C804008FE5EB /* ARMeshNavigationUITests.swift */; };
 		26AAA2482563C998008FE5EB /* MakeNavigationCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */; };
 		26AAA2492563C998008FE5EB /* EditDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */; };
 		26AAA2502563C998008FE5EB /* PopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA22F2563C996008FE5EB /* PopOverController.swift */; };
@@ -34,8 +32,6 @@
 		26AAA25F2563C998008FE5EB /* NavigationChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */; };
 		26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */; };
 		26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA26B2563CAC9008FE5EB /* art.scnassets */; };
-		3C001A433BF7F368D2392D0D /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82FF9CADBCF72A44A67EB1E9 /* Pods_ARMesh_ARMeshUITests.framework */; };
-		8BEB812D9E11E751EE2A4463 /* Pods_ARMeshTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC8EFC77E3D1B3CEBACF7CA /* Pods_ARMeshTests.framework */; };
 		B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */; };
 		CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0250D926380953003790E8 /* ObjectDataSource.swift */; };
 		CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */; };
@@ -112,7 +108,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		04B49D2998D053867478AEE0 /* Pods-ARMeshNavigation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation.release.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation/Pods-ARMeshNavigation.release.xcconfig"; sourceTree = "<group>"; };
 		0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.debug.xcconfig"; sourceTree = "<group>"; };
 		2628D272256A72C4002607F3 /* ARColabNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARColabNavigationController.swift; sourceTree = "<group>"; };
 		2632F45325F04193006B7366 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
@@ -132,11 +127,7 @@
 		26AAA1FC2563C804008FE5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		26AAA1FE2563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26AAA2032563C804008FE5EB /* ARMeshTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARMeshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		26AAA2072563C804008FE5EB /* ARMeshNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARMeshNavigationTests.swift; sourceTree = "<group>"; };
-		26AAA2092563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARMeshUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		26AAA2122563C804008FE5EB /* ARMeshNavigationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARMeshNavigationUITests.swift; sourceTree = "<group>"; };
-		26AAA2142563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeNavigationCheckController.swift; sourceTree = "<group>"; };
 		26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDataChoiceController.swift; sourceTree = "<group>"; };
 		26AAA22F2563C996008FE5EB /* PopOverController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopOverController.swift; sourceTree = "<group>"; };
@@ -149,15 +140,9 @@
 		26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationChoiceController.swift; sourceTree = "<group>"; };
 		26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceDataAllCheckController.swift; sourceTree = "<group>"; };
 		26AAA26B2563CAC9008FE5EB /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		3499FEAC7066F2DECD427C26 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation-ARMeshNavigationUITests/Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig"; sourceTree = "<group>"; };
-		49E5AE0AD556301EFA4EE43C /* Pods-ARMeshNavigationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigationTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigationTests/Pods-ARMeshNavigationTests.release.xcconfig"; sourceTree = "<group>"; };
 		5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.release.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.release.xcconfig"; sourceTree = "<group>"; };
-		82FF9CADBCF72A44A67EB1E9 /* Pods_ARMesh_ARMeshUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh_ARMeshUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		87A324FDB4E2324D432C9574 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation-ARMeshNavigationUITests/Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.debug.xcconfig"; sourceTree = "<group>"; };
-		9BC8EFC77E3D1B3CEBACF7CA /* Pods_ARMeshTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMeshTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B49B784DC9A3A8385179F581 /* Pods-ARMeshNavigation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation/Pods-ARMeshNavigation.debug.xcconfig"; sourceTree = "<group>"; };
 		C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.release.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.release.xcconfig"; sourceTree = "<group>"; };
 		C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.release.xcconfig"; sourceTree = "<group>"; };
 		CF0250D926380953003790E8 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
@@ -218,7 +203,6 @@
 		CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud.storyboard; sourceTree = "<group>"; };
 		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
 		EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		FEBFD6B1A4A6FD2DE262B984 /* Pods-ARMeshNavigationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigationTests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigationTests/Pods-ARMeshNavigationTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -235,7 +219,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BEB812D9E11E751EE2A4463 /* Pods_ARMeshTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,7 +226,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3C001A433BF7F368D2392D0D /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,8 +236,6 @@
 			isa = PBXGroup;
 			children = (
 				26AAA1EF2563C802008FE5EB /* ARMeshNavigation */,
-				26AAA2062563C804008FE5EB /* ARMeshNavigationTests */,
-				26AAA2112563C804008FE5EB /* ARMeshNavigationUITests */,
 				26AAA1EE2563C802008FE5EB /* Products */,
 				E914FFD664097DFA55085E20 /* Pods */,
 				F3C606179090637BE8364334 /* Frameworks */,
@@ -293,24 +273,6 @@
 				26AAA1F42563C802008FE5EB /* Experience.rcproject */,
 			);
 			path = ARMeshNavigation;
-			sourceTree = "<group>";
-		};
-		26AAA2062563C804008FE5EB /* ARMeshNavigationTests */ = {
-			isa = PBXGroup;
-			children = (
-				26AAA2072563C804008FE5EB /* ARMeshNavigationTests.swift */,
-				26AAA2092563C804008FE5EB /* Info.plist */,
-			);
-			path = ARMeshNavigationTests;
-			sourceTree = "<group>";
-		};
-		26AAA2112563C804008FE5EB /* ARMeshNavigationUITests */ = {
-			isa = PBXGroup;
-			children = (
-				26AAA2122563C804008FE5EB /* ARMeshNavigationUITests.swift */,
-				26AAA2142563C804008FE5EB /* Info.plist */,
-			);
-			path = ARMeshNavigationUITests;
 			sourceTree = "<group>";
 		};
 		CF0D73F1271CA13E00A2BB75 /* ChoiceData2 */ = {
@@ -561,12 +523,6 @@
 		E914FFD664097DFA55085E20 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				B49B784DC9A3A8385179F581 /* Pods-ARMeshNavigation.debug.xcconfig */,
-				04B49D2998D053867478AEE0 /* Pods-ARMeshNavigation.release.xcconfig */,
-				87A324FDB4E2324D432C9574 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig */,
-				3499FEAC7066F2DECD427C26 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig */,
-				FEBFD6B1A4A6FD2DE262B984 /* Pods-ARMeshNavigationTests.debug.xcconfig */,
-				49E5AE0AD556301EFA4EE43C /* Pods-ARMeshNavigationTests.release.xcconfig */,
 				0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */,
 				C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */,
 				EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */,
@@ -582,8 +538,6 @@
 			children = (
 				CF8D977426830F3700D6002A /* opencv2.framework */,
 				B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */,
-				82FF9CADBCF72A44A67EB1E9 /* Pods_ARMesh_ARMeshUITests.framework */,
-				9BC8EFC77E3D1B3CEBACF7CA /* Pods_ARMeshTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -909,7 +863,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26AAA2082563C804008FE5EB /* ARMeshNavigationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -917,7 +870,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26AAA2132563C804008FE5EB /* ARMeshNavigationUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1091,7 +1043,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou2;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -1118,7 +1070,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou2;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
