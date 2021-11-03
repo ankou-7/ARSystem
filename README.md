@@ -16,5 +16,11 @@ pod update（2回目以降）・・・Podfile.lockを参照せずにインスト
 
 https://github.com/opencv/opencv/releases
 
-(https://user-images.githubusercontent.com/61243751/140013533-615a63b6-003f-45b6-8700-5f7f69e06d04.png)
+画像の用にインストールしたファイルをプロジェクト内に入れる
+
+![スクリーンショット 2021-11-03 14 25 49](https://user-images.githubusercontent.com/61243751/140013533-615a63b6-003f-45b6-8700-5f7f69e06d04.png)
+
+
+
+
 
