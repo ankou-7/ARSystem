@@ -1,0 +1,1259 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2628D273256A72C4002607F3 /* ARColabNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2628D272256A72C4002607F3 /* ARColabNavigationController.swift */; };
+		2632F45425F04193006B7366 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45325F04193006B7366 /* Shaders.metal */; };
+		2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45925F0420A006B7366 /* MetalBuffer.swift */; };
+		2632F46225F04482006B7366 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F46125F04482006B7366 /* Helpers.swift */; };
+		2632F47D25F05BC8006B7366 /* EditDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F47C25F05BC8006B7366 /* EditDataController.swift */; };
+		26474EEC256AEA02000C1456 /* ColabNavigationEditModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26474EEB256AEA02000C1456 /* ColabNavigationEditModel.swift */; };
+		26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */; };
+		2682062F25C3F7BC00519E42 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2682062E25C3F7BC00519E42 /* Renderer.swift */; };
+		26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA1F02563C802008FE5EB /* AppDelegate.swift */; };
+		26AAA1F52563C802008FE5EB /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA1F42563C802008FE5EB /* Experience.rcproject */; };
+		26AAA1F82563C802008FE5EB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1F62563C802008FE5EB /* Main.storyboard */; };
+		26AAA1FA2563C804008FE5EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1F92563C804008FE5EB /* Assets.xcassets */; };
+		26AAA1FD2563C804008FE5EB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1FB2563C804008FE5EB /* LaunchScreen.storyboard */; };
+		26AAA2082563C804008FE5EB /* ARMeshNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2072563C804008FE5EB /* ARMeshNavigationTests.swift */; };
+		26AAA2132563C804008FE5EB /* ARMeshNavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2122563C804008FE5EB /* ARMeshNavigationUITests.swift */; };
+		26AAA2482563C998008FE5EB /* MakeNavigationCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */; };
+		26AAA2492563C998008FE5EB /* EditDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */; };
+		26AAA2502563C998008FE5EB /* PopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA22F2563C996008FE5EB /* PopOverController.swift */; };
+		26AAA2522563C998008FE5EB /* TitleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2312563C996008FE5EB /* TitleViewController.swift */; };
+		26AAA2542563C998008FE5EB /* UseDataNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2332563C996008FE5EB /* UseDataNavigationController.swift */; };
+		26AAA2552563C998008FE5EB /* Information.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2342563C996008FE5EB /* Information.swift */; };
+		26AAA2562563C998008FE5EB /* MakeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2352563C997008FE5EB /* MakeNavigationController.swift */; };
+		26AAA2592563C998008FE5EB /* NavigationEditModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2382563C997008FE5EB /* NavigationEditModel.swift */; };
+		26AAA25B2563C998008FE5EB /* UseNavigationChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA23A2563C997008FE5EB /* UseNavigationChoiceController.swift */; };
+		26AAA25F2563C998008FE5EB /* NavigationChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */; };
+		26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */; };
+		26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA26B2563CAC9008FE5EB /* art.scnassets */; };
+		3C001A433BF7F368D2392D0D /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82FF9CADBCF72A44A67EB1E9 /* Pods_ARMesh_ARMeshUITests.framework */; };
+		8BEB812D9E11E751EE2A4463 /* Pods_ARMeshTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC8EFC77E3D1B3CEBACF7CA /* Pods_ARMeshTests.framework */; };
+		B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */; };
+		CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0250D926380953003790E8 /* ObjectDataSource.swift */; };
+		CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */; };
+		CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */; };
+		CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73F6271CA99200A2BB75 /* ChoiceModelController.swift */; };
+		CF0D73FA271CAB8100A2BB75 /* Diff_PointCloud2.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F9271CAB8100A2BB75 /* Diff_PointCloud2.storyboard */; };
+		CF0D73FC271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73FB271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift */; };
+		CF0D73FE271CD8CC00A2BB75 /* SetParametorPopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73FD271CD8CC00A2BB75 /* SetParametorPopOver.swift */; };
+		CF0DBC312691A286006E2E19 /* Matching_OpenCV.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF0DBC302691A286006E2E19 /* Matching_OpenCV.mm */; };
+		CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0DBC3326923BC2006E2E19 /* Make3DModel.storyboard */; };
+		CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0DBC3526923BE4006E2E19 /* Make3DModelController.swift */; };
+		CF0F1669272C62D100E6F9ED /* MakeMap.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0F1668272C62D100E6F9ED /* MakeMap.storyboard */; };
+		CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166A272C62F400E6F9ED /* MakeMapViewController.swift */; };
+		CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */; };
+		CF0F166F272C835900E6F9ED /* SCNGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166E272C835900E6F9ED /* SCNGeometry.swift */; };
+		CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF13205727223CD400277339 /* ObjectOrigin.swift */; };
+		CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */; };
+		CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A975269EC0CB00F62D3A /* Extensions.swift */; };
+		CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */; };
+		CF30EF29262BA8A800C13B66 /* ARColabNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */; };
+		CF30EF34262BAA1F00C13B66 /* VRColabNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */; };
+		CF30EF3C262BAA7C00C13B66 /* ColabDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF3B262BAA7C00C13B66 /* ColabDataChoiceController.swift */; };
+		CF30EF48262BAF5000C13B66 /* PopOver.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF47262BAF5000C13B66 /* PopOver.storyboard */; };
+		CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF5A262C9C6600C13B66 /* SwitchPopOver.swift */; };
+		CF30EF60262C9CC000C13B66 /* MenuDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF5F262C9CC000C13B66 /* MenuDataSource.swift */; };
+		CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF64262CB39D00C13B66 /* CheckDataController.swift */; };
+		CF30EF71262D960600C13B66 /* MapExpansionChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF70262D960600C13B66 /* MapExpansionChoice.storyboard */; };
+		CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF75262D96EE00C13B66 /* MapExpansionChoiceController.swift */; };
+		CF30EF84262D97EC00C13B66 /* MapExpansionTransmit.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF83262D97EC00C13B66 /* MapExpansionTransmit.storyboard */; };
+		CF30EF89262D980200C13B66 /* MapExpansionReceive.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF88262D980200C13B66 /* MapExpansionReceive.storyboard */; };
+		CF30EF8E262D982000C13B66 /* MapExpansionTransmitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF8D262D982000C13B66 /* MapExpansionTransmitController.swift */; };
+		CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF92262D983900C13B66 /* MapExpansionReceiveController.swift */; };
+		CF3D8061262B518F007904E6 /* MakeNavigationChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8060262B518F007904E6 /* MakeNavigationChoice.storyboard */; };
+		CF3D806B262B5364007904E6 /* MakeNavigationChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D806A262B5364007904E6 /* MakeNavigationChoiceController.swift */; };
+		CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D806F262B53B5007904E6 /* DataSource.swift */; };
+		CF3D8081262B8803007904E6 /* MakeNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */; };
+		CF3D8094262B8DD3007904E6 /* CheckDataCell.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8093262B8DD3007904E6 /* CheckDataCell.storyboard */; };
+		CF3D80A3262B90F2007904E6 /* EditData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80A2262B90F2007904E6 /* EditData.storyboard */; };
+		CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */; };
+		CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */; };
+		CF3D80C3262B9C03007904E6 /* UseNavigationChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80C2262B9C03007904E6 /* UseNavigationChoice.storyboard */; };
+		CF3D80CC262B9CCF007904E6 /* SaveDataNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */; };
+		CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */; };
+		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
+		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
+		CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF8D977426830F3700D6002A /* opencv2.framework */; };
+		CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF8D977A2683106000D6002A /* OpenCVManager.mm */; };
+		CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8D977E2683147100D6002A /* FeatureMatching.storyboard */; };
+		CF8D97812683163300D6002A /* FeatureMatchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8D97802683163300D6002A /* FeatureMatchingController.swift */; };
+		CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */; };
+		CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */; };
+		CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */; };
+		CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9926C5121700E51949 /* ChoicePictureAllCheckController.swift */; };
+		CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */; };
+		CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */; };
+		CFD69EA326C7B71000E51949 /* Diff_PointCloudViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		26AAA2042563C804008FE5EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 26AAA1E52563C802008FE5EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 26AAA1EC2563C802008FE5EB;
+			remoteInfo = ARMeshNavigation;
+		};
+		26AAA20F2563C804008FE5EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 26AAA1E52563C802008FE5EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 26AAA1EC2563C802008FE5EB;
+			remoteInfo = ARMeshNavigation;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04B49D2998D053867478AEE0 /* Pods-ARMeshNavigation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation.release.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation/Pods-ARMeshNavigation.release.xcconfig"; sourceTree = "<group>"; };
+		0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.debug.xcconfig"; sourceTree = "<group>"; };
+		2628D272256A72C4002607F3 /* ARColabNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARColabNavigationController.swift; sourceTree = "<group>"; };
+		2632F45325F04193006B7366 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		2632F45825F041DF006B7366 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		2632F45925F0420A006B7366 /* MetalBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalBuffer.swift; sourceTree = "<group>"; };
+		2632F46125F04482006B7366 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		2632F46625F0451E006B7366 /* smTest-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "smTest-Bridging-Header.h"; sourceTree = "<group>"; };
+		2632F47C25F05BC8006B7366 /* EditDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDataController.swift; sourceTree = "<group>"; };
+		26474EEB256AEA02000C1456 /* ColabNavigationEditModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColabNavigationEditModel.swift; sourceTree = "<group>"; };
+		26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerPopOverController.swift; sourceTree = "<group>"; };
+		2682062E25C3F7BC00519E42 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		26AAA1ED2563C802008FE5EB /* ARMesh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARMesh.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AAA1F02563C802008FE5EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		26AAA1F42563C802008FE5EB /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
+		26AAA1F72563C802008FE5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		26AAA1F92563C804008FE5EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		26AAA1FC2563C804008FE5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		26AAA1FE2563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		26AAA2032563C804008FE5EB /* ARMeshTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARMeshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AAA2072563C804008FE5EB /* ARMeshNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARMeshNavigationTests.swift; sourceTree = "<group>"; };
+		26AAA2092563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARMeshUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AAA2122563C804008FE5EB /* ARMeshNavigationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARMeshNavigationUITests.swift; sourceTree = "<group>"; };
+		26AAA2142563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeNavigationCheckController.swift; sourceTree = "<group>"; };
+		26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDataChoiceController.swift; sourceTree = "<group>"; };
+		26AAA22F2563C996008FE5EB /* PopOverController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopOverController.swift; sourceTree = "<group>"; };
+		26AAA2312563C996008FE5EB /* TitleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleViewController.swift; sourceTree = "<group>"; };
+		26AAA2332563C996008FE5EB /* UseDataNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UseDataNavigationController.swift; sourceTree = "<group>"; };
+		26AAA2342563C996008FE5EB /* Information.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Information.swift; sourceTree = "<group>"; };
+		26AAA2352563C997008FE5EB /* MakeNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeNavigationController.swift; sourceTree = "<group>"; };
+		26AAA2382563C997008FE5EB /* NavigationEditModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationEditModel.swift; sourceTree = "<group>"; };
+		26AAA23A2563C997008FE5EB /* UseNavigationChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UseNavigationChoiceController.swift; sourceTree = "<group>"; };
+		26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationChoiceController.swift; sourceTree = "<group>"; };
+		26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceDataAllCheckController.swift; sourceTree = "<group>"; };
+		26AAA26B2563CAC9008FE5EB /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		3499FEAC7066F2DECD427C26 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation-ARMeshNavigationUITests/Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig"; sourceTree = "<group>"; };
+		49E5AE0AD556301EFA4EE43C /* Pods-ARMeshNavigationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigationTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigationTests/Pods-ARMeshNavigationTests.release.xcconfig"; sourceTree = "<group>"; };
+		5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.release.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.release.xcconfig"; sourceTree = "<group>"; };
+		82FF9CADBCF72A44A67EB1E9 /* Pods_ARMesh_ARMeshUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh_ARMeshUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		87A324FDB4E2324D432C9574 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation-ARMeshNavigationUITests/Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.debug.xcconfig"; sourceTree = "<group>"; };
+		9BC8EFC77E3D1B3CEBACF7CA /* Pods_ARMeshTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMeshTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B49B784DC9A3A8385179F581 /* Pods-ARMeshNavigation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigation.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigation/Pods-ARMeshNavigation.debug.xcconfig"; sourceTree = "<group>"; };
+		C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.release.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.release.xcconfig"; sourceTree = "<group>"; };
+		C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.release.xcconfig"; sourceTree = "<group>"; };
+		CF0250D926380953003790E8 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
+		CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceModelData.storyboard; sourceTree = "<group>"; };
+		CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelDataController.swift; sourceTree = "<group>"; };
+		CF0D73F6271CA99200A2BB75 /* ChoiceModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelController.swift; sourceTree = "<group>"; };
+		CF0D73F9271CAB8100A2BB75 /* Diff_PointCloud2.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud2.storyboard; sourceTree = "<group>"; };
+		CF0D73FB271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloud2Controller.swift; sourceTree = "<group>"; };
+		CF0D73FD271CD8CC00A2BB75 /* SetParametorPopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetParametorPopOver.swift; sourceTree = "<group>"; };
+		CF0DBC2F2691A253006E2E19 /* Matching_OpenCV.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Matching_OpenCV.h; sourceTree = "<group>"; };
+		CF0DBC302691A286006E2E19 /* Matching_OpenCV.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Matching_OpenCV.mm; sourceTree = "<group>"; };
+		CF0DBC3326923BC2006E2E19 /* Make3DModel.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Make3DModel.storyboard; sourceTree = "<group>"; };
+		CF0DBC3526923BE4006E2E19 /* Make3DModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Make3DModelController.swift; sourceTree = "<group>"; };
+		CF0F1668272C62D100E6F9ED /* MakeMap.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MakeMap.storyboard; sourceTree = "<group>"; };
+		CF0F166A272C62F400E6F9ED /* MakeMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeMapViewController.swift; sourceTree = "<group>"; };
+		CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTextureModelController.swift; sourceTree = "<group>"; };
+		CF0F166E272C835900E6F9ED /* SCNGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNGeometry.swift; sourceTree = "<group>"; };
+		CF13205727223CD400277339 /* ObjectOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOrigin.swift; sourceTree = "<group>"; };
+		CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Utils.swift"; sourceTree = "<group>"; };
+		CF27A975269EC0CB00F62D3A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeModePopOver.swift; sourceTree = "<group>"; };
+		CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ARColabNavigation.storyboard; sourceTree = "<group>"; };
+		CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VRColabNavigation.storyboard; sourceTree = "<group>"; };
+		CF30EF3B262BAA7C00C13B66 /* ColabDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColabDataChoiceController.swift; sourceTree = "<group>"; };
+		CF30EF47262BAF5000C13B66 /* PopOver.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopOver.storyboard; sourceTree = "<group>"; };
+		CF30EF5A262C9C6600C13B66 /* SwitchPopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPopOver.swift; sourceTree = "<group>"; };
+		CF30EF5F262C9CC000C13B66 /* MenuDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDataSource.swift; sourceTree = "<group>"; };
+		CF30EF64262CB39D00C13B66 /* CheckDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataController.swift; sourceTree = "<group>"; };
+		CF30EF70262D960600C13B66 /* MapExpansionChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MapExpansionChoice.storyboard; sourceTree = "<group>"; };
+		CF30EF75262D96EE00C13B66 /* MapExpansionChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapExpansionChoiceController.swift; sourceTree = "<group>"; };
+		CF30EF83262D97EC00C13B66 /* MapExpansionTransmit.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MapExpansionTransmit.storyboard; sourceTree = "<group>"; };
+		CF30EF88262D980200C13B66 /* MapExpansionReceive.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MapExpansionReceive.storyboard; sourceTree = "<group>"; };
+		CF30EF8D262D982000C13B66 /* MapExpansionTransmitController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapExpansionTransmitController.swift; sourceTree = "<group>"; };
+		CF30EF92262D983900C13B66 /* MapExpansionReceiveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapExpansionReceiveController.swift; sourceTree = "<group>"; };
+		CF3D8060262B518F007904E6 /* MakeNavigationChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MakeNavigationChoice.storyboard; sourceTree = "<group>"; };
+		CF3D806A262B5364007904E6 /* MakeNavigationChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeNavigationChoiceController.swift; sourceTree = "<group>"; };
+		CF3D806F262B53B5007904E6 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MakeNavigation.storyboard; sourceTree = "<group>"; };
+		CF3D8093262B8DD3007904E6 /* CheckDataCell.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckDataCell.storyboard; sourceTree = "<group>"; };
+		CF3D80A2262B90F2007904E6 /* EditData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EditData.storyboard; sourceTree = "<group>"; };
+		CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckAllData.storyboard; sourceTree = "<group>"; };
+		CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataChoiceController.swift; sourceTree = "<group>"; };
+		CF3D80C2262B9C03007904E6 /* UseNavigationChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UseNavigationChoice.storyboard; sourceTree = "<group>"; };
+		CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SaveDataNavigation.storyboard; sourceTree = "<group>"; };
+		CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDataChoiceController.swift; sourceTree = "<group>"; };
+		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
+		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
+		CF8D977426830F3700D6002A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		CF8D977A2683106000D6002A /* OpenCVManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVManager.mm; sourceTree = "<group>"; };
+		CF8D977D2683130000D6002A /* OpenCVManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVManager.h; sourceTree = "<group>"; };
+		CF8D977E2683147100D6002A /* FeatureMatching.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = FeatureMatching.storyboard; sourceTree = "<group>"; };
+		CF8D97802683163300D6002A /* FeatureMatchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureMatchingController.swift; sourceTree = "<group>"; };
+		CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimePointCloudController.swift; sourceTree = "<group>"; };
+		CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoicePictureData.storyboard; sourceTree = "<group>"; };
+		CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckPictureChoiceController.swift; sourceTree = "<group>"; };
+		CFD69E9926C5121700E51949 /* ChoicePictureAllCheckController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoicePictureAllCheckController.swift; sourceTree = "<group>"; };
+		CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureChoiceController.swift; sourceTree = "<group>"; };
+		CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud.storyboard; sourceTree = "<group>"; };
+		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
+		EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		FEBFD6B1A4A6FD2DE262B984 /* Pods-ARMeshNavigationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshNavigationTests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshNavigationTests/Pods-ARMeshNavigationTests.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		26AAA1EA2563C802008FE5EB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */,
+				B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AAA2002563C804008FE5EB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BEB812D9E11E751EE2A4463 /* Pods_ARMeshTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AAA20B2563C804008FE5EB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C001A433BF7F368D2392D0D /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		26AAA1E42563C802008FE5EB = {
+			isa = PBXGroup;
+			children = (
+				26AAA1EF2563C802008FE5EB /* ARMeshNavigation */,
+				26AAA2062563C804008FE5EB /* ARMeshNavigationTests */,
+				26AAA2112563C804008FE5EB /* ARMeshNavigationUITests */,
+				26AAA1EE2563C802008FE5EB /* Products */,
+				E914FFD664097DFA55085E20 /* Pods */,
+				F3C606179090637BE8364334 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		26AAA1EE2563C802008FE5EB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				26AAA1ED2563C802008FE5EB /* ARMesh.app */,
+				26AAA2032563C804008FE5EB /* ARMeshTests.xctest */,
+				26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		26AAA1EF2563C802008FE5EB /* ARMeshNavigation */ = {
+			isa = PBXGroup;
+			children = (
+				26AAA1F02563C802008FE5EB /* AppDelegate.swift */,
+				26AAA1F62563C802008FE5EB /* Main.storyboard */,
+				26AAA2312563C996008FE5EB /* TitleViewController.swift */,
+				26AAA2342563C996008FE5EB /* Information.swift */,
+				CF0F1667272C62A700E6F9ED /* MakeMap */,
+				CFD69E9426C50DA500E51949 /* ChoiceData */,
+				CF0D73F1271CA13E00A2BB75 /* ChoiceData2 */,
+				CF3D805F262B50B7007904E6 /* MakeNavigationChoice */,
+				CF3D80C1262B9BCD007904E6 /* UseNavigationChoice */,
+				CF30EF6F262D959300C13B66 /* MapExpansion */,
+				CF30EF46262BAF0A00C13B66 /* AllPopOver */,
+				26AAA1F92563C804008FE5EB /* Assets.xcassets */,
+				26AAA26B2563CAC9008FE5EB /* art.scnassets */,
+				26AAA1FE2563C804008FE5EB /* Info.plist */,
+				26AAA1FB2563C804008FE5EB /* LaunchScreen.storyboard */,
+				26AAA1F42563C802008FE5EB /* Experience.rcproject */,
+			);
+			path = ARMeshNavigation;
+			sourceTree = "<group>";
+		};
+		26AAA2062563C804008FE5EB /* ARMeshNavigationTests */ = {
+			isa = PBXGroup;
+			children = (
+				26AAA2072563C804008FE5EB /* ARMeshNavigationTests.swift */,
+				26AAA2092563C804008FE5EB /* Info.plist */,
+			);
+			path = ARMeshNavigationTests;
+			sourceTree = "<group>";
+		};
+		26AAA2112563C804008FE5EB /* ARMeshNavigationUITests */ = {
+			isa = PBXGroup;
+			children = (
+				26AAA2122563C804008FE5EB /* ARMeshNavigationUITests.swift */,
+				26AAA2142563C804008FE5EB /* Info.plist */,
+			);
+			path = ARMeshNavigationUITests;
+			sourceTree = "<group>";
+		};
+		CF0D73F1271CA13E00A2BB75 /* ChoiceData2 */ = {
+			isa = PBXGroup;
+			children = (
+				CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */,
+				CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */,
+				CF0D73F6271CA99200A2BB75 /* ChoiceModelController.swift */,
+				CF0D73F8271CAB6100A2BB75 /* Diff_PointCloud2 */,
+			);
+			path = ChoiceData2;
+			sourceTree = "<group>";
+		};
+		CF0D73F8271CAB6100A2BB75 /* Diff_PointCloud2 */ = {
+			isa = PBXGroup;
+			children = (
+				CF0D73F9271CAB8100A2BB75 /* Diff_PointCloud2.storyboard */,
+				CF0D73FB271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift */,
+				CF0D73FD271CD8CC00A2BB75 /* SetParametorPopOver.swift */,
+				CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */,
+			);
+			path = Diff_PointCloud2;
+			sourceTree = "<group>";
+		};
+		CF0DBC3226923B83006E2E19 /* Make3DModel */ = {
+			isa = PBXGroup;
+			children = (
+				CF0DBC3326923BC2006E2E19 /* Make3DModel.storyboard */,
+				CF0DBC3526923BE4006E2E19 /* Make3DModelController.swift */,
+				CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */,
+			);
+			path = Make3DModel;
+			sourceTree = "<group>";
+		};
+		CF0F1667272C62A700E6F9ED /* MakeMap */ = {
+			isa = PBXGroup;
+			children = (
+				CF0F1668272C62D100E6F9ED /* MakeMap.storyboard */,
+				CF0F166A272C62F400E6F9ED /* MakeMapViewController.swift */,
+				CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */,
+				CF0F166E272C835900E6F9ED /* SCNGeometry.swift */,
+			);
+			path = MakeMap;
+			sourceTree = "<group>";
+		};
+		CF30EF26262BA82E00C13B66 /* ARColabNavigation */ = {
+			isa = PBXGroup;
+			children = (
+				CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */,
+				2628D272256A72C4002607F3 /* ARColabNavigationController.swift */,
+			);
+			path = ARColabNavigation;
+			sourceTree = "<group>";
+		};
+		CF30EF27262BA85700C13B66 /* VRColabNavigation */ = {
+			isa = PBXGroup;
+			children = (
+				CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */,
+				CF30EF3B262BAA7C00C13B66 /* ColabDataChoiceController.swift */,
+				26474EEB256AEA02000C1456 /* ColabNavigationEditModel.swift */,
+			);
+			path = VRColabNavigation;
+			sourceTree = "<group>";
+		};
+		CF30EF46262BAF0A00C13B66 /* AllPopOver */ = {
+			isa = PBXGroup;
+			children = (
+				CF30EF47262BAF5000C13B66 /* PopOver.storyboard */,
+				26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */,
+				CF0250D926380953003790E8 /* ObjectDataSource.swift */,
+				26AAA22F2563C996008FE5EB /* PopOverController.swift */,
+				CF30EF5A262C9C6600C13B66 /* SwitchPopOver.swift */,
+				CF30EF5F262C9CC000C13B66 /* MenuDataSource.swift */,
+			);
+			path = AllPopOver;
+			sourceTree = "<group>";
+		};
+		CF30EF6F262D959300C13B66 /* MapExpansion */ = {
+			isa = PBXGroup;
+			children = (
+				CF30EF70262D960600C13B66 /* MapExpansionChoice.storyboard */,
+				CF30EF75262D96EE00C13B66 /* MapExpansionChoiceController.swift */,
+				CF30EF7E262D978700C13B66 /* MapExpansionTransmit */,
+				CF30EF82262D97C100C13B66 /* MapExpansionReceive */,
+			);
+			path = MapExpansion;
+			sourceTree = "<group>";
+		};
+		CF30EF7E262D978700C13B66 /* MapExpansionTransmit */ = {
+			isa = PBXGroup;
+			children = (
+				CF30EF83262D97EC00C13B66 /* MapExpansionTransmit.storyboard */,
+				CF30EF8D262D982000C13B66 /* MapExpansionTransmitController.swift */,
+			);
+			path = MapExpansionTransmit;
+			sourceTree = "<group>";
+		};
+		CF30EF82262D97C100C13B66 /* MapExpansionReceive */ = {
+			isa = PBXGroup;
+			children = (
+				CF30EF88262D980200C13B66 /* MapExpansionReceive.storyboard */,
+				CF30EF92262D983900C13B66 /* MapExpansionReceiveController.swift */,
+				CF13205727223CD400277339 /* ObjectOrigin.swift */,
+			);
+			path = MapExpansionReceive;
+			sourceTree = "<group>";
+		};
+		CF3D805F262B50B7007904E6 /* MakeNavigationChoice */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D8060262B518F007904E6 /* MakeNavigationChoice.storyboard */,
+				26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */,
+				CF3D806A262B5364007904E6 /* MakeNavigationChoiceController.swift */,
+				CF3D806F262B53B5007904E6 /* DataSource.swift */,
+				CF3D807F262B87DC007904E6 /* MakeNavigation */,
+				CF3D809E262B907D007904E6 /* EditData */,
+				CF3D80AD262B9523007904E6 /* CheckAllData */,
+			);
+			path = MakeNavigationChoice;
+			sourceTree = "<group>";
+		};
+		CF3D807F262B87DC007904E6 /* MakeNavigation */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */,
+				26AAA2352563C997008FE5EB /* MakeNavigationController.swift */,
+				CF27A975269EC0CB00F62D3A /* Extensions.swift */,
+				CF6BC314262AE43700E9B083 /* AddDataCellChoice */,
+				CF3D8092262B8D64007904E6 /* AddDataCheckCell */,
+				CF3D808E262B8C64007904E6 /* Renderer */,
+			);
+			path = MakeNavigation;
+			sourceTree = "<group>";
+		};
+		CF3D808E262B8C64007904E6 /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				2682062E25C3F7BC00519E42 /* Renderer.swift */,
+				2632F45325F04193006B7366 /* Shaders.metal */,
+				2632F45925F0420A006B7366 /* MetalBuffer.swift */,
+				2632F45825F041DF006B7366 /* ShaderTypes.h */,
+				2632F46625F0451E006B7366 /* smTest-Bridging-Header.h */,
+				2632F46125F04482006B7366 /* Helpers.swift */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		CF3D8092262B8D64007904E6 /* AddDataCheckCell */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D8093262B8DD3007904E6 /* CheckDataCell.storyboard */,
+				26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */,
+			);
+			path = AddDataCheckCell;
+			sourceTree = "<group>";
+		};
+		CF3D809E262B907D007904E6 /* EditData */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
+				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
+				26AAA2382563C997008FE5EB /* NavigationEditModel.swift */,
+				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
+			);
+			path = EditData;
+			sourceTree = "<group>";
+		};
+		CF3D80AD262B9523007904E6 /* CheckAllData */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */,
+				CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */,
+				26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */,
+				CF30EF64262CB39D00C13B66 /* CheckDataController.swift */,
+			);
+			path = CheckAllData;
+			sourceTree = "<group>";
+		};
+		CF3D80C1262B9BCD007904E6 /* UseNavigationChoice */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D80C2262B9C03007904E6 /* UseNavigationChoice.storyboard */,
+				26AAA23A2563C997008FE5EB /* UseNavigationChoiceController.swift */,
+				CF3D80CA262B9C8D007904E6 /* SaveDataNavigation */,
+				CF30EF26262BA82E00C13B66 /* ARColabNavigation */,
+				CF30EF27262BA85700C13B66 /* VRColabNavigation */,
+			);
+			path = UseNavigationChoice;
+			sourceTree = "<group>";
+		};
+		CF3D80CA262B9C8D007904E6 /* SaveDataNavigation */ = {
+			isa = PBXGroup;
+			children = (
+				CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */,
+				CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */,
+				26AAA2332563C996008FE5EB /* UseDataNavigationController.swift */,
+			);
+			path = SaveDataNavigation;
+			sourceTree = "<group>";
+		};
+		CF6BC314262AE43700E9B083 /* AddDataCellChoice */ = {
+			isa = PBXGroup;
+			children = (
+				CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */,
+				CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */,
+			);
+			path = AddDataCellChoice;
+			sourceTree = "<group>";
+		};
+		CF8D977926830FD900D6002A /* FeatureMatching */ = {
+			isa = PBXGroup;
+			children = (
+				CF8D977E2683147100D6002A /* FeatureMatching.storyboard */,
+				CF8D977A2683106000D6002A /* OpenCVManager.mm */,
+				CF8D977D2683130000D6002A /* OpenCVManager.h */,
+				CF0DBC2F2691A253006E2E19 /* Matching_OpenCV.h */,
+				CF0DBC302691A286006E2E19 /* Matching_OpenCV.mm */,
+				CF8D97802683163300D6002A /* FeatureMatchingController.swift */,
+			);
+			path = FeatureMatching;
+			sourceTree = "<group>";
+		};
+		CFD69E9426C50DA500E51949 /* ChoiceData */ = {
+			isa = PBXGroup;
+			children = (
+				CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */,
+				CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */,
+				CFD69E9926C5121700E51949 /* ChoicePictureAllCheckController.swift */,
+				CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */,
+				CFD69E9F26C7B56B00E51949 /* Diff_PointCloud */,
+			);
+			path = ChoiceData;
+			sourceTree = "<group>";
+		};
+		CFD69E9F26C7B56B00E51949 /* Diff_PointCloud */ = {
+			isa = PBXGroup;
+			children = (
+				CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */,
+				CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */,
+				CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */,
+				CF8D977926830FD900D6002A /* FeatureMatching */,
+				CF0DBC3226923B83006E2E19 /* Make3DModel */,
+			);
+			name = Diff_PointCloud;
+			path = "ぢっf";
+			sourceTree = "<group>";
+		};
+		E914FFD664097DFA55085E20 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B49B784DC9A3A8385179F581 /* Pods-ARMeshNavigation.debug.xcconfig */,
+				04B49D2998D053867478AEE0 /* Pods-ARMeshNavigation.release.xcconfig */,
+				87A324FDB4E2324D432C9574 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.debug.xcconfig */,
+				3499FEAC7066F2DECD427C26 /* Pods-ARMeshNavigation-ARMeshNavigationUITests.release.xcconfig */,
+				FEBFD6B1A4A6FD2DE262B984 /* Pods-ARMeshNavigationTests.debug.xcconfig */,
+				49E5AE0AD556301EFA4EE43C /* Pods-ARMeshNavigationTests.release.xcconfig */,
+				0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */,
+				C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */,
+				EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */,
+				5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */,
+				9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */,
+				C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		F3C606179090637BE8364334 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CF8D977426830F3700D6002A /* opencv2.framework */,
+				B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */,
+				82FF9CADBCF72A44A67EB1E9 /* Pods_ARMesh_ARMeshUITests.framework */,
+				9BC8EFC77E3D1B3CEBACF7CA /* Pods_ARMeshTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		26AAA1EC2563C802008FE5EB /* ARMesh */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AAA2172563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMesh" */;
+			buildPhases = (
+				28EA23814CA3413A9E61678E /* [CP] Check Pods Manifest.lock */,
+				26AAA1E92563C802008FE5EB /* Sources */,
+				26AAA1EA2563C802008FE5EB /* Frameworks */,
+				26AAA1EB2563C802008FE5EB /* Resources */,
+				D9EAAFC585B9110FF0F7C117 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ARMesh;
+			productName = ARMeshNavigation;
+			productReference = 26AAA1ED2563C802008FE5EB /* ARMesh.app */;
+			productType = "com.apple.product-type.application";
+		};
+		26AAA2022563C804008FE5EB /* ARMeshTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AAA21A2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshTests" */;
+			buildPhases = (
+				B3A969CADE33DD3A57E95769 /* [CP] Check Pods Manifest.lock */,
+				26AAA1FF2563C804008FE5EB /* Sources */,
+				26AAA2002563C804008FE5EB /* Frameworks */,
+				26AAA2012563C804008FE5EB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				26AAA2052563C804008FE5EB /* PBXTargetDependency */,
+			);
+			name = ARMeshTests;
+			productName = ARMeshNavigationTests;
+			productReference = 26AAA2032563C804008FE5EB /* ARMeshTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		26AAA20D2563C804008FE5EB /* ARMeshUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26AAA21D2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshUITests" */;
+			buildPhases = (
+				6048FE2F67486181EEA469B1 /* [CP] Check Pods Manifest.lock */,
+				26AAA20A2563C804008FE5EB /* Sources */,
+				26AAA20B2563C804008FE5EB /* Frameworks */,
+				26AAA20C2563C804008FE5EB /* Resources */,
+				261ED44B6FEC44D93D653331 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				26AAA2102563C804008FE5EB /* PBXTargetDependency */,
+			);
+			name = ARMeshUITests;
+			productName = ARMeshNavigationUITests;
+			productReference = 26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		26AAA1E52563C802008FE5EB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1220;
+				LastUpgradeCheck = 1220;
+				TargetAttributes = {
+					26AAA1EC2563C802008FE5EB = {
+						CreatedOnToolsVersion = 12.2;
+					};
+					26AAA2022563C804008FE5EB = {
+						CreatedOnToolsVersion = 12.2;
+						TestTargetID = 26AAA1EC2563C802008FE5EB;
+					};
+					26AAA20D2563C804008FE5EB = {
+						CreatedOnToolsVersion = 12.2;
+						TestTargetID = 26AAA1EC2563C802008FE5EB;
+					};
+				};
+			};
+			buildConfigurationList = 26AAA1E82563C802008FE5EB /* Build configuration list for PBXProject "ARMesh" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 26AAA1E42563C802008FE5EB;
+			productRefGroup = 26AAA1EE2563C802008FE5EB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				26AAA1EC2563C802008FE5EB /* ARMesh */,
+				26AAA2022563C804008FE5EB /* ARMeshTests */,
+				26AAA20D2563C804008FE5EB /* ARMeshUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		26AAA1EB2563C802008FE5EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF30EF34262BAA1F00C13B66 /* VRColabNavigation.storyboard in Resources */,
+				CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */,
+				CF30EF71262D960600C13B66 /* MapExpansionChoice.storyboard in Resources */,
+				CF30EF48262BAF5000C13B66 /* PopOver.storyboard in Resources */,
+				26AAA1FD2563C804008FE5EB /* LaunchScreen.storyboard in Resources */,
+				CF30EF84262D97EC00C13B66 /* MapExpansionTransmit.storyboard in Resources */,
+				26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */,
+				CF30EF29262BA8A800C13B66 /* ARColabNavigation.storyboard in Resources */,
+				CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */,
+				CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */,
+				CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */,
+				CF0F1669272C62D100E6F9ED /* MakeMap.storyboard in Resources */,
+				CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */,
+				CF30EF89262D980200C13B66 /* MapExpansionReceive.storyboard in Resources */,
+				26AAA1FA2563C804008FE5EB /* Assets.xcassets in Resources */,
+				CF3D80A3262B90F2007904E6 /* EditData.storyboard in Resources */,
+				CF3D8081262B8803007904E6 /* MakeNavigation.storyboard in Resources */,
+				26AAA1F82563C802008FE5EB /* Main.storyboard in Resources */,
+				CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */,
+				CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */,
+				CF3D8061262B518F007904E6 /* MakeNavigationChoice.storyboard in Resources */,
+				CF3D80CC262B9CCF007904E6 /* SaveDataNavigation.storyboard in Resources */,
+				CF3D8094262B8DD3007904E6 /* CheckDataCell.storyboard in Resources */,
+				CF0D73FA271CAB8100A2BB75 /* Diff_PointCloud2.storyboard in Resources */,
+				CF3D80C3262B9C03007904E6 /* UseNavigationChoice.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AAA2012563C804008FE5EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AAA20C2563C804008FE5EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		261ED44B6FEC44D93D653331 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		28EA23814CA3413A9E61678E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ARMesh-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6048FE2F67486181EEA469B1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ARMesh-ARMeshUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B3A969CADE33DD3A57E95769 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ARMeshTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D9EAAFC585B9110FF0F7C117 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ARMesh/Pods-ARMesh-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ARMesh/Pods-ARMesh-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ARMesh/Pods-ARMesh-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		26AAA1E92563C802008FE5EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2632F46225F04482006B7366 /* Helpers.swift in Sources */,
+				CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */,
+				CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */,
+				CF8D97812683163300D6002A /* FeatureMatchingController.swift in Sources */,
+				CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */,
+				26AAA2552563C998008FE5EB /* Information.swift in Sources */,
+				CF30EF60262C9CC000C13B66 /* MenuDataSource.swift in Sources */,
+				CF0DBC312691A286006E2E19 /* Matching_OpenCV.mm in Sources */,
+				CF0D73FC271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift in Sources */,
+				2632F47D25F05BC8006B7366 /* EditDataController.swift in Sources */,
+				CF0F166F272C835900E6F9ED /* SCNGeometry.swift in Sources */,
+				2628D273256A72C4002607F3 /* ARColabNavigationController.swift in Sources */,
+				26AAA2492563C998008FE5EB /* EditDataChoiceController.swift in Sources */,
+				CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */,
+				CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */,
+				CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */,
+				CF3D806B262B5364007904E6 /* MakeNavigationChoiceController.swift in Sources */,
+				CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */,
+				CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */,
+				CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */,
+				CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */,
+				26474EEC256AEA02000C1456 /* ColabNavigationEditModel.swift in Sources */,
+				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
+				26AAA2592563C998008FE5EB /* NavigationEditModel.swift in Sources */,
+				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
+				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
+				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,
+				26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */,
+				CFD69EA326C7B71000E51949 /* Diff_PointCloudViewController.swift in Sources */,
+				26AAA2542563C998008FE5EB /* UseDataNavigationController.swift in Sources */,
+				26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */,
+				CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */,
+				2632F45425F04193006B7366 /* Shaders.metal in Sources */,
+				CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */,
+				26AAA2562563C998008FE5EB /* MakeNavigationController.swift in Sources */,
+				26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */,
+				26AAA25B2563C998008FE5EB /* UseNavigationChoiceController.swift in Sources */,
+				CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */,
+				2682062F25C3F7BC00519E42 /* Renderer.swift in Sources */,
+				2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */,
+				CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */,
+				CF0D73FE271CD8CC00A2BB75 /* SetParametorPopOver.swift in Sources */,
+				26AAA2482563C998008FE5EB /* MakeNavigationCheckController.swift in Sources */,
+				26AAA2502563C998008FE5EB /* PopOverController.swift in Sources */,
+				26AAA25F2563C998008FE5EB /* NavigationChoiceController.swift in Sources */,
+				CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */,
+				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
+				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
+				CF30EF3C262BAA7C00C13B66 /* ColabDataChoiceController.swift in Sources */,
+				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,
+				26AAA1F52563C802008FE5EB /* Experience.rcproject in Sources */,
+				CF30EF8E262D982000C13B66 /* MapExpansionTransmitController.swift in Sources */,
+				CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */,
+				26AAA2522563C998008FE5EB /* TitleViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AAA1FF2563C804008FE5EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26AAA2082563C804008FE5EB /* ARMeshNavigationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26AAA20A2563C804008FE5EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26AAA2132563C804008FE5EB /* ARMeshNavigationUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		26AAA2052563C804008FE5EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 26AAA1EC2563C802008FE5EB /* ARMesh */;
+			targetProxy = 26AAA2042563C804008FE5EB /* PBXContainerItemProxy */;
+		};
+		26AAA2102563C804008FE5EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 26AAA1EC2563C802008FE5EB /* ARMesh */;
+			targetProxy = 26AAA20F2563C804008FE5EB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		26AAA1F62563C802008FE5EB /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				26AAA1F72563C802008FE5EB /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		26AAA1FB2563C804008FE5EB /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				26AAA1FC2563C804008FE5EB /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		26AAA2152563C804008FE5EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		26AAA2162563C804008FE5EB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		26AAA2182563C804008FE5EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 424LNK92VG;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = ARMeshNavigation/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		26AAA2192563C804008FE5EB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 424LNK92VG;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = ARMeshNavigation/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		26AAA21B2563C804008FE5EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 424LNK92VG;
+				INFOPLIST_FILE = ARMeshNavigationTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ARMesh.app/ARMesh";
+			};
+			name = Debug;
+		};
+		26AAA21C2563C804008FE5EB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 424LNK92VG;
+				INFOPLIST_FILE = ARMeshNavigationTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ARMesh.app/ARMesh";
+			};
+			name = Release;
+		};
+		26AAA21E2563C804008FE5EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 424LNK92VG;
+				INFOPLIST_FILE = ARMeshNavigationUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ARMeshNavigation;
+			};
+			name = Debug;
+		};
+		26AAA21F2563C804008FE5EB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 424LNK92VG;
+				INFOPLIST_FILE = ARMeshNavigationUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ARMeshNavigation;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		26AAA1E82563C802008FE5EB /* Build configuration list for PBXProject "ARMesh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AAA2152563C804008FE5EB /* Debug */,
+				26AAA2162563C804008FE5EB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26AAA2172563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMesh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AAA2182563C804008FE5EB /* Debug */,
+				26AAA2192563C804008FE5EB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26AAA21A2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AAA21B2563C804008FE5EB /* Debug */,
+				26AAA21C2563C804008FE5EB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26AAA21D2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26AAA21E2563C804008FE5EB /* Debug */,
+				26AAA21F2563C804008FE5EB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 26AAA1E52563C802008FE5EB /* Project object */;
+}
