@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Y6W-OH-hqX">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -104,23 +103,6 @@
                                 <rect key="frame" x="0.0" y="24" width="834" height="1150"/>
                                 <color key="backgroundColor" systemColor="systemGray5Color"/>
                             </sceneKitView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6Ar-mv-yd6">
-                                <rect key="frame" x="0.0" y="24" width="834" height="1150"/>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CoK-hH-Rzr">
-                                <rect key="frame" x="20" y="99" width="250" height="333"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="250" id="R4m-Ho-kia"/>
-                                    <constraint firstAttribute="height" constant="333" id="pAA-Vq-eWp"/>
-                                </constraints>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Vjs-wo-zXg">
-                                <rect key="frame" x="290" y="99" width="300" height="300"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="300" id="hh4-Rj-ueA"/>
-                                    <constraint firstAttribute="width" constant="300" id="qRM-Xj-sz2"/>
-                                </constraints>
-                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zmh-PL-MA5">
                                 <rect key="frame" x="0.0" y="24" width="100" height="50"/>
                                 <constraints>
@@ -137,98 +119,80 @@
                                     <action selector="back:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="a4d-sC-dOd"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jrx-in-d9C">
-                                <rect key="frame" x="375" y="1107" width="81" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemGreenColor"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jrx-in-d9C">
+                                <rect key="frame" x="377" y="1104" width="80" height="40"/>
+                                <color key="backgroundColor" systemColor="systemYellowColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="Fse-8N-Vht"/>
+                                    <constraint firstAttribute="height" constant="40" id="MsA-Bf-Fbo"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Start">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="tap:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="cT5-GA-4NK"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UhV-JJ-aO2">
-                                <rect key="frame" x="700" y="1107" width="76" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button2"/>
-                                <connections>
-                                    <action selector="tap2:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="PBB-hP-D0D"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Nv-OU-BPJ">
-                                <rect key="frame" x="91" y="1107" width="50" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Add"/>
-                                <connections>
-                                    <action selector="trans:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="H4s-BL-teb"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LhK-qI-EIX">
-                                <rect key="frame" x="704" y="1039" width="68" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Trans2"/>
-                                <connections>
-                                    <action selector="trans2:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="noj-tr-828"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kmi-I2-DDT">
-                                <rect key="frame" x="290" y="1107" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="point:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="fQG-JF-2Ga"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TT0-w2-zVL">
-                                <rect key="frame" x="755" y="655" width="52" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="load"/>
-                                <connections>
-                                    <action selector="load_mesh:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="dnW-rX-Zjv"/>
-                                </connections>
-                            </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jgm-po-S70">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jgm-po-S70">
                                 <rect key="frame" x="20" y="99" width="300" height="300"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="300" id="4KN-U1-Wif"/>
                                     <constraint firstAttribute="width" constant="300" id="qqK-Lq-fpj"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rWb-ZT-14c">
+                                <rect key="frame" x="784" y="74" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="MRS-I9-2Z8"/>
+                                    <constraint firstAttribute="width" constant="30" id="Tdv-5K-5XO"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="color"/>
+                                <connections>
+                                    <action selector="tap_changeColor:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="M77-kg-Baf"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fpf-IB-S6V">
+                                <rect key="frame" x="784" y="124" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="BvK-8K-sef"/>
+                                    <constraint firstAttribute="width" constant="30" id="Fgu-0X-JFy"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="mesh"/>
+                                <connections>
+                                    <action selector="tap_changeMesh:" destination="FXL-oj-Jlq" eventType="touchUpInside" id="go2-6C-Mxp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="bqX-mZ-9p7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="jgm-po-S70" firstAttribute="leading" secondItem="bqX-mZ-9p7" secondAttribute="leading" constant="20" id="0ZM-7g-RGx"/>
                             <constraint firstItem="5Ue-NY-OKH" firstAttribute="top" secondItem="bqX-mZ-9p7" secondAttribute="top" id="3Sa-bs-Ngi"/>
-                            <constraint firstItem="6Ar-mv-yd6" firstAttribute="trailing" secondItem="bqX-mZ-9p7" secondAttribute="trailing" id="5wB-kK-5kV"/>
                             <constraint firstItem="Zmh-PL-MA5" firstAttribute="top" secondItem="bqX-mZ-9p7" secondAttribute="top" id="8Y6-1u-CbF"/>
                             <constraint firstItem="5Ue-NY-OKH" firstAttribute="leading" secondItem="bqX-mZ-9p7" secondAttribute="leading" id="Bgs-as-sbq"/>
-                            <constraint firstItem="CoK-hH-Rzr" firstAttribute="top" secondItem="Zmh-PL-MA5" secondAttribute="bottom" constant="25" id="S2u-WX-zlw"/>
+                            <constraint firstAttribute="trailing" secondItem="Fpf-IB-S6V" secondAttribute="trailing" constant="20" id="Eg9-Xw-Wfj"/>
+                            <constraint firstAttribute="trailing" secondItem="rWb-ZT-14c" secondAttribute="trailing" constant="20" id="K5g-Tw-g8O"/>
+                            <constraint firstItem="Jrx-in-d9C" firstAttribute="centerX" secondItem="iYG-DK-LGc" secondAttribute="centerX" id="Tru-N9-SRn"/>
                             <constraint firstItem="Zmh-PL-MA5" firstAttribute="leading" secondItem="bqX-mZ-9p7" secondAttribute="leading" id="Zbe-yF-uLI"/>
-                            <constraint firstItem="Vjs-wo-zXg" firstAttribute="leading" secondItem="CoK-hH-Rzr" secondAttribute="trailing" constant="20" id="akc-V1-dnk"/>
                             <constraint firstItem="bqX-mZ-9p7" firstAttribute="trailing" secondItem="5Ue-NY-OKH" secondAttribute="trailing" id="cmc-Q6-c1o"/>
-                            <constraint firstItem="6Ar-mv-yd6" firstAttribute="leading" secondItem="bqX-mZ-9p7" secondAttribute="leading" id="j2l-De-cht"/>
-                            <constraint firstItem="6Ar-mv-yd6" firstAttribute="bottom" secondItem="bqX-mZ-9p7" secondAttribute="bottom" id="jQy-ei-ifv"/>
-                            <constraint firstItem="CoK-hH-Rzr" firstAttribute="leading" secondItem="bqX-mZ-9p7" secondAttribute="leading" constant="20" id="uO6-VO-m4J"/>
-                            <constraint firstItem="6Ar-mv-yd6" firstAttribute="top" secondItem="bqX-mZ-9p7" secondAttribute="top" id="wbs-cy-d2N"/>
-                            <constraint firstItem="Vjs-wo-zXg" firstAttribute="top" secondItem="bqX-mZ-9p7" secondAttribute="top" constant="75" id="wnV-XZ-iqg"/>
+                            <constraint firstItem="bqX-mZ-9p7" firstAttribute="bottom" secondItem="Jrx-in-d9C" secondAttribute="bottom" constant="30" id="mdj-j6-uYf"/>
+                            <constraint firstItem="rWb-ZT-14c" firstAttribute="top" secondItem="bqX-mZ-9p7" secondAttribute="top" constant="50" id="oiJ-Rc-DG3"/>
+                            <constraint firstItem="Fpf-IB-S6V" firstAttribute="top" secondItem="rWb-ZT-14c" secondAttribute="bottom" constant="20" id="p8k-r7-o3U"/>
                             <constraint firstItem="jgm-po-S70" firstAttribute="top" secondItem="Zmh-PL-MA5" secondAttribute="bottom" constant="25" id="yyf-8i-vBZ"/>
                             <constraint firstItem="bqX-mZ-9p7" firstAttribute="bottom" secondItem="5Ue-NY-OKH" secondAttribute="bottom" id="z78-au-Rxs"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="imageview" destination="6Ar-mv-yd6" id="Bk4-C7-fhZ"/>
-                        <outlet property="imageview1" destination="CoK-hH-Rzr" id="P1G-ep-PxU"/>
-                        <outlet property="imageview2" destination="Vjs-wo-zXg" id="bHa-4H-UrL"/>
-                        <outlet property="imageview3" destination="jgm-po-S70" id="jW0-ip-fKH"/>
+                        <outlet property="imageView" destination="jgm-po-S70" id="aOF-7X-BC5"/>
                         <outlet property="sceneView" destination="5Ue-NY-OKH" id="qjS-IH-9dX"/>
                     </connections>
                 </viewController>
@@ -239,6 +203,8 @@
     </scenes>
     <resources>
         <image name="back2" width="240" height="240"/>
+        <image name="color" width="783" height="783"/>
+        <image name="mesh" width="815" height="815"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -248,11 +214,11 @@
         <systemColor name="systemGray5Color">
             <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
-        <systemColor name="systemGreenColor">
-            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemYellowColor">
+            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

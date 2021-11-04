@@ -38,6 +38,9 @@ class Navi_Modelname: Object {
     
     let pic = List<pic_data>()
     let json = List<json_data>()
+    
+    @objc dynamic var texture_pic: Data!
+    let mesh_anchor = List<anchor_data>()
 }
 
 class Navi_Usdz_ModelInfo: Object {
@@ -68,18 +71,14 @@ class Navityu: Object {
     let usdz = List<Navi_Usdz_ModelInfo>()
 }
 
-//内部パラメータ
-class in_parameta: Object {
-    @objc dynamic var rgb_image: Data!
-    @objc dynamic var depth_image: Data!
-}
-
 //内部パラメータ用
 class Data_parameta: Object {
     @objc dynamic var modelname: String = ""
     
     let pic = List<pic_data>()
     let json = List<json_data>()
+    
+    let mesh_anchor = List<anchor_data>()
 }
 
 class pic_data: Object {
@@ -91,7 +90,6 @@ class json_data: Object {
     @objc dynamic var json_name: String = ""
     @objc dynamic var json_data: Data!
 }
-
 
 //メッシュアンカー用
 class Anchors_data: Object {

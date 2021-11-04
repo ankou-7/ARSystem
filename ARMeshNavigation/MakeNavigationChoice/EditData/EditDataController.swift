@@ -107,12 +107,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //        cameraNode.eulerAngles = cameraEulerAngles
 //        self.scene.rootNode.addChildNode(cameraNode)
         
-        let sphere:SCNGeometry = SCNSphere(radius: 0.01)
-        sphere.firstMaterial?.diffuse.contents = UIColor.red.withAlphaComponent(0.3)
-        let sphereNode = SCNNode(geometry: sphere)
-        sphereNode.camera?.zNear = 0.0
-        sphereNode.position = SCNVector3(0, 0, 0.3)
-        self.scene.rootNode.addChildNode(sphereNode)
+        let sphereCamera:SCNGeometry = SCNSphere(radius: 0.01)
+        let cameraNode = SCNNode(geometry: sphereCamera)
+        cameraNode.camera = SCNCamera()
+        cameraNode.camera?.zNear = 0.0
+        cameraNode.opacity = 0 //透明化
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.5)
+        scene.rootNode.addChildNode(cameraNode)
         
         
 //        //psn gesuture
@@ -191,17 +192,19 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
         self.database_model_num = results[section_num].cells[cell_num].models.count
         //let modelname = "NaviModel01-0"
+        
+        load_anchor()
 
         if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
             
-            if results[section_num].cells[cell_num].models[current_model_num].exit_mesh == 1 {
-                let mesh_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).scn")
-                if let referenceNode = SCNReferenceNode(url: mesh_model_name) {
-                    referenceNode.load()
-                    referenceNode.name = "mesh"
-                    self.scene.rootNode.addChildNode(referenceNode)
-                }
-            }
+//            if results[section_num].cells[cell_num].models[current_model_num].exit_mesh == 1 {
+//                let mesh_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).scn")
+//                if let referenceNode = SCNReferenceNode(url: mesh_model_name) {
+//                    referenceNode.load()
+//                    referenceNode.name = "mesh"
+//                    self.scene.rootNode.addChildNode(referenceNode)
+//                }
+//            }
             
             if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
                 let txt_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).txt")
@@ -244,6 +247,62 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
+    func load_anchor() {
+        let realm = try! Realm()
+        let results = realm.objects(Navi_SectionTitle.self)
+        
+        let texture_node = SCNNode()
+        texture_node.name = "texture_node"
+        
+        for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
+            let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
+            if let mesh_anchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+                
+//                let texcoords_data = results2[results2.count-1].anchor[i].texcoords
+//                guard let texcoords = try? decoder.decode([SIMD2<Float>].self, from: texcoords_data! as Data) else {
+//                    fatalError("読み込みエラー")
+//                }
+                
+                let verticles = mesh_anchor.geometry.vertices
+                let normals = mesh_anchor.geometry.normals
+                let faces = mesh_anchor.geometry.faces
+                let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
+                let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
+                let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
+                let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
+                var sources = [verticesSource, normalsSource]
+                
+//                let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
+//                sources.append(textureCoordinates)
+                
+                let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
+                //nodeGeometry.firstMaterial?.diffuse.contents = UIColor.green //image
+                
+//                let defaultMaterial = SCNMaterial()
+//                defaultMaterial.fillMode = .lines
+//                defaultMaterial.diffuse.contents = UIColor.green
+//                nodeGeometry.materials = [defaultMaterial]
+                
+                let node = SCNNode(geometry: nodeGeometry)
+                node.simdTransform = mesh_anchor.transform
+                texture_node.addChildNode(node)
+                //scene.rootNode.addChildNode(node)
+            }
+        }
+        scene.rootNode.addChildNode(texture_node)
+        print("load完了")
+    }
+    
+    func convertType(type: ARGeometryPrimitiveType) -> SCNGeometryPrimitiveType {
+        switch type {
+        case .line:
+            return .line
+        case .triangle:
+            return .triangles
+        @unknown default:
+            fatalError("unknown type")
+        }
+    }
     
     @IBAction func Tapped_hukan(_ sender: UIButton) {
         //let location = CGPoint(x: self.view.bounds.width/2, y: 1050/2)

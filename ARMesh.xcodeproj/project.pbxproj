@@ -33,6 +33,7 @@
 		26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */; };
 		26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA26B2563CAC9008FE5EB /* art.scnassets */; };
 		B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */; };
+		B93657C73F8649A28906F5EB /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE26EB9CE5C141FA558A82F /* Pods_ARMesh_ARMeshUITests.framework */; };
 		CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0250D926380953003790E8 /* ObjectDataSource.swift */; };
 		CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */; };
 		CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */; };
@@ -88,6 +89,7 @@
 		CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */; };
 		CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */; };
 		CFD69EA326C7B71000E51949 /* Diff_PointCloudViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */; };
+		DB2BB5F06867ED9855D5ABEA /* Pods_ARMeshTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74676E971A0CEC363AC8C09 /* Pods_ARMeshTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +147,7 @@
 		B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.release.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.release.xcconfig"; sourceTree = "<group>"; };
 		C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.release.xcconfig"; sourceTree = "<group>"; };
+		CEE26EB9CE5C141FA558A82F /* Pods_ARMesh_ARMeshUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh_ARMeshUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF0250D926380953003790E8 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceModelData.storyboard; sourceTree = "<group>"; };
 		CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelDataController.swift; sourceTree = "<group>"; };
@@ -202,6 +205,7 @@
 		CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureChoiceController.swift; sourceTree = "<group>"; };
 		CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud.storyboard; sourceTree = "<group>"; };
 		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
+		E74676E971A0CEC363AC8C09 /* Pods_ARMeshTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMeshTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -219,6 +223,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB2BB5F06867ED9855D5ABEA /* Pods_ARMeshTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +231,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B93657C73F8649A28906F5EB /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -538,6 +544,8 @@
 			children = (
 				CF8D977426830F3700D6002A /* opencv2.framework */,
 				B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */,
+				CEE26EB9CE5C141FA558A82F /* Pods_ARMesh_ARMeshUITests.framework */,
+				E74676E971A0CEC363AC8C09 /* Pods_ARMeshTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

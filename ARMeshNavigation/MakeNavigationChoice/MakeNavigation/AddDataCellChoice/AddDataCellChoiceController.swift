@@ -215,6 +215,13 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                     print(results[section_num].cells[cell_num].models[i].usdz)
                 }
                 
+                if navityu_results[i].exit_mesh == 1 {
+                    for j in 0...data_parameta_results[i].mesh_anchor.count-1 {
+                        results[section_num].cells[cell_num].models[i].mesh_anchor.append(
+                            anchor_data(value: ["mesh": data_parameta_results[i].mesh_anchor[j].mesh]))
+                    }
+                }
+                
                 if navityu_results[i].exit_parameta == 1 {
                     if data_parameta_results[i].pic.count > 0 {
                         for j in 0...data_parameta_results[i].pic.count-1 {

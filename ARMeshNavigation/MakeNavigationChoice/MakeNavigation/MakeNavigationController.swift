@@ -602,26 +602,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         // DocumentディレクトリのfileURLを取得
         if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
 //            // ディレクトリのパスにファイル名をつなげてファイルのフルパスを作る
-//            let targetTextFilePath_jpeg = documentDirectoryFileURL.appendingPathComponent("rgb_\(filename).jpeg")
-//            do {
-//                try jpegData.write(to: targetTextFilePath_jpeg)
-//            } catch {
-//                print("エラー")
-//            }
-//
-//            let targetTextFilePath_json = documentDirectoryFileURL.appendingPathComponent("\(filename).json")
-//            do {
-//                try jsonData.write(to: targetTextFilePath_json)
-//            } catch {
-//                print("エラー")
-//            }
-//
-////            let targetTextFilePath_png = documentDirectoryFileURL.appendingPathComponent("\(filename).png")
-////            do {
-////                try depthData.write(to: targetTextFilePath_png)
-////            } catch {
-////                print("エラー")
-////            }
             let targetTextFilePath_depthMap = documentDirectoryFileURL.appendingPathComponent("depth_\(filename).data")
             do {
                 try depthMapData.write(to: targetTextFilePath_depthMap)
@@ -676,7 +656,20 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             //sceneをscnファイルで保存
             if menu_array[3] == false {
                 self.sceneView.scene.write(to: targetTextFilePath, options: nil, delegate: nil, progressHandler: nil)
+                
+                guard let anchors = sceneView.session.currentFrame?.anchors else { return }
+                let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
+                for anchor in meshAnchors {
+                    guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
+                    else{ return }
+                    let realm = try! Realm()
+                    let results = realm.objects(Data_parameta.self)
+                    try! realm.write {
+                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                    }
+                }
             }
+            
             sceneView.session.getCurrentWorldMap { [self]worldMap, error in
                 if let map = worldMap {
                     if let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
@@ -775,7 +768,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             for anchor in anchors {
                 if let node = knownAnchors[anchor.identifier] {
                     if let meshAnchor = anchor as? ARMeshAnchor {
-                        // reconstruct it since we don't have an efficient way of updating the underlying data
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }
                     node.simdTransform = anchor.transform
