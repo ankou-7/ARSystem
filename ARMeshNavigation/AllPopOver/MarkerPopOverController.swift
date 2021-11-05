@@ -28,7 +28,7 @@ class MarkerPopOverController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ table: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        return 100
     }
 
     //各cellの内容

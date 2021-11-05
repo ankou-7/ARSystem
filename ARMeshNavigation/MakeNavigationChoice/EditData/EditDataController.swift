@@ -10,7 +10,7 @@ import SceneKit
 import ARKit
 import RealmSwift
 
-class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecognizerDelegate {
+class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate {
     
     //画面遷移した際のsectionとcellの番号を格納
     var section_num = Int()
@@ -110,6 +110,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         cameraNode.opacity = 0 //透明化
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 0.0)
         scene.rootNode.addChildNode(cameraNode)
+        
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .ambient //.omni
+        //lightNode.position = SCNVector3(x: 0, y: 10, z: -10)
+        scene.rootNode.addChildNode(lightNode)
         
         if results[section_num].cells[cell_num].models.count < 2 {
             right_modelbutton.isHidden = true
@@ -272,6 +278,62 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         load_anchor(tex_bool: false)
     }
     
+    var item = ObjectItem(name: "", id: 0, kind: "")
+    let ObjectdataSource = ObjectModel()
+    var select_object_num = 0
+    var tap_objectMenu_flag = false
+    
+    @IBAction func tap_objectMenu_button(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "PopOver", bundle: nil)
+        let contentVC = storyboard.instantiateViewController(withIdentifier: "MarkerPopOverController") as! MarkerPopOverController
+        
+        contentVC.modalPresentationStyle = .popover
+        contentVC.preferredContentSize = CGSize(width: 100, height: 300)
+        
+        guard let popoverPresentationController = contentVC.popoverPresentationController else { return }
+        
+        popoverPresentationController.sourceView = view
+        popoverPresentationController.sourceRect = sender.frame
+        popoverPresentationController.permittedArrowDirections = .any
+        popoverPresentationController.delegate = self
+        
+        contentVC.closure = { (num: Int) -> Void in
+            self.select_object_num = num
+            self.item = self.ObjectdataSource.item(row: self.select_object_num)
+            print(self.select_object_num)
+            print(self.item)
+        }
+        
+        tap_objectMenu_flag = true
+        
+        present(contentVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func handleTap(_ sender: UITapGestureRecognizer) {
+        if tap_objectMenu_flag == true {
+            let hitResults = sceneView.hitTest(sender.location(in: sceneView), options: [:])
+            if !hitResults.isEmpty {
+                let posi = hitResults[0].worldCoordinates
+                guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
+                let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
+                let node = scene.rootNode.childNode(withName: item.name, recursively: true)
+                node?.scale = SCNVector3(0.01, 0.01, 0.01)
+                node?.position = posi
+                node!.name = item.name
+                
+                //座標軸
+                let axis = ObjectOrigin().makeAxisNode()
+                axis.position = posi
+                axis.scale = SCNVector3(2.0, 2.0, 2.0)
+                sceneView.scene!.rootNode.addChildNode(axis)
+                //node?.addChildNode(axis)
+                
+                sceneView.scene!.rootNode.addChildNode(node!)
+            }
+        }
+    }
+    
+    
     func load_anchor(tex_bool: Bool) {
         for (i, mesh_anchor) in anchors.enumerated() {
             let verticles = mesh_anchor.geometry.vertices
@@ -343,7 +405,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
-    @IBAction func make_texture(_ sender: UIButton) {
+    @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         make_texture()
     }
     
