@@ -91,9 +91,6 @@
                                 <rect key="frame" x="0.0" y="24" width="834" height="1170"/>
                                 <color key="backgroundColor" systemColor="systemGray5Color"/>
                                 <gestureRecognizers/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="7qN-Fw-eur" appends="YES" id="mpM-u9-eK6"/>
-                                </connections>
                             </sceneKitView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bg8-nC-QUg">
                                 <rect key="frame" x="492" y="1021" width="50" height="50"/>
@@ -270,11 +267,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Ll-bW-fv3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="7qN-Fw-eur">
-                    <connections>
-                        <action selector="handleTap:" destination="OtV-2Q-EG5" id="9So-Mn-gJ2"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="750.35971223021591" y="2341.708542713568"/>
         </scene>

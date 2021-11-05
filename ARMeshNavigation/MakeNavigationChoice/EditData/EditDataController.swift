@@ -31,6 +31,21 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     var uiimage_array: [UIImage] = []
     @IBOutlet var imageView: UIImageView!
     
+    var objectName_array: [String] = []
+    var objectInfo: [(object_name: String, //オブジェクトの名前
+                      object_name_identify: String, //個別の名前
+                      object_num: Int, //オブジェクト番号
+                      object_type: String, //オブジェクトの型
+                      object_posi_x: Float,
+                      object_posi_y: Float,
+                      object_posi_z: Float,
+                      object_scale_x: Float,
+                      object_scale_y: Float,
+                      object_scale_z: Float,
+                      object_euler_x: Float,
+                      object_euler_y: Float,
+                      object_euler_z: Float)] = []
+    
     var cameraNode = SCNNode()
     var lastGestureRotation: Float = 0.0
     var lastGestureScale: Float = 1.0
@@ -122,6 +137,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             left_modelbutton.isHidden = true
             modelname_label.isHidden = true
         }
+        
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(twoTap(gesture:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        sceneView.addGestureRecognizer(doubleTapGesture)
         
 //        //psn gesuture
 //        let pan = UIPanGestureRecognizer(
@@ -281,7 +300,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     var item = ObjectItem(name: "", id: 0, kind: "")
     let ObjectdataSource = ObjectModel()
     var select_object_num = 0
-    var tap_objectMenu_flag = false
+    var tap_object_flag = false
     
     @IBAction func tap_objectMenu_button(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "PopOver", bundle: nil)
@@ -304,37 +323,208 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             print(self.item)
         }
         
-        tap_objectMenu_flag = true
+        tap_object_flag = true
         
         present(contentVC, animated: true, completion: nil)
     }
     
-    @IBAction func handleTap(_ sender: UITapGestureRecognizer) {
-        if tap_objectMenu_flag == true {
-            let hitResults = sceneView.hitTest(sender.location(in: sceneView), options: [:])
-            if !hitResults.isEmpty {
-                let posi = hitResults[0].worldCoordinates
-                guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
-                let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
-                let node = scene.rootNode.childNode(withName: item.name, recursively: true)
-                node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                node?.position = posi
-                node!.name = item.name
-                
-                //座標軸
-                let axis = ObjectOrigin().makeAxisNode()
-                axis.position = posi
-                axis.scale = SCNVector3(2.0, 2.0, 2.0)
-                sceneView.scene!.rootNode.addChildNode(axis)
-                //node?.addChildNode(axis)
-                
-                sceneView.scene!.rootNode.addChildNode(node!)
+    @objc fileprivate func twoTap(gesture: UITapGestureRecognizer) {
+        if gesture.numberOfTapsRequired == 2 {
+            // ダブルタップ時の動作
+            
+        }
+    }
+    
+    var touchMove_flag = false
+    var choiceNode_name: String!
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let location = touches.first!.location(in: self.sceneView)
+        let hitResults = sceneView.hitTest(location, options: [:])
+        for result in hitResults {
+            if result.node.parent?.name == "axis" {
+                sceneView.allowsCameraControl = false
+            }
+        }
+        startAxisDrag(screenPos: location)
+        touchMove_flag = false
+    }
+    
+    override open func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let location = touches.first!.location(in: self.sceneView)
+        updateAxisDrag(screenPos: location)
+        touchMove_flag = true
+    }
+    
+    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let location = touches.first!.location(in: self.sceneView)
+        endAxisDrag(screenPos: location)
+        sceneView.allowsCameraControl = true
+        
+        if touchMove_flag == false {
+            if tap_object_flag == true {
+                let hitResults = sceneView.hitTest(location, options: [:])
+                print(hitResults)
+                if hitResults.count > 0 {
+                    //print(hitResults[0].node.parent?.name)
+                    
+//                    for (i, name) in objectName_array.enumerated() {
+//                        if hitResults[0].node.name == name {
+//                            if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+//                                node.removeFromParentNode()
+//                            }
+//                            let axis = ObjectOrigin().makeAxisNode()
+//                            axis.position = SCNVector3(objectInfo[i].object_posi_x, objectInfo[i].object_posi_y, objectInfo[i].object_posi_z)
+//                            axis.scale = SCNVector3(2.0, 2.0, 2.0)
+//                            sceneView.scene!.rootNode.addChildNode(axis)
+//                        }
+//                    }
+                    
+                    if hitResults[0].node.name == "child_tex_node" {
+                        let posi = hitResults[0].worldCoordinates
+                        guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
+                        let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
+                        let node = scene.rootNode.childNode(withName: item.name, recursively: true)
+                        node?.scale = SCNVector3(0.01, 0.01, 0.01)
+                        node?.position = posi
+                        node!.name = item.name + String(objectInfo.count)
+                        choiceNode_name = item.name + String(objectInfo.count)
+                        let scale = node?.scale
+                        let euler = node?.eulerAngles
+                        objectName_array.append(node!.name!)
+                        let info = (object_name: item.name, object_name_identify: node!.name!, object_num: item.id, object_type: item.kind, object_posi_x: posi.x, object_posi_y: posi.y, object_posi_z: posi.z, object_scale_x: scale!.x, object_scale_y: scale!.y, object_scale_z: scale!.z, object_euler_x: euler!.x, object_euler_y: euler!.y, object_euler_z: euler!.z)
+                        objectInfo.append(info)
+                        print(objectInfo)
+                        print(objectName_array)
+                        
+                        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+                            node.removeFromParentNode()
+                        }
+                        
+                        //座標軸
+                        let axis = ObjectOrigin().makeAxisNode()
+                        axis.position = posi
+                        axis.scale = SCNVector3(2.0, 2.0, 2.0)
+                        sceneView.scene!.rootNode.addChildNode(axis)
+                        //node?.addChildNode(axis)
+                        
+                        sceneView.scene!.rootNode.addChildNode(node!)
+                        
+                        //tap_object_flag = false
+                        touchMove_flag = false
+                    }
+                }
             }
         }
     }
     
+    var origin_posi = CGPoint(x: 0, y: 0)
+    var distance: Float = 0.0
+    var pre_screenPos = CGPoint(x: 0, y: 0)
+    var select_node: SCNNode!
+    var start_flag = false
+    
+    func startAxisDrag(screenPos: CGPoint) {
+        let hitResults = sceneView.hitTest(screenPos, options: [:])
+        for result in hitResults {
+            
+            if result.node.parent?.name == "axis" {
+                let posi = sceneView.projectPoint(result.node.parent!.position)
+                origin_posi = CGPoint(x: CGFloat(posi.x), y: CGFloat(posi.y))
+                distance = sqrt((posi.x - Float(screenPos.x)) * (posi.x - Float(screenPos.x)) + (posi.y - Float(screenPos.y)) * (posi.y - Float(screenPos.y)))
+                pre_screenPos = screenPos
+                select_node = result.node
+                start_flag = true
+                result.node.geometry?.firstMaterial?.diffuse.contents = UIColor.white
+            }
+        }
+    }
+    
+    func updateAxisDrag(screenPos: CGPoint) {
+        if start_flag == true {
+            let posi = sceneView.projectPoint(select_node.parent!.position)
+            let now_distance = sqrt((posi.x - Float(screenPos.x)) * (posi.x - Float(screenPos.x)) + (posi.y - Float(screenPos.y)) * (posi.y - Float(screenPos.y)))
+            let diff = now_distance - distance
+            let translation = screenPos.y - pre_screenPos.y
+            if select_node.name == "XAxis" {
+                select_node.parent!.localTranslate(by: SCNVector3(x: diff * 0.003, y: 0, z: 0))
+                sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false)!.localTranslate(by: SCNVector3(x: diff * 0.003, y: 0, z: 0))
+            }
+            else if select_node.name == "YAxis" {
+                select_node.parent!.localTranslate(by: SCNVector3(x: 0, y: diff * 0.003, z: 0))
+                sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false)!.localTranslate(by: SCNVector3(x: 0, y: diff * 0.003, z: 0))
+            }
+            else if select_node.name == "ZAxis" {
+                select_node.parent!.localTranslate(by: SCNVector3(x: 0, y: 0, z: diff * 0.003))
+                sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false)!.localTranslate(by: SCNVector3(x: 0, y: 0, z: diff * 0.003))
+            }
+            else if select_node.name == "XCurve" {
+                select_node.parent!.localRotate(by: SCNQuaternion(translation * 0.005, 0, 0, 1))
+                sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false)!.localRotate(by: SCNQuaternion(translation * 0.005, 0, 0, 1))
+            }
+            else if select_node.name == "YCurve" {
+                select_node.parent!.localRotate(by: SCNQuaternion(0, translation * 0.005, 0, 1))
+                sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false)!.localRotate(by: SCNQuaternion(0, translation * 0.005, 0, 1))
+            }
+            else if select_node.name == "ZCurve" {
+                select_node.parent!.localRotate(by: SCNQuaternion(0, 0, translation * 0.005, 1))
+                sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false)!.localRotate(by: SCNQuaternion(0, 0, translation * 0.005, 1))
+            }
+            let now_posi = sceneView.projectPoint(select_node.parent!.position)
+            origin_posi = CGPoint(x: CGFloat(now_posi.x), y: CGFloat(now_posi.y))
+            distance = sqrt((now_posi.x - Float(screenPos.x)) * (now_posi.x - Float(screenPos.x)) + (now_posi.y - Float(screenPos.y)) * (now_posi.y - Float(screenPos.y)))
+            pre_screenPos = screenPos
+        }
+    }
+    
+    func endAxisDrag(screenPos: CGPoint) {
+        if start_flag == true {
+            start_flag = false
+            
+            if let node = sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false) {
+                let posi = node.position
+                let scale = node.scale
+                let euler = node.eulerAngles
+                let num = objectName_array.firstIndex(of: choiceNode_name)!
+                print(num)
+                
+                objectInfo[num].object_posi_x = posi.x
+                objectInfo[num].object_posi_y = posi.y
+                objectInfo[num].object_posi_z = posi.z
+                objectInfo[num].object_scale_x = scale.x
+                objectInfo[num].object_scale_y = scale.y
+                objectInfo[num].object_scale_z = scale.z
+                objectInfo[num].object_euler_x = euler.x
+                objectInfo[num].object_euler_y = euler.y
+                objectInfo[num].object_euler_z = euler.z
+                
+                print(objectInfo)
+            }
+            
+            if select_node.name == "XAxis" {
+                select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+            }
+            else if select_node.name == "YAxis" {
+                select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+            }
+            else if select_node.name == "ZAxis" {
+                select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
+            }
+            else if select_node.name == "XCurve" {
+                select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+            }
+            else if select_node.name == "YCurve" {
+                select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+            }
+            else if select_node.name == "ZCurve" {
+                select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
+            }
+        }
+    }
     
     func load_anchor(tex_bool: Bool) {
+        let tex_node = SCNNode()
+        tex_node.name = "tex_node"
         for (i, mesh_anchor) in anchors.enumerated() {
             let verticles = mesh_anchor.geometry.vertices
             let normals = mesh_anchor.geometry.normals
@@ -363,13 +553,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             let node = SCNNode(geometry: nodeGeometry)
             node.simdTransform = mesh_anchor.transform
             knownAnchors[mesh_anchor.identifier] = node
-            scene.rootNode.addChildNode(node)
+            node.name = "child_tex_node"
+            tex_node.addChildNode(node)
+            //scene.rootNode.addChildNode(node)
         }
+        scene.rootNode.addChildNode(tex_node)
         print("load完了")
     }
     
     func save_anchor() {
-        for (i, anchor) in anchors.enumerated() {
+        for (i, _) in anchors.enumerated() {
             let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
             
             let realm = try! Realm()
@@ -780,16 +973,5 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
-    }
-    
-    
+    }    
 }
-
-//var pan_move: Float2 = [0, 0]
-//var rotateVector: matrix_float4x4 = simd_float4x4(columns: (simd_float4(1,0,0,0),
-//                                                            simd_float4(0,1,0,0),
-//                                                            simd_float4(0,0,1,0),
-//                                                            simd_float4(0,0,0,1)))
-
-//var scale: Float = 1.0
-        
