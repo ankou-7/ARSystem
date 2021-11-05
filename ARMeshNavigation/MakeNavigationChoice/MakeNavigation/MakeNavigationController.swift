@@ -63,6 +63,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var knownAnchors = Dictionary<UUID, SCNNode>()
     var meshAnchors_array: [String] = []
+    var texcoords2: [[SIMD2<Float>]] = []
     
     var jpeg_count = 0
     var parameta_flag = false
@@ -99,7 +100,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         for _ in 1...viewModel.count {
             menu_array.append(false)
         }
-        print(menu_array)
         
         numGridPoints_slider.value = Float(numGridPoints / 100)
         numGridPoints_label.text = "\(numGridPoints)個/frame"
@@ -232,7 +232,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.make_modelButton.layer.cornerRadius = 25
                 
                 self.pointCloud_flag = false
-                self.parameta_flag.toggle()
+                self.parameta_flag = false
                 self.depth_flag = false
 
                 self.Alert() //モデル作成部分
@@ -290,6 +290,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.current_imageData = cgImage.jpegData(compressionQuality: 0.5)
                 
                 self.mesh_flag = true
+                self.parameta_flag = true
                 
                 if self.menu_array[0] == true {
                     self.sceneView.debugOptions = .showWorldOrigin
@@ -531,30 +532,30 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     json_data = try! JSONEncoder().encode(entity)
                     //json_data = Data(bytes: [entity], count: MemoryLayout<json_pointcloudUniforms>.size)
                     
-                    //深度画像
-                    let aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
-                    var (depthArray, depthSize) = frame.cropPortraitCenterSquareDepth(aspectRatio: aspectRatio)
-                    print("depthSize:\(depthSize)")
-                    print("depthArray.count:\(depthArray.count)")
+//                    //深度画像
+//                    let aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
+//                    var (depthArray, depthSize) = frame.cropPortraitCenterSquareDepth(aspectRatio: aspectRatio)
+//                    print("depthSize:\(depthSize)")
+//                    print("depthArray.count:\(depthArray.count)")
 
-                    // 深度の信頼度情報を取得
-                    let (depthConfidenceArray, _) = frame.cropPortraitCenterSquareDepthConfidence(aspectRatio: aspectRatio)
-                    print("depthConfidenceArray.count:\(depthConfidenceArray.count)")
-                    // 信頼度が高い深度情報のみ抽出
-                    if depthArray.count != depthConfidenceArray.count  {
-                        depthArray = depthConfidenceArray.enumerated().map {
-                            // 信頼度が high 未満は深度を -1 に書き換え
-                            return $0.element >= UInt8(ARConfidenceLevel.high.rawValue) ? depthArray[$0.offset] : -1
-                        }
-                    }
-                    var depthDataArray: [depthMap_data] = []
-                    for i in depthArray {
-                        depthDataArray.append(depthMap_data(depth: i))
-                    }
-                    //print("depthDataArray_count:\(depthDataArray.count)")
-                    let depthMapData: Data = try! JSONEncoder().encode(depthDataArray)
+//                    // 深度の信頼度情報を取得
+//                    let (depthConfidenceArray, _) = frame.cropPortraitCenterSquareDepthConfidence(aspectRatio: aspectRatio)
+//                    print("depthConfidenceArray.count:\(depthConfidenceArray.count)")
+//                    // 信頼度が高い深度情報のみ抽出
+//                    if depthArray.count != depthConfidenceArray.count  {
+//                        depthArray = depthConfidenceArray.enumerated().map {
+//                            // 信頼度が high 未満は深度を -1 に書き換え
+//                            return $0.element >= UInt8(ARConfidenceLevel.high.rawValue) ? depthArray[$0.offset] : -1
+//                        }
+//                    }
+//                    var depthDataArray: [depthMap_data] = []
+//                    for i in depthArray {
+//                        depthDataArray.append(depthMap_data(depth: i))
+//                    }
+//                    //print("depthDataArray_count:\(depthDataArray.count)")
+//                    let depthMapData: Data = try! JSONEncoder().encode(depthDataArray)
                     
-                    save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthMapData: depthMapData)
+                    save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data)
                 }
             }
             
@@ -587,28 +588,28 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     //jpegデータ保存
-    func save_jpeg(filename: String, jpegData: Data, jsonData: Data, depthMapData: Data) {
+    func save_jpeg(filename: String, jpegData: Data, jsonData: Data) {
         
         let realm = try! Realm()
         let results = realm.objects(Data_parameta.self)
         try! realm.write {
             results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
                                                                       "pic_data": jpegData]))
-            
+
             results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
                                                                       "json_data": jsonData]))
         }
         
-        // DocumentディレクトリのfileURLを取得
-        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
-//            // ディレクトリのパスにファイル名をつなげてファイルのフルパスを作る
-            let targetTextFilePath_depthMap = documentDirectoryFileURL.appendingPathComponent("depth_\(filename).data")
-            do {
-                try depthMapData.write(to: targetTextFilePath_depthMap)
-            } catch {
-                print("エラー")
-            }
-        }
+//        // DocumentディレクトリのfileURLを取得
+//        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
+////            // ディレクトリのパスにファイル名をつなげてファイルのフルパスを作る
+//            let targetTextFilePath_depthMap = documentDirectoryFileURL.appendingPathComponent("depth_\(filename).data")
+//            do {
+//                try depthMapData.write(to: targetTextFilePath_depthMap)
+//            } catch {
+//                print("エラー")
+//            }
+//        }
         
     }
     
@@ -659,13 +660,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 guard let anchors = sceneView.session.currentFrame?.anchors else { return }
                 let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
-                for anchor in meshAnchors {
+                for (i, anchor) in meshAnchors.enumerated() {
+                    texcoords2.append([])
+                    let verticles = anchor.geometry.vertices
+                    for _ in 0..<verticles.count {
+                        texcoords2[i].append(SIMD2<Float>(0, 0))
+                    }
                     guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                     else{ return }
+                    let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
+                    
                     let realm = try! Realm()
                     let results = realm.objects(Data_parameta.self)
                     try! realm.write {
-                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data,
+                                                                                             "texcoords": texcoords_data]))
                     }
                 }
             }
@@ -799,6 +808,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     @IBAction func Finish_navigate(_ sender: Any) {
         timer.invalidate()
+        
+        let realm = try! Realm()
+        let results = realm.objects(Data_parameta.self)
+        print(results[self.recording_count].pic)
         
         let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController

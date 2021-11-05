@@ -21,16 +21,25 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 
     @IBOutlet weak var sceneView: SCNView!
     let scene = SCNScene()
+    let decoder = JSONDecoder()
+    let results = try! Realm().objects(Navi_SectionTitle.self)
+    var knownAnchors = Dictionary<UUID, SCNNode>()
     
-    let cameraNode = SCNNode()
+    var anchors: [ARMeshAnchor] = []
+    var texcoords2: [[SIMD2<Float>]] = []
+    var new_uiimage: UIImage!
+    var uiimage_array: [UIImage] = []
+    @IBOutlet var imageView: UIImageView!
+    
+    var cameraNode = SCNNode()
     var lastGestureRotation: Float = 0.0
     var lastGestureScale: Float = 1.0
     
+    @IBOutlet var left_modelbutton: UIButton!
+    @IBOutlet var right_modelbutton: UIButton!
+    @IBOutlet var modelname_label: UILabel!
+    
     var ui_view = UIView()
-    
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var imageView2: UIImageView!
-    
     
     @IBOutlet weak var mesh_slider: UISlider!
     
@@ -94,27 +103,19 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //
 //        print()
         
-//        let sphereCamera:SCNGeometry = SCNPlane(width: 0.294217, height: 0.3922889)
-//        sphereCamera.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.0)
-//        let cameraNode = SCNNode(geometry: sphereCamera)
-//        cameraNode.camera = SCNCamera()
-//        print(cameraNode.camera?.zFar) //100.0
-//        print(cameraNode.camera?.zNear) //1.0
-//        cameraNode.camera?.zNear = 0.0
-//        cameraNode.position = cameraPosition
-////        cameraNode.position.z = cameraPosition.z + 1.0
-////        cameraNode.position.x = cameraPosition.x + 0.7
-//        cameraNode.eulerAngles = cameraEulerAngles
-//        self.scene.rootNode.addChildNode(cameraNode)
-        
         let sphereCamera:SCNGeometry = SCNSphere(radius: 0.01)
-        let cameraNode = SCNNode(geometry: sphereCamera)
+        cameraNode = SCNNode(geometry: sphereCamera)
         cameraNode.camera = SCNCamera()
         cameraNode.camera?.zNear = 0.0
         cameraNode.opacity = 0 //透明化
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.5)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 0.0)
         scene.rootNode.addChildNode(cameraNode)
         
+        if results[section_num].cells[cell_num].models.count < 2 {
+            right_modelbutton.isHidden = true
+            left_modelbutton.isHidden = true
+            modelname_label.isHidden = true
+        }
         
 //        //psn gesuture
 //        let pan = UIPanGestureRecognizer(
@@ -139,16 +140,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //        )
 //        rotaion.delegate = self
 //        sceneView.addGestureRecognizer(rotaion)
-
-//        cameraNode.camera = SCNCamera()
-//        cameraNode.name = "camera"
-//        cameraNode.scale = SCNVector3(x: 0.1, y: 0.1, z: 0.1)
-//        cameraNode.eulerAngles.x = -Float.pi/2
-//        cameraNode.position = .init(0, 0.5, 0)
-//        scene.rootNode.addChildNode(cameraNode)
-//        print(cameraNode.transform)
-//        print(cameraNode.eulerAngles)
-//        print(cameraNode.orientation)
         
 //        let quat = cameraNode.orientation
 //        //エンティティの回転角を取得
@@ -187,13 +178,43 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
         let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
         self.database_model_num = results[section_num].cells[cell_num].models.count
-        //let modelname = "NaviModel01-0"
         
-        load_anchor()
+        let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        let yoko: Float = 4.0
+        let tate: Float = ceil(Float(count)/4.0)
+        
+        print(results[section_num].cells[cell_num].models[current_model_num].pic)
+        for i in 0..<count {
+            let uiimage = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[i].pic_data!)
+            uiimage_array.append(uiimage!)
+        }
+        //16384以下にする必要あり
+        new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: 2880 * CGFloat(yoko), height: 3840 * CGFloat(tate))
+        //imageView.image = new_uiimage
+        
+        for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
+            let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
+            if let mesh_anchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+                anchors.append(mesh_anchor)
+            }
+            
+            texcoords2.append([])
+            let texcoords_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords
+            guard let texcoords = try? decoder.decode([SIMD2<Float>].self, from: texcoords_data! as Data) else {
+                fatalError("読み込みエラー")
+            }
+            
+            texcoords2[i].append(contentsOf: texcoords)
+        }
+        
+        print(results[section_num].cells[cell_num].models)
+        if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
+            load_anchor(tex_bool: true)
+        } else {
+            load_anchor(tex_bool: false)
+        }
 
         if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
             
@@ -206,34 +227,34 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //                }
 //            }
             
-            if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
-                let txt_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).txt")
-                guard let fileContents = try? String(contentsOf: txt_model_name) else {
-                    fatalError("ファイル読み込みエラー")
-                }
-                let row = fileContents.components(separatedBy: "\n")
-                let vertice_count = Int(row[0])!
-                
-                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
-                
-                //let points_data = try NSData(contentsOf: data_model_name)
-                
-                guard let data = try? Data(contentsOf: data_model_name) else {
-                    fatalError("ファイル読み込みエラー")
-                }
-                print(data.count)
-                print(data)
-                let decoder = JSONDecoder()
-                guard let datas = try? decoder.decode([PointCloudVertex].self, from: data) else {
-                    fatalError("JSON読み込みエラー")
-                }
-                let points_data = NSData(bytes: datas, length: MemoryLayout<PointCloudVertex>.size * vertice_count)
-                
-                let node = self.buildNode2(vertexData: points_data, count: vertice_count)
-                node.position = SCNVector3(x: 0, y: 0, z: 0)
-                node.name = "point"
-                self.scene.rootNode.addChildNode(node)
-            }
+//            if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
+//                let txt_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).txt")
+//                guard let fileContents = try? String(contentsOf: txt_model_name) else {
+//                    fatalError("ファイル読み込みエラー")
+//                }
+//                let row = fileContents.components(separatedBy: "\n")
+//                let vertice_count = Int(row[0])!
+//
+//                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
+//
+//                //let points_data = try NSData(contentsOf: data_model_name)
+//
+//                guard let data = try? Data(contentsOf: data_model_name) else {
+//                    fatalError("ファイル読み込みエラー")
+//                }
+//                print(data.count)
+//                print(data)
+//                let decoder = JSONDecoder()
+//                guard let datas = try? decoder.decode([PointCloudVertex].self, from: data) else {
+//                    fatalError("JSON読み込みエラー")
+//                }
+//                let points_data = NSData(bytes: datas, length: MemoryLayout<PointCloudVertex>.size * vertice_count)
+//
+//                let node = self.buildNode2(vertexData: points_data, count: vertice_count)
+//                node.position = SCNVector3(x: 0, y: 0, z: 0)
+//                node.name = "point"
+//                self.scene.rootNode.addChildNode(node)
+//            }
         }
     }
     
@@ -241,56 +262,74 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         super.viewWillDisappear(animated)
     }
     
-    @IBAction func mesh_valueChanged(_ sender: UISlider) {
-        if let node = self.sceneView.scene!.rootNode.childNode(withName: "mesh", recursively: false) {
-            node.opacity =  CGFloat(sender.value)
-        }
+    @IBAction func tap_colorNode(_ sender: UIButton) {
+        delete_mesh()
+        load_anchor(tex_bool: true)
     }
     
-    func load_anchor() {
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
-        
-        let texture_node = SCNNode()
-        texture_node.name = "texture_node"
-        
-        for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
-            let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
-            if let mesh_anchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                
-//                let texcoords_data = results2[results2.count-1].anchor[i].texcoords
-//                guard let texcoords = try? decoder.decode([SIMD2<Float>].self, from: texcoords_data! as Data) else {
-//                    fatalError("読み込みエラー")
-//                }
-                
-                let verticles = mesh_anchor.geometry.vertices
-                let normals = mesh_anchor.geometry.normals
-                let faces = mesh_anchor.geometry.faces
-                let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
-                let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
-                let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
-                let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
-                var sources = [verticesSource, normalsSource]
-                
-//                let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
-//                sources.append(textureCoordinates)
-                
-                let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
-                //nodeGeometry.firstMaterial?.diffuse.contents = UIColor.green //image
-                
-//                let defaultMaterial = SCNMaterial()
-//                defaultMaterial.fillMode = .lines
-//                defaultMaterial.diffuse.contents = UIColor.green
-//                nodeGeometry.materials = [defaultMaterial]
-                
-                let node = SCNNode(geometry: nodeGeometry)
-                node.simdTransform = mesh_anchor.transform
-                texture_node.addChildNode(node)
-                //scene.rootNode.addChildNode(node)
+    @IBAction func tap_meshNode(_ sender: UIButton) {
+        delete_mesh()
+        load_anchor(tex_bool: false)
+    }
+    
+    func load_anchor(tex_bool: Bool) {
+        for (i, mesh_anchor) in anchors.enumerated() {
+            let verticles = mesh_anchor.geometry.vertices
+            let normals = mesh_anchor.geometry.normals
+            let faces = mesh_anchor.geometry.faces
+            let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
+            let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
+            let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
+            let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
+            var sources = [verticesSource, normalsSource]
+            
+            if tex_bool == true {
+                let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords2[i])
+                sources.append(textureCoordinates)
+            }
+            
+            let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
+            nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
+            
+            if tex_bool == false {
+                let defaultMaterial = SCNMaterial()
+                defaultMaterial.fillMode = .lines
+                defaultMaterial.diffuse.contents = UIColor.green
+                nodeGeometry.materials = [defaultMaterial]
+            }
+            
+            let node = SCNNode(geometry: nodeGeometry)
+            node.simdTransform = mesh_anchor.transform
+            knownAnchors[mesh_anchor.identifier] = node
+            scene.rootNode.addChildNode(node)
+        }
+        print("load完了")
+    }
+    
+    func save_anchor() {
+        for (i, anchor) in anchors.enumerated() {
+            let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
+            
+            let realm = try! Realm()
+            try! realm.write {
+                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords = texcoords_data
             }
         }
-        scene.rootNode.addChildNode(texture_node)
-        print("load完了")
+        let realm = try! Realm()
+        try! realm.write {
+            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 1
+        }
+        print(results[section_num].cells[cell_num].models)
+        print("save完了")
+    }
+    
+    func delete_mesh() {
+        for anchor in anchors {
+            if let node = knownAnchors[anchor.identifier] {
+                node.removeFromParentNode()
+            }
+        }
+        knownAnchors = Dictionary<UUID, SCNNode>()
     }
     
     func convertType(type: ARGeometryPrimitiveType) -> SCNGeometryPrimitiveType {
@@ -303,6 +342,112 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             fatalError("unknown type")
         }
     }
+    
+    @IBAction func make_texture(_ sender: UIButton) {
+        make_texture()
+    }
+    
+    func ComposeUIImage(UIImageArray : [UIImage], width: CGFloat, height : CGFloat)->UIImage!{
+        // 指定された画像の大きさのコンテキストを用意.
+        UIGraphicsBeginImageContext(CGSize(width: width/2, height: height/2))
+        
+        var num = -1
+        // UIImageのある分回す.
+        for (i,image) in UIImageArray.enumerated() {
+            if i % 4 == 0 {
+                num += 1
+            }
+            // コンテキストに画像を描画する.
+            image.draw(in: CGRect(x: CGFloat(i % 4) * image.size.width/2, y: CGFloat(num) * image.size.height/2, width: image.size.width/2, height: image.size.height/2))
+        }
+        // コンテキストからUIImageを作る.
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        // コンテキストを閉じる.
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    func make_texture() {
+        let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        let yoko: Float = 4.0
+        let tate: Float = ceil(Float(count)/4.0)
+        
+        //RGB画像
+        let uiImage = new_uiimage
+        let imageData = uiImage!.jpegData(compressionQuality: 0.5)
+        
+        //内部パラメータ保存用
+        let realm = try! Realm()
+        try! realm.write {
+            results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
+        }
+        
+        DispatchQueue.global().sync {
+            for i in 0..<count {
+                print("\(i+1)回目：")
+                let json_data = try? decoder.decode(json_pointcloudUniforms.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
+                let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+                                                json_data!.cameraPosition.y,
+                                                json_data!.cameraPosition.z)
+                let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+                                                   json_data!.cameraEulerAngles.y,
+                                                   json_data!.cameraEulerAngles.z)
+                
+                let move = SCNAction.move(to: cameraPosition, duration: 0)
+                let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+                cameraNode.runAction(SCNAction.group([move, rotation]),
+                                     completionHandler: { [self] in
+                    calcTextureCoordinates(num: i, yoko: yoko, tate: tate)
+                    print("\(i+1)：完了")
+                    if i+1 == count {
+                        print("全周完了")
+                        DispatchQueue.main.sync {
+                            
+                            Alert()
+                        }
+                        
+                    }
+                })
+            }
+            
+        }
+    }
+    
+    @objc func Alert() {
+        let title = "テクスチャ座標計算完了"
+        let message = "モデルを表示しますか"
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
+            save_anchor()
+            delete_mesh()
+            load_anchor(tex_bool: true)
+        })
+            
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func calcTextureCoordinates(num: Int, yoko: Float, tate: Float) {
+        for (i, mesh_anchor) in anchors.enumerated() {
+            let verticles = mesh_anchor.geometry.vertices
+            for j in 0..<verticles.count {
+                let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * j))
+                let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+                let world_vertex4 = simd_mul(mesh_anchor.transform, vertex4)
+                let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+                let pt = sceneView.projectPoint(world_vector3)
+                
+                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                    let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                    let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                    texcoords2[i][j] = SIMD2<Float>(u, v)
+                }
+            }
+        }
+    }
+    
     
     @IBAction func Tapped_hukan(_ sender: UIButton) {
         //let location = CGPoint(x: self.view.bounds.width/2, y: 1050/2)
@@ -532,8 +677,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             node.removeFromParentNode()
         }
         
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
         let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
         
         if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{

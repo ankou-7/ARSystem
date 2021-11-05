@@ -239,6 +239,10 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
     }
 
     @IBAction func tap(_ sender: UIButton) {
+        make_texture()
+    }
+    
+    func make_texture() {
         let count = results[0].pic.count
         let yoko: Float = 4.0
         let tate: Float = ceil(Float(count)/4.0)

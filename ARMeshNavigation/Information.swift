@@ -40,6 +40,7 @@ class Navi_Modelname: Object {
     let json = List<json_data>()
     
     @objc dynamic var texture_pic: Data!
+    @objc dynamic var texture_bool: Int = 0
     let mesh_anchor = List<anchor_data>()
 }
 
