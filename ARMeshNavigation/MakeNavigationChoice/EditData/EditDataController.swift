@@ -11,7 +11,6 @@ import ARKit
 import RealmSwift
 
 class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate {
-    
     //画面遷移した際のsectionとcellの番号を格納
     var section_num = Int()
     var cell_num = Int()
@@ -25,98 +24,28 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     let results = try! Realm().objects(Navi_SectionTitle.self)
     var knownAnchors = Dictionary<UUID, SCNNode>()
     
-    var anchors: [ARMeshAnchor] = []
-    var texcoords2: [[SIMD2<Float>]] = []
+    var anchors: [ARMeshAnchor]!
+    var texcoords2: [[SIMD2<Float>]]!
     var new_uiimage: UIImage!
-    var uiimage_array: [UIImage] = []
+    var uiimage_array: [UIImage]!
     @IBOutlet var imageView: UIImageView!
     
     var objectName_array: [String] = []
-    var objectInfo: [(object_name: String, //オブジェクトの名前
-                      object_name_identify: String, //個別の名前
-                      object_num: Int, //オブジェクト番号
-                      object_type: String, //オブジェクトの型
-                      object_posi_x: Float,
-                      object_posi_y: Float,
-                      object_posi_z: Float,
-                      object_scale_x: Float,
-                      object_scale_y: Float,
-                      object_scale_z: Float,
-                      object_euler_x: Float,
-                      object_euler_y: Float,
-                      object_euler_z: Float)] = []
+    @IBOutlet weak var delete_finish_button: UIButton!
     
     var cameraNode = SCNNode()
-    var lastGestureRotation: Float = 0.0
     var lastGestureScale: Float = 1.0
     
     @IBOutlet var left_modelbutton: UIButton!
     @IBOutlet var right_modelbutton: UIButton!
     @IBOutlet var modelname_label: UILabel!
     
-    var ui_view = UIView()
-    
-    @IBOutlet weak var mesh_slider: UISlider!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        sceneView.delegate = self //delegateのセット
+        sceneView.delegate = self
         sceneView.scene = scene
-        sceneView.allowsCameraControl = true //カメラ位置をタップでコントロール可能にする
-        
-//        // UIView生成
-//        ui_view.frame = CGRect(x: 0,
-//                               y: 0,
-//                               width: 500,
-//                               height: 500)
-        print("\(self.sceneView.bounds.width) pt")
-        print("\(self.sceneView.bounds.height) pt")
-//        ui_view.backgroundColor = UIColor.blue
-////        view.layer.borderColor = UIColor.yellow.cgColor //枠線の色
-////        view.layer.borderWidth = 1 //枠線の太さ
-//        ui_view.layer.opacity = 0.1
-//        self.sceneView.addSubview(ui_view)
-        
-//        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
-//            let file_name = documentDirectoryFileURL.appendingPathComponent("rgb_try_102.jpeg")
-//            let image = UIImage(contentsOfFile: file_name.path)
-//            imageView.image = image
-//            imageView.alpha = 0.3
-//            // 画像の幅・高さの取得
-//            let width = image!.size.width //2880
-//            let height = image!.size.height //3840
-//            print(width)
-//            print(height)
-//
-//            let clipRect = CGRect(x: ((2880-((2*834*1920)/1194))/2), y: 0, width: ((2*834*1920)/1194), height: 3840)
-//            let cripImageRef = image?.cgImage!.cropping(to: clipRect)
-//            let crippedImage = UIImage(cgImage: cripImageRef!, scale: image!.scale, orientation: image!.imageOrientation)
-//            print(crippedImage.size)
-//            imageView.image = crippedImage
-//            imageView2.image = crippedImage
-//        }
-//
-//
-//        let json_data = read_json(name: "try_102")
-//        let cameraPosition = SCNVector3(json_data.cameraPosition.x,
-//                                        json_data.cameraPosition.y,
-//                                        json_data.cameraPosition.z)
-//        let cameraEulerAngles = SCNVector3(json_data.cameraEulerAngles.x,
-//                                           json_data.cameraEulerAngles.y,
-//                                           json_data.cameraEulerAngles.z)
-        
-//        let geometry = SCNPlane(width: 0.294217, height: 0.4141611)
-//        let planeMaterial = SCNMaterial()
-//        planeMaterial.diffuse.contents = UIColor.white.withAlphaComponent(0.3)
-//        geometry.materials = [planeMaterial]
-//        let plane_node = SCNNode(geometry: geometry)
-//        plane_node.position = cameraPosition
-//        plane_node.eulerAngles = cameraEulerAngles
-//        //plane_node.transform = SCNMatrix4MakeRotation(-Float.pi / 2, 1, 0, 0)
-//        self.scene.rootNode.addChildNode(plane_node)
-//
-//        print()
+        sceneView.allowsCameraControl = true
         
         let sphereCamera:SCNGeometry = SCNSphere(radius: 0.01)
         cameraNode = SCNNode(geometry: sphereCamera)
@@ -129,8 +58,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .ambient //.omni
-        //lightNode.position = SCNVector3(x: 0, y: 10, z: -10)
         scene.rootNode.addChildNode(lightNode)
+        
+        delete_finish_button.isHidden = true
         
         if results[section_num].cells[cell_num].models.count < 2 {
             right_modelbutton.isHidden = true
@@ -138,42 +68,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             modelname_label.isHidden = true
         }
         
-        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(twoTap(gesture:)))
-        doubleTapGesture.numberOfTapsRequired = 2
-        sceneView.addGestureRecognizer(doubleTapGesture)
-        
-//        //psn gesuture
-//        let pan = UIPanGestureRecognizer(
-//            target: self,
-//            action: #selector(type(of: self).scenePanGesture(_:))
-//        )
-//        pan.delegate = self
-//        sceneView.addGestureRecognizer(pan)
-        
-//        //pinch gesuture
-//        let pinch = UIPinchGestureRecognizer(
-//            target: self,
-//            action: #selector(type(of: self).scenePinchGesture(_:))
-//        )
-//        pinch.delegate = self
-//        sceneView.addGestureRecognizer(pinch)
-
-//        // rotate gesture
-//        let rotaion = UIRotationGestureRecognizer(
-//            target: self,
-//            action: #selector(type(of: self).sceneRotateGesture(_:))
-//        )
-//        rotaion.delegate = self
-//        sceneView.addGestureRecognizer(rotaion)
-        
-//        let quat = cameraNode.orientation
-//        //エンティティの回転角を取得
-//        let argue = make_oirar(w: quat.w, x: quat.x, y: quat.y, z: quat.z)
-//        //回転角から動く方向を決定
-//        let dis_x = -sin(argue)
-//        let dis_z = cos(argue)
-//        let dis_yoko_x = -sin(argue + (Float.pi/2.0))
-//        let dis_yoko_z = cos(argue + (Float.pi/2.0))
+        //pinch gesuture
+        let pinch = UIPinchGestureRecognizer(
+            target: self,
+            action: #selector(type(of: self).scenePinchGesture(_:))
+        )
+        pinch.delegate = self
+        sceneView.addGestureRecognizer(pinch)
         
     }
     
@@ -185,32 +86,23 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
-//    func read_json(name: String) -> json_pointcloudUniforms {
-//        guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
-//            fatalError("ファイルが見つからない")
-//        }
-//        guard let data = try? Data(contentsOf: url) else {
-//            fatalError("ファイル読み込みエラー")
-//        }
-//        let decoder = JSONDecoder()
-//        guard let datas = try? decoder.decode(json_pointcloudUniforms.self, from: data) else {
-//            fatalError("JSON読み込みエラー")
-//        }
-//
-//        return datas
-//    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        anchors = []
+        texcoords2 = []
+        uiimage_array = []
         
-        let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
-        self.database_model_num = results[section_num].cells[cell_num].models.count
+        print(results[section_num].cells[cell_num].models[current_model_num].obj)
+        for s in results[section_num].cells[cell_num].models[current_model_num].obj {
+            objectName_array.append(s.name_identify)
+        }
+        print(objectName_array)
         
         let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
         let yoko: Float = 4.0
         let tate: Float = ceil(Float(count)/4.0)
         
-        print(results[section_num].cells[cell_num].models[current_model_num].pic)
         for i in 0..<count {
             let uiimage = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[i].pic_data!)
             uiimage_array.append(uiimage!)
@@ -234,52 +126,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             texcoords2[i].append(contentsOf: texcoords)
         }
         
-        print(results[section_num].cells[cell_num].models)
         if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
             load_anchor(tex_bool: true)
         } else {
             load_anchor(tex_bool: false)
-        }
-
-        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
-            
-//            if results[section_num].cells[cell_num].models[current_model_num].exit_mesh == 1 {
-//                let mesh_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).scn")
-//                if let referenceNode = SCNReferenceNode(url: mesh_model_name) {
-//                    referenceNode.load()
-//                    referenceNode.name = "mesh"
-//                    self.scene.rootNode.addChildNode(referenceNode)
-//                }
-//            }
-            
-//            if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
-//                let txt_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).txt")
-//                guard let fileContents = try? String(contentsOf: txt_model_name) else {
-//                    fatalError("ファイル読み込みエラー")
-//                }
-//                let row = fileContents.components(separatedBy: "\n")
-//                let vertice_count = Int(row[0])!
-//
-//                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
-//
-//                //let points_data = try NSData(contentsOf: data_model_name)
-//
-//                guard let data = try? Data(contentsOf: data_model_name) else {
-//                    fatalError("ファイル読み込みエラー")
-//                }
-//                print(data.count)
-//                print(data)
-//                let decoder = JSONDecoder()
-//                guard let datas = try? decoder.decode([PointCloudVertex].self, from: data) else {
-//                    fatalError("JSON読み込みエラー")
-//                }
-//                let points_data = NSData(bytes: datas, length: MemoryLayout<PointCloudVertex>.size * vertice_count)
-//
-//                let node = self.buildNode2(vertexData: points_data, count: vertice_count)
-//                node.position = SCNVector3(x: 0, y: 0, z: 0)
-//                node.name = "point"
-//                self.scene.rootNode.addChildNode(node)
-//            }
         }
     }
     
@@ -296,6 +146,53 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         delete_mesh()
         load_anchor(tex_bool: false)
     }
+    
+    @IBAction func tap_pointNode(_ sender: UIButton) {
+        delete_mesh()
+        load_pointCloud()
+    }
+    
+    func load_pointCloud() {
+        let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
+        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
+            if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
+                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
+                guard let data = try? Data(contentsOf: data_model_name) else {
+                    fatalError("ファイル読み込みエラー")
+                }
+                guard let datas = try? JSONDecoder().decode([PointCloudVertex].self, from: data) else {
+                    fatalError("JSON読み込みエラー")
+                }
+
+                let node = self.build_pointsNode(points: datas)
+                node.name = "point"
+                self.scene.rootNode.addChildNode(node)
+            }
+        }
+    }
+    
+    @IBAction func load_saveObject(_ sender: UIButton) {
+        tap_object_flag = true
+        if results[section_num].cells[cell_num].models[current_model_num].obj.count > 0 {
+            for obj in results[section_num].cells[cell_num].models[current_model_num].obj {
+                if obj.type == "usdz" {
+                    guard let url = Bundle.main.url(forResource: "art.scnassets/\(obj.name)", withExtension: "usdz") else { return }
+                    let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
+                    let node = scene.rootNode.childNode(withName: obj.name, recursively: true)
+                    let json_data = try? decoder.decode(ObjectInfo_data.self, from: obj.info_data)
+                    let posi = json_data!.Position
+                    let scale = json_data?.Scale
+                    let euler = json_data?.EulerAngles
+                    node!.position = SCNVector3(posi.x, posi.y, posi.z)
+                    node!.scale = SCNVector3(scale!.x, scale!.y, scale!.z)
+                    node!.eulerAngles = SCNVector3(euler!.x, euler!.y, euler!.z)
+                    node!.name = obj.name_identify
+                    sceneView.scene!.rootNode.addChildNode(node!)
+                }
+            }
+        }
+    }
+    
     
     var item = ObjectItem(name: "", id: 0, kind: "")
     let ObjectdataSource = ObjectModel()
@@ -319,24 +216,38 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         contentVC.closure = { (num: Int) -> Void in
             self.select_object_num = num
             self.item = self.ObjectdataSource.item(row: self.select_object_num)
-            print(self.select_object_num)
-            print(self.item)
         }
         
         tap_object_flag = true
-        
         present(contentVC, animated: true, completion: nil)
     }
     
-    @objc fileprivate func twoTap(gesture: UITapGestureRecognizer) {
-        if gesture.numberOfTapsRequired == 2 {
-            // ダブルタップ時の動作
+    var delete_flag = false
+    
+    @IBAction func delete_object(_ sender: UIButton) {
+            let title = "配置オブジェクトの削除"
+            let message = "削除したいオブジェクトをタップして下さい．"
             
-        }
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
+                delete_finish_button.isHidden = false
+                delete_flag = true
+                if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+                    node.removeFromParentNode()
+                }
+            })
+                
+            self.present(alertController, animated: true, completion: nil)
     }
     
+    @IBAction func tap_delete_finish_button(_ sender: UIButton) {
+        delete_finish_button.isHidden = true
+        delete_flag = false
+    }
+    
+    
     var touchMove_flag = false
-    var choiceNode_name: String!
+    var choiceNode_name: String = ""
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.sceneView)
@@ -363,57 +274,107 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         
         if touchMove_flag == false {
             if tap_object_flag == true {
-                let hitResults = sceneView.hitTest(location, options: [:])
-                print(hitResults)
-                if hitResults.count > 0 {
-                    //print(hitResults[0].node.parent?.name)
-                    
-//                    for (i, name) in objectName_array.enumerated() {
-//                        if hitResults[0].node.name == name {
-//                            if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
-//                                node.removeFromParentNode()
-//                            }
-//                            let axis = ObjectOrigin().makeAxisNode()
-//                            axis.position = SCNVector3(objectInfo[i].object_posi_x, objectInfo[i].object_posi_y, objectInfo[i].object_posi_z)
-//                            axis.scale = SCNVector3(2.0, 2.0, 2.0)
-//                            sceneView.scene!.rootNode.addChildNode(axis)
-//                        }
-//                    }
-                    
-                    if hitResults[0].node.name == "child_tex_node" {
-                        let posi = hitResults[0].worldCoordinates
-                        guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
-                        let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
-                        let node = scene.rootNode.childNode(withName: item.name, recursively: true)
-                        node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                        node?.position = posi
-                        node!.name = item.name + String(objectInfo.count)
-                        choiceNode_name = item.name + String(objectInfo.count)
-                        let scale = node?.scale
-                        let euler = node?.eulerAngles
-                        objectName_array.append(node!.name!)
-                        let info = (object_name: item.name, object_name_identify: node!.name!, object_num: item.id, object_type: item.kind, object_posi_x: posi.x, object_posi_y: posi.y, object_posi_z: posi.z, object_scale_x: scale!.x, object_scale_y: scale!.y, object_scale_z: scale!.z, object_euler_x: euler!.x, object_euler_y: euler!.y, object_euler_z: euler!.z)
-                        objectInfo.append(info)
-                        print(objectInfo)
-                        print(objectName_array)
-                        
-                        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
-                            node.removeFromParentNode()
+                if delete_flag == false {
+                    let hitResults = sceneView.hitTest(location, options: [:])
+                    if hitResults.count > 0 {
+                        for (i, name) in objectName_array.enumerated() {
+                            if (hitResults[0].node.name == name ||
+                                hitResults[0].node.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
+                                if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+                                    node.removeFromParentNode()
+                                }
+                                let axis = ObjectOrigin().makeAxisNode()
+                                let json_data = try? decoder.decode(ObjectInfo_data.self, from:results[section_num].cells[cell_num].models[current_model_num].obj[i].info_data)
+                                let posi = json_data!.Position
+                                //let scale = json_data?.Scale
+                                let euler = json_data?.EulerAngles
+                                
+                                axis.position = SCNVector3(posi.x, posi.y, posi.z)
+                                axis.scale = SCNVector3(2.0, 2.0, 2.0)
+                                axis.eulerAngles = SCNVector3(euler!.x, euler!.y, euler!.z)
+                                sceneView.scene!.rootNode.addChildNode(axis)
+                                choiceNode_name = name
+                            }
                         }
                         
-                        //座標軸
-                        let axis = ObjectOrigin().makeAxisNode()
-                        axis.position = posi
-                        axis.scale = SCNVector3(2.0, 2.0, 2.0)
-                        sceneView.scene!.rootNode.addChildNode(axis)
-                        //node?.addChildNode(axis)
-                        
-                        sceneView.scene!.rootNode.addChildNode(node!)
-                        
-                        //tap_object_flag = false
-                        touchMove_flag = false
+                        if hitResults[0].node.name == "child_tex_node" {
+                            let posi = hitResults[0].worldCoordinates
+                            guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
+                            let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
+                            let node = scene.rootNode.childNode(withName: item.name, recursively: true)
+                            node?.scale = SCNVector3(0.01, 0.01, 0.01)
+                            node?.position = posi
+                            node!.name = item.name + String(results[section_num].cells[cell_num].models[current_model_num].add_obj_count)
+                            sceneView.scene!.rootNode.addChildNode(node!)
+                            
+                            choiceNode_name = node!.name!
+                            objectName_array.append(node!.name!)
+                            
+                            let entity = ObjectInfo_data(Position: Vector3Entity(x: posi.x,
+                                                                                 y: posi.y,
+                                                                                 z: posi.z),
+                                                         Scale: Vector3Entity(x: (node?.scale.x)!,
+                                                                              y: (node?.scale.y)!,
+                                                                              z: (node?.scale.z)!),
+                                                         EulerAngles: Vector3Entity(x: (node?.eulerAngles.x)!,
+                                                                                    y: (node?.eulerAngles.y)!,
+                                                                                    z: (node?.eulerAngles.z)!))
+                            let json_data = try! JSONEncoder().encode(entity)
+                            let realm = try! Realm()
+                            try! realm.write {
+                                results[section_num].cells[cell_num].models[current_model_num].add_obj_count += 1
+                                results[section_num].cells[cell_num].models[current_model_num].obj.append(ObjectInfo(
+                                    value: ["name": item.name,
+                                            "name_identify": node!.name!,
+                                            "type": item.kind,
+                                            "info_data": json_data]))
+                            }
+                            
+                            if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+                                node.removeFromParentNode()
+                            }
+                            let axis = ObjectOrigin().makeAxisNode()
+                            axis.position = posi
+                            axis.scale = SCNVector3(2.0, 2.0, 2.0)
+                            sceneView.scene!.rootNode.addChildNode(axis)
+                            
+                            //tap_object_flag = false
+                            touchMove_flag = false
+                        }
                     }
                 }
+                else if delete_flag == true {
+                    let hitResults = sceneView.hitTest(location, options: [:])
+                    if hitResults.count > 0 {
+                        for (i, name) in objectName_array.enumerated() {
+                            if (hitResults[0].node.name == name ||
+                                hitResults[0].node.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
+                                
+                                sceneView.scene?.rootNode.childNode(withName: name, recursively: false)!.removeFromParentNode()
+                                let realm = try! Realm()
+                                try! realm.write {
+                                    results[section_num].cells[cell_num].models[current_model_num].obj.remove(at: i)
+                                }
+                                objectName_array.remove(at: i)
+                            }
+                        }
+                    }
+                }
+                
             }
         }
     }
@@ -482,23 +443,21 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             start_flag = false
             
             if let node = sceneView.scene?.rootNode.childNode(withName: choiceNode_name, recursively: false) {
-                let posi = node.position
-                let scale = node.scale
-                let euler = node.eulerAngles
                 let num = objectName_array.firstIndex(of: choiceNode_name)!
-                print(num)
-                
-                objectInfo[num].object_posi_x = posi.x
-                objectInfo[num].object_posi_y = posi.y
-                objectInfo[num].object_posi_z = posi.z
-                objectInfo[num].object_scale_x = scale.x
-                objectInfo[num].object_scale_y = scale.y
-                objectInfo[num].object_scale_z = scale.z
-                objectInfo[num].object_euler_x = euler.x
-                objectInfo[num].object_euler_y = euler.y
-                objectInfo[num].object_euler_z = euler.z
-                
-                print(objectInfo)
+                let entity = ObjectInfo_data(Position: Vector3Entity(x: node.position.x,
+                                                                     y: node.position.y,
+                                                                     z: node.position.z),
+                                             Scale: Vector3Entity(x: node.scale.x,
+                                                                  y: node.scale.y,
+                                                                  z: node.scale.z),
+                                             EulerAngles: Vector3Entity(x: node.eulerAngles.x,
+                                                                        y: node.eulerAngles.y,
+                                                                        z: node.eulerAngles.z))
+                let json_data = try! JSONEncoder().encode(entity)
+                let realm = try! Realm()
+                try! realm.write {
+                    results[section_num].cells[cell_num].models[current_model_num].obj[num].info_data = json_data
+                }
             }
             
             if select_node.name == "XAxis" {
@@ -519,6 +478,45 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             else if select_node.name == "ZCurve" {
                 select_node.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
             }
+        }
+    }
+    
+    //拡大・縮小
+    @objc func scenePinchGesture(_ recognizer: UIPinchGestureRecognizer) {
+        if recognizer.state == .began {
+            lastGestureScale = 1
+        }
+    
+        let newGestureScale: Float = Float(recognizer.scale)
+        let diff = newGestureScale - lastGestureScale
+    
+        if !choiceNode_name.isEmpty {
+            if let node = self.sceneView.scene!.rootNode.childNode(withName: choiceNode_name, recursively: false) {
+                let currentScale = node.scale
+                //diff分だけscaleを変化させる。1は1倍、1.2は1.2倍
+                node.scale = SCNVector3Make(
+                    currentScale.x * (1 + diff),
+                    currentScale.y * (1 + diff),
+                    currentScale.z * (1 + diff)
+                )
+                
+                let num = objectName_array.firstIndex(of: choiceNode_name)!
+                let entity = ObjectInfo_data(Position: Vector3Entity(x: node.position.x,
+                                                                     y: node.position.y,
+                                                                     z: node.position.z),
+                                             Scale: Vector3Entity(x: node.scale.x,
+                                                                  y: node.scale.y,
+                                                                  z: node.scale.z),
+                                             EulerAngles: Vector3Entity(x: node.eulerAngles.x,
+                                                                        y: node.eulerAngles.y,
+                                                                        z: node.eulerAngles.z))
+                let json_data = try! JSONEncoder().encode(entity)
+                let realm = try! Realm()
+                try! realm.write {
+                    results[section_num].cells[cell_num].models[current_model_num].obj[num].info_data = json_data
+                }
+            }
+            lastGestureScale = newGestureScale
         }
     }
     
@@ -585,6 +583,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             }
         }
         knownAnchors = Dictionary<UUID, SCNNode>()
+        
+        if let node = sceneView.scene!.rootNode.childNode(withName: "point", recursively: false) {
+            node.removeFromParentNode()
+        }
     }
     
     func convertType(type: ARGeometryPrimitiveType) -> SCNGeometryPrimitiveType {
@@ -637,8 +639,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         try! realm.write {
             results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
         }
-        
         DispatchQueue.global().sync {
+            
             for i in 0..<count {
                 print("\(i+1)回目：")
                 let json_data = try? decoder.decode(json_pointcloudUniforms.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
@@ -654,18 +656,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 cameraNode.runAction(SCNAction.group([move, rotation]),
                                      completionHandler: { [self] in
                     calcTextureCoordinates(num: i, yoko: yoko, tate: tate)
-                    print("\(i+1)：完了")
                     if i+1 == count {
-                        print("全周完了")
                         DispatchQueue.main.sync {
-                            
                             Alert()
                         }
-                        
                     }
                 })
             }
-            
         }
     }
     
@@ -703,165 +700,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
-    
-    @IBAction func Tapped_hukan(_ sender: UIButton) {
-        //let location = CGPoint(x: self.view.bounds.width/2, y: 1050/2)
-        let locate = [CGPoint(x: 0, y: 0),
-                      CGPoint(x: self.view.bounds.width, y: 0),
-                      CGPoint(x: 0, y: self.view.bounds.height),
-                      CGPoint(x: self.view.bounds.width, y: self.view.bounds.height),
-                      CGPoint(x: self.view.bounds.width/2, y: self.view.bounds.height/2)]
-        
-        for (i,points) in locate.enumerated() {
-            let hitResults = sceneView.hitTest(points, options: [:])
-            if !hitResults.isEmpty {
-                let posi = hitResults[0].worldCoordinates
-                print("\(i) : \(posi)")
-            }
-        }
-        
-//        let hitResults = sceneView.hitTest(location, options: [:])
-//        print(hitResults)
-//        if !hitResults.isEmpty {
-//            let posi = hitResults[0].worldCoordinates
-//            print(posi)
-//        }
-        
-        
-        
-        
-//        //sceneView.allowsCameraControl = false
-//        //panGesture.toggle()
-//
-//        cameraNode.eulerAngles.x = -Float.pi/2
-//        cameraNode.position = .init(0, 0.5, 0)
-//
-//
-//
-////        if let node = self.sceneView.scene!.rootNode.childNode(withName: "camera", recursively: false) {
-////            print("tapped Hukan")
-////            node.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
-////        }
-//
-////        print(sceneView.cameraControlConfiguration.rotationSensitivity)
-////        print(sceneView.cameraControlConfiguration.flyModeVelocity)
-////        print(sceneView.cameraControlConfiguration.panSensitivity)
-////        print(sceneView.cameraControlConfiguration.truckSensitivity)
-////        print(sceneView.cameraControlConfiguration.allowsTranslation)
-//
-//        print(sceneView.defaultCameraController)
-//        print(sceneView.defaultCameraController.autoContentAccessingProxy)
-//        print(sceneView.defaultCameraController.interactionMode)
-        
-    }
-    
-    @objc func scenePanGesture(_ recognizer: UIPanGestureRecognizer) {
-        //if panGesture == true {
-            //タッチした位置を基準にして左右がx，上下がyで右下に行くほど値が大きくなる
-            let translation = recognizer.translation(in: recognizer.view!)
-            print(translation)
-        
-            if let node = self.sceneView.scene!.rootNode.childNode(withName: "camera", recursively: false) {
-                let posi = node.position
-                print(posi)
-                node.position = SCNVector3(posi.x + Float(translation.x)/500, posi.y - Float(translation.y)/500, posi.z)
-                print("position:\(node.position)")
-                recognizer.setTranslation(CGPoint.zero, in: recognizer.view!)
-            }
-        //}
-    }
-    
-    //拡大・縮小
-    @objc func scenePinchGesture(_ recognizer: UIPinchGestureRecognizer) {
-        if recognizer.state == .began {
-            lastGestureScale = 1
-        }
-    
-        let newGestureScale: Float = Float(recognizer.scale)
-        print("newGestureScale: \(newGestureScale)")
-    
-        // ここで直前のscaleとのdiffぶんだけ取得しときます
-        let diff = newGestureScale - lastGestureScale
-        print("diff: \(diff)")
-    
-        if let node = self.sceneView.scene!.rootNode.childNode(withName: "camera", recursively: false) {
-            let posi = node.position
-            //node.position = SCNVector3(posi.x + Float(translation.x)/500, posi.y - Float(translation.y)/500, posi.z)
-//            //diff分だけscaleを変化させる。1は1倍、1.2は1.2倍
-//            node.scale = SCNVector3Make(
-//                currentScale.x * (1 + diff),
-//                currentScale.y * (1 + diff),
-//                currentScale.z * (1 + diff)
-//            )
-        }
-        lastGestureScale = newGestureScale
-        print("lastGestureScale: \(lastGestureScale)")
-    }
-    
-    func make_oirar(w: Float, x: Float, y: Float, z: Float) -> Float {
-        var thita_x: Float
-        var thita_y: Float
-        var thita_z: Float
-        
-        let m00 = 1-2*y*y-2*z*z
-        let m01 = 2*x*y+2*w*z
-        //let m02 = 2*x*z-2*w*y
-        let m10 = 2*x*y-2*w*z
-        let m11 = 1-2*x*x-2*z*z
-        //let m12 = 2*y*z+2*w*x
-        let m20 = 2*x*z+2*w*y
-        let m21 = 2*y*z-2*w*x
-        let m22 = 1-2*x*x-2*y*y
-        
-        if m21 == 1.0 {
-            thita_x = Float.pi/2.0
-            thita_y = 0
-            thita_z = atan2(m10,m00)
-        }
-        else if m21 == -1.0 {
-            thita_x = -1.0 * (Float.pi/2.0)
-            thita_y = 0
-            thita_z = atan2(m10,m00)
-        }
-        else {
-            thita_x = asin(m21)
-            thita_y = atan2(-m20,m22)
-            thita_z = atan2(-m01,m11)
-        }
-        
-        print("(x , y , z) = (\(String(format: "%f", thita_x)), \(String(format: "%f", thita_y)), \(String(format: "%f", thita_z)))")
-        print("角度 : ",thita_y * (180.0/Float.pi))
-        
-        return thita_y
-    }
-    
-    @objc func sceneRotateGesture(_ recognizer: UIRotationGestureRecognizer) {
-        let newGestureRotation = Float(recognizer.rotation)
-        print("newGestureRotation:\(newGestureRotation)")
-    
-        if recognizer.state == .began {
-            lastGestureRotation = 0
-        }
-        // 前回とのdiffを取得
-        let diff = newGestureRotation - lastGestureRotation
-    
-        // 今回はオイラーアングルのyを取るため、y軸中心の回転をさせます。
-        if let node = self.sceneView.scene!.rootNode.childNode(withName: "camera", recursively: false) {
-            let eulerY = node.eulerAngles.y
-            print("eulerY:\(eulerY)")
-            node.eulerAngles.y = eulerY - diff
-            print("eulerAngles.y:\(node.eulerAngles.y)")
-        }
-        lastGestureRotation = newGestureRotation
-    }
-    
-    
-    public func buildNode2(vertexData: NSData, count: Int) -> SCNNode {
+    private func build_pointsNode(points: [PointCloudVertex]) -> SCNNode {
+        let vertexData = NSData(
+            bytes: points,
+            length: MemoryLayout<PointCloudVertex>.size * points.count
+        )
         
         let positionSource = SCNGeometrySource(
             data: vertexData as Data,
             semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: count,
+            vectorCount: points.count,
             usesFloatComponents: true,
             componentsPerVector: 3,
             bytesPerComponent: MemoryLayout<Float>.size,
@@ -871,48 +719,33 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         let colorSource = SCNGeometrySource(
             data: vertexData as Data,
             semantic: SCNGeometrySource.Semantic.color,
-            vectorCount: count,
+            vectorCount: points.count,
             usesFloatComponents: true,
             componentsPerVector: 3,
             bytesPerComponent: MemoryLayout<Float>.size,
             dataOffset: MemoryLayout<Float>.size * 3,
             dataStride: MemoryLayout<PointCloudVertex>.size
         )
-        
-//        let normalSource = SCNGeometrySource(
-//            data: normalsData as Data,
-//            semantic: SCNGeometrySource.Semantic.normal,
-//            vectorCount: count,
-//            usesFloatComponents: true,
-//            componentsPerVector: 3,
-//            bytesPerComponent: MemoryLayout<Float>.size,
-//            dataOffset: 0,
-//            dataStride: MemoryLayout<vector_float3>.size
-//        )
-//        //SCNGeometrySource(normals: normals)
-        
         let element = SCNGeometryElement(
             data: nil,
             primitiveType: .point,
-            primitiveCount: count,
+            primitiveCount: points.count,
             bytesPerIndex: MemoryLayout<Int>.size
         )
-
         // for bigger dots
         element.pointSize = 1
         element.minimumPointScreenSpaceRadius = 1
         element.maximumPointScreenSpaceRadius = 7
-
+        
         let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [element])
         
         return SCNNode(geometry: pointsGeometry)
     }
-    
+        
     @IBAction func right_Change(_ sender: UIButton) {
         if current_model_num < database_model_num - 1 {
             current_model_num += 1
             model_kirikae_hyouji()
-            mesh_slider.value = 1.0
         }
     }
     
@@ -920,58 +753,19 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         if current_model_num > 0 {
             current_model_num -= 1
             model_kirikae_hyouji()
-            mesh_slider.value = 1.0
         }
     }
     
     func model_kirikae_hyouji() {
-        if let node = sceneView.scene!.rootNode.childNode(withName: "mesh", recursively: false) {
-            node.removeFromParentNode()
-        }
-        if let node = sceneView.scene!.rootNode.childNode(withName: "point", recursively: false) {
-            node.removeFromParentNode()
-        }
-        
-        let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
-        
-        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
-            if results[section_num].cells[cell_num].models[current_model_num].exit_mesh == 1 {
-                let filename = documentDirectoryFileURL.appendingPathComponent("\(modelname).scn")
-                if let referenceNode = SCNReferenceNode(url: filename) {
-                    referenceNode.load()
-                    referenceNode.name = "mesh"
-                    self.scene.rootNode.addChildNode(referenceNode)
-                }
-            }
-            if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
-                let txt_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).txt")
-                guard let fileContents = try? String(contentsOf: txt_model_name) else {
-                    fatalError("ファイル読み込みエラー")
-                }
-                let row = fileContents.components(separatedBy: "\n")
-                let vertice_count = Int(row[0])!
-                
-                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
-                //let points_data = try NSData(contentsOf: data_model_name)
-                
-                guard let data = try? Data(contentsOf: data_model_name) else {
-                    fatalError("ファイル読み込みエラー")
-                }
-                let decoder = JSONDecoder()
-                guard let datas = try? decoder.decode([PointCloudVertex].self, from: data) else {
-                    fatalError("JSON読み込みエラー")
-                }
-                let points_data = NSData(bytes: datas, length: MemoryLayout<PointCloudVertex>.size * vertice_count)
-                
-                let node = self.buildNode2(vertexData: points_data, count: vertice_count)
-                node.position = SCNVector3(x: 0, y: 0, z: 0)
-                node.name = "point"
-                self.scene.rootNode.addChildNode(node)
-            }
+        delete_mesh()
+        if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
+            load_anchor(tex_bool: true)
+        } else {
+            load_anchor(tex_bool: false)
         }
     }
     
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
-    }    
+    }
 }

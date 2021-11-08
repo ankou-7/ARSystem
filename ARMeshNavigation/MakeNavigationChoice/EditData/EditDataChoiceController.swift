@@ -17,7 +17,6 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     //sectionの高さを決める

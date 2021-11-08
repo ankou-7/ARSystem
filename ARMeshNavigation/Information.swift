@@ -35,6 +35,8 @@ class Navi_Modelname: Object {
     @objc dynamic var exit_point: Int = 0
     
     let usdz = List<Navi_Usdz_ModelInfo>()
+    let obj = List<ObjectInfo>()
+    @objc dynamic var add_obj_count: Int = 0
     
     let pic = List<pic_data>()
     let json = List<json_data>()
@@ -56,6 +58,13 @@ class Navi_Usdz_ModelInfo: Object {
     @objc dynamic var usdz_euler_x: Float = 0.0
     @objc dynamic var usdz_euler_y: Float = 0.0
     @objc dynamic var usdz_euler_z: Float = 0.0
+}
+
+class ObjectInfo: Object {
+    @objc dynamic var name: String = ""
+    @objc dynamic var name_identify: String = ""
+    @objc dynamic var type: String = ""
+    @objc dynamic var info_data: Data!
 }
 
 //section,cell格納前のモデル情報を格納
