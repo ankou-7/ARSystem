@@ -527,33 +527,43 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             let verticles = mesh_anchor.geometry.vertices
             let normals = mesh_anchor.geometry.normals
             let faces = mesh_anchor.geometry.faces
-            let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
-            let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
-            let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
-            let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
-            var sources = [verticesSource, normalsSource]
             
-            if tex_bool == true {
-                let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords2[i])
-                sources.append(textureCoordinates)
+            if i == 4 {
+                print(faces.count)
+                for j in 0..<faces.count {
+                    print(mesh_anchor.geometry.classificationOf(faceWithIndex: j).description)
+                }
+            
+            
+            
+                let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
+                let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
+                let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
+                let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
+                var sources = [verticesSource, normalsSource]
+                
+                if tex_bool == true {
+                    let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords2[i])
+                    sources.append(textureCoordinates)
+                }
+                
+                let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
+                nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
+                
+                if tex_bool == false {
+                    let defaultMaterial = SCNMaterial()
+                    defaultMaterial.fillMode = .lines
+                    defaultMaterial.diffuse.contents = UIColor.green
+                    nodeGeometry.materials = [defaultMaterial]
+                }
+                
+                let node = SCNNode(geometry: nodeGeometry)
+                node.simdTransform = mesh_anchor.transform
+                knownAnchors[mesh_anchor.identifier] = node
+                node.name = "child_tex_node"
+                tex_node.addChildNode(node)
+                //scene.rootNode.addChildNode(node)
             }
-            
-            let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
-            nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
-            
-            if tex_bool == false {
-                let defaultMaterial = SCNMaterial()
-                defaultMaterial.fillMode = .lines
-                defaultMaterial.diffuse.contents = UIColor.green
-                nodeGeometry.materials = [defaultMaterial]
-            }
-            
-            let node = SCNNode(geometry: nodeGeometry)
-            node.simdTransform = mesh_anchor.transform
-            knownAnchors[mesh_anchor.identifier] = node
-            node.name = "child_tex_node"
-            tex_node.addChildNode(node)
-            //scene.rootNode.addChildNode(node)
         }
         scene.rootNode.addChildNode(tex_node)
         print("load完了")

@@ -789,6 +789,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         for anchor in anchors {
             if let node = knownAnchors[anchor.identifier] {
                 node.removeFromParentNode()
+                // knownAnchors からも削除
+                knownAnchors.removeValue(forKey: anchor.identifier)
             }
         }
     }
