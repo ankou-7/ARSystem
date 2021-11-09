@@ -75,7 +75,6 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
     
     //スワイプしたセルを削除　※arrayNameは変数名に変更してください
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        print(indexPath)
         if editingStyle == UITableViewCell.EditingStyle.delete {
             
             //データベースから指定したセルを削除し，更新

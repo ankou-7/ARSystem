@@ -218,7 +218,7 @@
                                     <constraint firstAttribute="height" constant="30" id="oTX-cV-jfb"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="3" minY="3" maxX="3" maxY="3"/>
-                                <state key="normal" image="ロボット-1"/>
+                                <state key="normal" image="ロボット"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="20"/>
@@ -721,6 +721,7 @@
         <image name="trash" catalog="system" width="121" height="128"/>
         <image name="trash.fill" catalog="system" width="121" height="128"/>
         <image name="video.fill" catalog="system" width="128" height="82"/>
+        <image name="ロボット" width="237" height="233"/>
         <image name="ロボット-1" width="237" height="233"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

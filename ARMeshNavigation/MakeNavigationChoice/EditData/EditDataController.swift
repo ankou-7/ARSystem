@@ -93,23 +93,23 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         texcoords2 = []
         uiimage_array = []
         
-        print(results[section_num].cells[cell_num].models[current_model_num].obj)
         for s in results[section_num].cells[cell_num].models[current_model_num].obj {
             objectName_array.append(s.name_identify)
         }
-        print(objectName_array)
         
         let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
-        let yoko: Float = 4.0
-        let tate: Float = ceil(Float(count)/4.0)
+        let yoko: Float = 17.0//4.0
+        let tate: Float = ceil(Float(count)/yoko)
+        let num: CGFloat = 3.0 //画像のサイズの縮尺率
+        print("pic_count：\(count)")
         
         for i in 0..<count {
             let uiimage = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[i].pic_data!)
             uiimage_array.append(uiimage!)
         }
         //16384以下にする必要あり
-        new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: 2880 * CGFloat(yoko), height: 3840 * CGFloat(tate))
-        //imageView.image = new_uiimage
+        new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: (2880 / num) * CGFloat(yoko), height: (3840 / num) * CGFloat(tate), yoko: yoko, num: num)
+        imageView.image = new_uiimage
         
         for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
             let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
@@ -528,13 +528,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             let normals = mesh_anchor.geometry.normals
             let faces = mesh_anchor.geometry.faces
             
-            if i == 4 {
-                print(faces.count)
-                for j in 0..<faces.count {
-                    print(mesh_anchor.geometry.classificationOf(faceWithIndex: j).description)
-                }
-            
-            
+//            if i == 4 {
+//                print(faces.count)
+//                for j in 0..<faces.count {
+//                    print(mesh_anchor.geometry.classificationOf(faceWithIndex: j).description)
+//                }
             
                 let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
                 let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
@@ -564,7 +562,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 tex_node.addChildNode(node)
                 //scene.rootNode.addChildNode(node)
             }
-        }
+//        }
         scene.rootNode.addChildNode(tex_node)
         print("load完了")
     }
@@ -582,7 +580,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         try! realm.write {
             results[section_num].cells[cell_num].models[current_model_num].texture_bool = 1
         }
-        print(results[section_num].cells[cell_num].models)
         print("save完了")
     }
     
@@ -614,18 +611,18 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         make_texture()
     }
     
-    func ComposeUIImage(UIImageArray : [UIImage], width: CGFloat, height : CGFloat)->UIImage!{
+    func ComposeUIImage(UIImageArray : [UIImage], width: CGFloat, height : CGFloat, yoko: Float, num: CGFloat)->UIImage!{
         // 指定された画像の大きさのコンテキストを用意.
-        UIGraphicsBeginImageContext(CGSize(width: width/2, height: height/2))
+        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         
-        var num = -1
+        var tate_count = -1
         // UIImageのある分回す.
         for (i,image) in UIImageArray.enumerated() {
-            if i % 4 == 0 {
-                num += 1
+            if i % Int(yoko) == 0 {
+                tate_count += 1
             }
             // コンテキストに画像を描画する.
-            image.draw(in: CGRect(x: CGFloat(i % 4) * image.size.width/2, y: CGFloat(num) * image.size.height/2, width: image.size.width/2, height: image.size.height/2))
+            image.draw(in: CGRect(x: CGFloat(i % Int(yoko)) * image.size.width/num, y: CGFloat(tate_count) * image.size.height/num, width: image.size.width/num, height: image.size.height/num))
         }
         // コンテキストからUIImageを作る.
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -637,8 +634,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     func make_texture() {
         let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
-        let yoko: Float = 4.0
-        let tate: Float = ceil(Float(count)/4.0)
+        let yoko: Float = 17.0//4.0
+        let tate: Float = ceil(Float(count)/yoko)
         
         //RGB画像
         let uiImage = new_uiimage
@@ -652,7 +649,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         DispatchQueue.global().sync {
             
             for i in 0..<count {
-                print("\(i+1)回目：")
                 let json_data = try? decoder.decode(json_pointcloudUniforms.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
                 let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                                 json_data!.cameraPosition.y,
