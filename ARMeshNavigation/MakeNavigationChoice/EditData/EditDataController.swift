@@ -528,6 +528,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             let normals = mesh_anchor.geometry.normals
             let faces = mesh_anchor.geometry.faces
             
+            
 //            if i == 4 {
 //                print(faces.count)
 //                for j in 0..<faces.count {
@@ -702,6 +703,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                     let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
                     texcoords2[i][j] = SIMD2<Float>(u, v)
                 }
+            }
+            
+            let normals = mesh_anchor.geometry.normals
+            for k in 0..<normals.count {
+                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * k))
+                let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                print(normal)
             }
         }
     }
