@@ -245,6 +245,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         delete_flag = false
     }
     
+    //MARK: -オブジェクト処理
     
     var touchMove_flag = false
     var choiceNode_name: String = ""
@@ -520,6 +521,18 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
+    //MARK: -メッシュ処理
+    @IBAction func tap_texture_riset(_ sender: UIButton) {
+        for i in 0..<texcoords2.count {
+            for j in 0..<texcoords2[i].count {
+                texcoords2[i][j] = SIMD2<Float>(0, 0)
+            }
+        }
+        save_anchor()
+        delete_mesh()
+        load_anchor(tex_bool: true)
+    }
+    
     func load_anchor(tex_bool: Bool) {
         let tex_node = SCNNode()
         tex_node.name = "tex_node"
@@ -650,19 +663,22 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         DispatchQueue.global().sync {
             
             for i in 0..<count {
-                let json_data = try? decoder.decode(json_pointcloudUniforms.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
+                let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
                 let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                                 json_data!.cameraPosition.y,
                                                 json_data!.cameraPosition.z)
                 let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
                                                    json_data!.cameraEulerAngles.y,
                                                    json_data!.cameraEulerAngles.z)
+                let cameraVector = SCNVector3(json_data!.cameraVector.x,
+                                              json_data!.cameraVector.y,
+                                              json_data!.cameraVector.z)
                 
                 let move = SCNAction.move(to: cameraPosition, duration: 0)
                 let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
                 cameraNode.runAction(SCNAction.group([move, rotation]),
                                      completionHandler: { [self] in
-                    calcTextureCoordinates(num: i, yoko: yoko, tate: tate)
+                    calcTextureCoordinates(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
                     if i+1 == count {
                         DispatchQueue.main.sync {
                             Alert()
@@ -687,9 +703,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func calcTextureCoordinates(num: Int, yoko: Float, tate: Float) {
+    func calcTextureCoordinates(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3) {
         for (i, mesh_anchor) in anchors.enumerated() {
             let verticles = mesh_anchor.geometry.vertices
+            let normals = mesh_anchor.geometry.normals
             for j in 0..<verticles.count {
                 let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * j))
                 let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
@@ -698,19 +715,28 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
                 let pt = sceneView.projectPoint(world_vector3)
                 
-                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-                    let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-                    let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                    texcoords2[i][j] = SIMD2<Float>(u, v)
-                }
+                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * j))
+                let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                
+                let inner = normal.x * cameraVector.x + normal.y * cameraVector.y + normal.z * cameraVector.z
+                let thita = acos(inner) * 180.0 / .pi
+                //print(thita)
+                
+                //if thita >= 135 {
+                    if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                        texcoords2[i][j] = SIMD2<Float>(u, v)
+                    }
+                //}
             }
             
-            let normals = mesh_anchor.geometry.normals
-            for k in 0..<normals.count {
-                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * k))
-                let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
-                print(normal)
-            }
+//            let normals = mesh_anchor.geometry.normals
+//            for k in 0..<normals.count {
+//                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * k))
+//                let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+//                print(normal)
+//            }
         }
     }
     

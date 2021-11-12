@@ -42,7 +42,7 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
             realm.delete(realm.objects(Data_parameta.self))
         }
         
-        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

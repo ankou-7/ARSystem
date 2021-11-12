@@ -41,3 +41,9 @@ struct ObjectInfo_data: Codable {
     var Scale: Vector3Entity
     var EulerAngles: Vector3Entity
 }
+
+struct MakeMap_parameta: Codable {
+    var cameraPosition: Vector3Entity
+    var cameraEulerAngles: Vector3Entity
+    var cameraVector: Vector3Entity
+}
