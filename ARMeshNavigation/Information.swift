@@ -112,4 +112,8 @@ class Anchors_data: Object {
 class anchor_data: Object {
     @objc dynamic var mesh: Data!
     @objc dynamic var texcoords: Data!
+    @objc dynamic var vertices: Data!
+    @objc dynamic var normals: Data!
+    @objc dynamic var faces: Data!
+    @objc dynamic var vertice_count: Int = 0
 }

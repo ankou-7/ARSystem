@@ -134,54 +134,61 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
         self.present(vc, animated: true, completion: nil)
     }
     
+    var pre_eulerAngles = SCNVector3(0,0,0)
+    
     @objc func update() {
         if parameta_flag == true {
             guard let frame = self.sceneView.session.currentFrame else {
                 fatalError("Couldn't get the current ARFrame")
             }
+//            print(frame.camera.eulerAngles)
             //2D → 3D変換用の内部パラメータ
-            let camera = frame.camera
-            
-            let cameraIntrinsics = camera.intrinsics.inverse
-            let flipYZ = simd_float4x4(
-                [1, 0, 0, 0],
-                [0, 1, 0, 0],
-                [0, 0, -1, 0],
-                [0, 0, 0, 1] )
-            let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
-            
             if let camera = self.sceneView.pointOfView {
                 let cameraPosition = camera.position
-                let cameraEulerAngles = camera.eulerAngles
-                let T = camera.transform
+                let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
+                pre_eulerAngles = camera.eulerAngles
+                let camera_n = camera.transform
+                //print(cameraPosition)
+                print("EulerAngles：\(cameraEulerAngles)")
+                //print(camera_n)
+                
+                let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
+                let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
+                let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+                
+                let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
+                let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
+                
+                let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
+                
+                let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
+                let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
+                let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
+                let out_vec_size: Float = sqrt(a * a + b * b + c * c)
+                
+                let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
+                
+                let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
+                print(inner * 180.0 / .pi )
+                //180の時にメッシュと並行
+                //90の時にメッシュと垂直
                 
                 //RGB画像
                 let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
                 let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
                 let imageData = uiImage.jpegData(compressionQuality: 0.5) //toJPEGData()
                 
-                let entity = json_parameta(Intrinsics:
-                                            Vector33Entity(x: cameraIntrinsics.columns.0,
-                                                           y: cameraIntrinsics.columns.1,
-                                                           z: cameraIntrinsics.columns.2),
-                                           ViewMatrix:
-                                            Vector44Entity(x: viewMatrix.columns.0,
-                                                           y: viewMatrix.columns.1,
-                                                           z: viewMatrix.columns.2,
-                                                           w: viewMatrix.columns.3),
-                                           cameraPosition:
-                                            Vector3Entity(x: cameraPosition.x,
-                                                          y: cameraPosition.y,
-                                                          z: cameraPosition.z),
-                                           cameraEulerAngles:
-                                            Vector3Entity(x: cameraEulerAngles.x,
-                                                          y: cameraEulerAngles.y,
-                                                          z: cameraEulerAngles.z),
-                                           cameraTransform:
-                                            Vector44Entity(x: SIMD4<Float>(T.m11, T.m12, T.m13, T.m14),
-                                                           y: SIMD4<Float>(T.m21, T.m22, T.m23, T.m24),
-                                                           z: SIMD4<Float>(T.m31, T.m32, T.m33, T.m34),
-                                                           w: SIMD4<Float>(T.m41, T.m42, T.m43, T.m44)))
+                let entity = MakeMap_parameta(cameraPosition:
+                                                Vector3Entity(x: cameraPosition.x,
+                                                              y: cameraPosition.y,
+                                                              z: cameraPosition.z),
+                                              cameraEulerAngles:
+                                                Vector3Entity(x: cameraEulerAngles.x,
+                                                              y: cameraEulerAngles.y,
+                                                              z: cameraEulerAngles.z),
+                                              cameraVector: Vector3Entity(x: tani_out_vec.x,
+                                                                          y: tani_out_vec.y,
+                                                                          z: tani_out_vec.z))
                 
                 let json_data = try! JSONEncoder().encode(entity)
                 
@@ -252,14 +259,4 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
         //timer.invalidate()
         self.dismiss(animated: true, completion: nil)
     }
-}
-
-
-struct json_parameta: Codable {
-    var Intrinsics: Vector33Entity
-    var ViewMatrix: Vector44Entity
-    
-    var cameraPosition: Vector3Entity
-    var cameraEulerAngles: Vector3Entity
-    var cameraTransform: Vector44Entity
 }

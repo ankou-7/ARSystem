@@ -481,6 +481,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         return SCNNode(geometry: pointsGeometry)
     }
     
+    var pre_eulerAngles = SCNVector3(0,0,0)
+    
     @objc func update() {
         //if depth_flag == true {
             if parameta_flag == true {
@@ -504,7 +506,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 if let camera = self.sceneView.pointOfView {
                     let cameraPosition = camera.position
-                    let cameraEulerAngles = camera.eulerAngles
+                    //let cameraEulerAngles = camera.eulerAngles
+                    let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
+                    pre_eulerAngles = camera.eulerAngles
                     
                     let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
                     let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
@@ -674,21 +678,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 guard let anchors = sceneView.session.currentFrame?.anchors else { return }
                 let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
-                for (i, anchor) in meshAnchors.enumerated() {
-                    texcoords2.append([])
-                    let verticles = anchor.geometry.vertices
-                    for _ in 0..<verticles.count {
-                        texcoords2[i].append(SIMD2<Float>(0, 0))
-                    }
+                for (_, anchor) in meshAnchors.enumerated() {
+//                    texcoords2.append([])
+//                    let verticles = anchor.geometry.vertices
+//                    for _ in 0..<verticles.count {
+//                        texcoords2[i].append(SIMD2<Float>(0, 0))
+//                    }
                     guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                     else{ return }
-                    let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
+//                    let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
                     
                     let realm = try! Realm()
                     let results = realm.objects(Data_parameta.self)
                     try! realm.write {
-                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data,
-                                                                                             "texcoords": texcoords_data]))
+                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                        //,"texcoords": texcoords_data]))
                     }
                 }
             }

@@ -24,10 +24,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     let results = try! Realm().objects(Navi_SectionTitle.self)
     var knownAnchors = Dictionary<UUID, SCNNode>()
     
-    var anchors: [ARMeshAnchor]!
-    var texcoords2: [[SIMD2<Float>]]!
+    var anchors: [ARMeshAnchor] = []
+    var texcoords2: [[SIMD2<Float>]] = []
+    var tex_bool: [[Bool]] = []
+    var vertex_array: [[SCNVector3]] = []
+    var normal_array: [[SCNVector3]] = []
+    var face_array: [[Int32]] = []
+    var new_face_array: [[Int32]] = []
+    
     var new_uiimage: UIImage!
-    var uiimage_array: [UIImage]!
+    var uiimage_array: [UIImage] = []
     @IBOutlet var imageView: UIImageView!
     
     var objectName_array: [String] = []
@@ -89,10 +95,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        anchors = []
-        texcoords2 = []
-        uiimage_array = []
-        
         for s in results[section_num].cells[cell_num].models[current_model_num].obj {
             objectName_array.append(s.name_identify)
         }
@@ -111,25 +113,27 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: (2880 / num) * CGFloat(yoko), height: (3840 / num) * CGFloat(tate), yoko: yoko, num: num)
         imageView.image = new_uiimage
         
+        print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
+        //メッシュ情報初期化
         for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
             let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
-            if let mesh_anchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                anchors.append(mesh_anchor)
+            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+                anchors.append(meshAnchor)
             }
-            
             texcoords2.append([])
-            let texcoords_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords
-            guard let texcoords = try? decoder.decode([SIMD2<Float>].self, from: texcoords_data! as Data) else {
-                fatalError("読み込みエラー")
-            }
-            
-            texcoords2[i].append(contentsOf: texcoords)
+            tex_bool.append([])
+            vertex_array.append([])
+            face_array.append([])
+            new_face_array.append([])
+            normal_array.append([])
         }
         
         if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
             load_anchor(tex_bool: true)
-        } else {
+        } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 0 {
             load_anchor(tex_bool: false)
+        } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 2 {
+            load_anchor2()
         }
     }
     
@@ -523,14 +527,30 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     //MARK: -メッシュ処理
     @IBAction func tap_texture_riset(_ sender: UIButton) {
-        for i in 0..<texcoords2.count {
-            for j in 0..<texcoords2[i].count {
-                texcoords2[i][j] = SIMD2<Float>(0, 0)
+        let realm = try! Realm()
+        try! realm.write {
+            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 0
+            results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.removeAll()
+        }
+        print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
+        
+        for anchor in anchors {
+            guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
+            else{ return }
+            try! realm.write {
+                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
             }
         }
-        save_anchor()
+        
+        
+//        for i in 0..<texcoords2.count {
+//            for j in 0..<texcoords2[i].count {
+//                texcoords2[i][j] = SIMD2<Float>(0, 0)
+//            }
+//        }
+//        save_model()
         delete_mesh()
-        load_anchor(tex_bool: true)
+        load_anchor(tex_bool: false)
     }
     
     func load_anchor(tex_bool: Bool) {
@@ -541,60 +561,110 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             let normals = mesh_anchor.geometry.normals
             let faces = mesh_anchor.geometry.faces
             
+            let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
+            let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
+            let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
+            let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
+            var sources = [verticesSource, normalsSource]
             
-//            if i == 4 {
-//                print(faces.count)
-//                for j in 0..<faces.count {
-//                    print(mesh_anchor.geometry.classificationOf(faceWithIndex: j).description)
-//                }
-            
-                let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
-                let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
-                let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
-                let facesElement = SCNGeometryElement(data: data, primitiveType: convertType(type: faces.primitiveType), primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
-                var sources = [verticesSource, normalsSource]
-                
-                if tex_bool == true {
-                    let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords2[i])
-                    sources.append(textureCoordinates)
-                }
-                
-                let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
-                nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
-                
-                if tex_bool == false {
-                    let defaultMaterial = SCNMaterial()
-                    defaultMaterial.fillMode = .lines
-                    defaultMaterial.diffuse.contents = UIColor.green
-                    nodeGeometry.materials = [defaultMaterial]
-                }
-                
-                let node = SCNNode(geometry: nodeGeometry)
-                node.simdTransform = mesh_anchor.transform
-                knownAnchors[mesh_anchor.identifier] = node
-                node.name = "child_tex_node"
-                tex_node.addChildNode(node)
-                //scene.rootNode.addChildNode(node)
+            if tex_bool == true {
+                let texcoords = try? decoder.decode([SIMD2<Float>].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords as Data)
+                let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords!)
+                sources.append(textureCoordinates)
             }
-//        }
+            
+            let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
+            nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
+            
+            if tex_bool == false {
+                let defaultMaterial = SCNMaterial()
+                defaultMaterial.fillMode = .lines
+                defaultMaterial.diffuse.contents = UIColor.green
+                nodeGeometry.materials = [defaultMaterial]
+            }
+            
+            let node = SCNNode(geometry: nodeGeometry)
+            node.simdTransform = mesh_anchor.transform
+            knownAnchors[mesh_anchor.identifier] = node
+            node.name = "child_tex_node"
+            tex_node.addChildNode(node)
+            //scene.rootNode.addChildNode(node)
+        }
         scene.rootNode.addChildNode(tex_node)
         print("load完了")
     }
     
-    func save_anchor() {
+    func load_anchor2() {
+        let tex_node = SCNNode()
+        tex_node.name = "tex_node"
+        for i in 0..<anchors.count {
+            let vertexData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices
+            let normalData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals
+            let count = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count
+            
+            let faces = try? decoder.decode([Int32].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces as Data)
+            let texcoords = try? decoder.decode([SIMD2<Float>].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords as Data)
+            
+            let verticeSource = SCNGeometrySource(
+                data: vertexData! as Data,
+                semantic: SCNGeometrySource.Semantic.vertex,
+                vectorCount: count,
+                usesFloatComponents: true,
+                componentsPerVector: 3,
+                bytesPerComponent: MemoryLayout<Float>.size,
+                dataOffset: 0,
+                dataStride: MemoryLayout<SCNVector3>.size
+            )
+            let normalSource = SCNGeometrySource(
+                data: normalData! as Data,
+                semantic: SCNGeometrySource.Semantic.normal,
+                vectorCount: count,
+                usesFloatComponents: true,
+                componentsPerVector: 3,
+                bytesPerComponent: MemoryLayout<Float>.size,
+                dataOffset: MemoryLayout<Float>.size * 3,
+                dataStride: MemoryLayout<SCNVector3>.size
+            )
+            let faceSource = SCNGeometryElement(indices: faces!, primitiveType: .triangles)
+            let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords!)
+            
+            let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
+            nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
+            let node = SCNNode(geometry: nodeGeometry)
+            knownAnchors[anchors[i].identifier] = node
+            tex_node.addChildNode(node)
+            //scene.rootNode.addChildNode(node)
+        }
+        scene.rootNode.addChildNode(tex_node)
+        print("load完了")
+    }
+    
+    func save_model() {
         for (i, _) in anchors.enumerated() {
             let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
+            let vertices_data = Data(bytes: vertex_array[i], count: MemoryLayout<SCNVector3>.size * vertex_array[i].count)
+            let normals_data = Data(bytes: normal_array[i], count: MemoryLayout<SCNVector3>.size * normal_array[i].count)
+            let faces_data = try! JSONEncoder().encode(new_face_array[i])
             
             let realm = try! Realm()
             try! realm.write {
                 results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords = texcoords_data
+                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices = vertices_data
+                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals = normals_data
+                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces = faces_data
+                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count = vertex_array[i].count
             }
         }
         let realm = try! Realm()
         try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 1
+            if vertex_array[0].count == 0 {
+                results[section_num].cells[cell_num].models[current_model_num].texture_bool = 1
+            } else {
+                results[section_num].cells[cell_num].models[current_model_num].texture_bool = 2
+            }
         }
         print("save完了")
+        print(results[section_num].cells[cell_num].models[current_model_num])
     }
     
     func delete_mesh() {
@@ -608,6 +678,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         if let node = sceneView.scene!.rootNode.childNode(withName: "point", recursively: false) {
             node.removeFromParentNode()
         }
+//        if let node = sceneView.scene!.rootNode.childNode(withName: "tex_node", recursively: false) {
+//            node.removeFromParentNode()
+//        }
     }
     
     func convertType(type: ARGeometryPrimitiveType) -> SCNGeometryPrimitiveType {
@@ -621,8 +694,83 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
+    var tex_mode = 0
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
-        make_texture()
+        tex_mode = 0
+        make_texture(num: tex_mode)
+    }
+    
+    @IBAction func tap_newmakeTexture(_ sender: UIButton) {
+        tex_mode = 1
+        make_texture(num: tex_mode)
+    }
+    
+    @IBAction func tap_saveButton(_ sender: UIButton) {
+        save_model()
+    }
+    
+    func Make_meshInfo_Array() {
+        for (i, meshAnchor) in anchors.enumerated() {
+            texcoords2[i] = []
+            tex_bool[i] = []
+            vertex_array[i] = []
+            face_array[i] = []
+            normal_array[i] = []
+            
+            let verticles = meshAnchor.geometry.vertices
+            let normals = meshAnchor.geometry.normals
+            for j in 0..<verticles.count {
+                texcoords2[i].append(SIMD2<Float>(0, 0))
+                tex_bool[i].append(false)
+                
+                let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * j))
+                let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+                let world_vertex4 = simd_mul(meshAnchor.transform, vertex4)
+                let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+                vertex_array[i].append(world_vector3)
+                
+                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * j))
+                let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
+                normal_array[i].append(normal)
+            }
+            
+            let faces = meshAnchor.geometry.faces
+            for j in 0..<faces.count {
+                let indicesPerFace = faces.indexCountPerPrimitive
+                for offset in 0..<indicesPerFace {
+                    let vertexIndexAddress = faces.buffer.contents().advanced(by: (j * indicesPerFace + offset) * MemoryLayout<UInt32>.size)
+                    let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+                    face_array[i].append(per_face)
+                }
+            }
+        }
+    }
+    
+    func remake_mesh() {
+        var num_array: [[Int]] = []
+        
+        for index in 0..<vertex_array.count {
+            //new_face_array.append([])
+            num_array = []
+            for _ in 0..<(face_array[index].count) { // / 10)+1 {
+                num_array.append([])
+            }
+            for i in 0..<face_array[index].count {
+                let n = Int(face_array[index][i])
+                if num_array[n].count == 0 {
+                    num_array[n].append(Int(face_array[index][i]))
+                    new_face_array[index].append(face_array[index][i])
+                }
+                else {
+                    vertex_array[index].append(vertex_array[index][Int(face_array[index][i])])
+                    normal_array[index].append(normal_array[index][Int(face_array[index][i])])
+                    texcoords2[index].append(SIMD2<Float>(0, 0))
+                    tex_bool[index].append(false)
+                    new_face_array[index].append(Int32(vertex_array[index].count - 1))
+                }
+            }
+        }
     }
     
     func ComposeUIImage(UIImageArray : [UIImage], width: CGFloat, height : CGFloat, yoko: Float, num: CGFloat)->UIImage!{
@@ -646,7 +794,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         return newImage
     }
     
-    func make_texture() {
+    func make_texture(num: Int) {
         let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
         let yoko: Float = 17.0//4.0
         let tate: Float = ceil(Float(count)/yoko)
@@ -661,6 +809,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
         }
         DispatchQueue.global().sync {
+            Make_meshInfo_Array()
+            if num == 1 {
+                remake_mesh()
+            }
             
             for i in 0..<count {
                 let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
@@ -675,13 +827,24 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                                               json_data!.cameraVector.z)
                 
                 let move = SCNAction.move(to: cameraPosition, duration: 0)
-                let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+                let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
                 cameraNode.runAction(SCNAction.group([move, rotation]),
                                      completionHandler: { [self] in
-                    calcTextureCoordinates(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
+                    if num == 0 {
+                        calcTextureCoordinates(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
+                    } else {
+                        calcTextureCoordinates5(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
+                    }
                     if i+1 == count {
                         DispatchQueue.main.sync {
-                            Alert()
+                            //Alert()
+                            save_model()
+                            delete_mesh()
+                            if num == 0 {
+                                load_anchor(tex_bool: true)
+                            } else {
+                                load_anchor2()
+                            }
                         }
                     }
                 })
@@ -695,7 +858,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
-            save_anchor()
+            //save_anchor()
             delete_mesh()
             load_anchor(tex_bool: true)
         })
@@ -720,7 +883,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 
                 let inner = normal.x * cameraVector.x + normal.y * cameraVector.y + normal.z * cameraVector.z
                 let thita = acos(inner) * 180.0 / .pi
-                //print(thita)
                 
                 //if thita >= 135 {
                     if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
@@ -730,16 +892,54 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                     }
                 //}
             }
-            
-//            let normals = mesh_anchor.geometry.normals
-//            for k in 0..<normals.count {
-//                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * k))
-//                let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
-//                print(normal)
-//            }
         }
     }
     
+    func calcTextureCoordinates5(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
+        for (i, faces) in new_face_array.enumerated() {
+            var points: [SCNVector3] = []
+            var points_index: [Int] = []
+            for (j, index) in faces.enumerated() {
+                let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
+                let inner = normal_array[i][Int(index)].x * cameraVector.x + normal_array[i][Int(index)].y * cameraVector.y + normal_array[i][Int(index)].z * cameraVector.z
+                let thita = acos(inner) * 180.0 / .pi
+                
+                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                    points.append(pt)
+                    points_index.append(Int(index))
+                }
+                if j % 3 == 2 {
+                    if points_index.count == 3 {
+                        for (k, p) in points.enumerated() {
+                            let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                            let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                            texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+                            
+//                            if texcoords2[i][points_index[k]] != SIMD2<Float>(0, 0) {
+//                                if tex_bool[i][points_index[k]] == false {
+//                                    if thita <= 135 {
+//                                        texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+//                                        tex_bool[i][points_index[k]] = true
+//                                    }
+//                                }
+//                            }
+//                            else {
+//                                texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+//                                if thita <= 135 {
+//                                    tex_bool[i][points_index[k]] = true
+//                                }
+//                            }
+                        }
+                    }
+                    points = []
+                    points_index = []
+                }
+            }
+        }
+        print("calculate完了")
+    }
+    
+    //MARK: -その他
     private func build_pointsNode(points: [PointCloudVertex]) -> SCNNode {
         let vertexData = NSData(
             bytes: points,

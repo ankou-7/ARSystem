@@ -40,7 +40,7 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
         cameraNode.camera = SCNCamera()
         cameraNode.camera?.zNear = 0.0
         cameraNode.opacity = 0 //透明化
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.5)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 0)
         scene.rootNode.addChildNode(cameraNode)
         
 //        //パラメータを一時的に保存する場所を初期化
@@ -70,11 +70,11 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
     }
 
     var texcoords2: [[SIMD2<Float>]] = []
+    var tex_bool: [[Bool]] = []
     var vertex_array: [[SCNVector3]] = []
     var normal_array: [[SCNVector3]] = []
     var face_array: [[Int32]] = []
     var new_face_array: [[Int32]] = []
-    var mesh_array: [PointCloudVertex] = []
     let realm = try! Realm()
     
     override func viewDidAppear(_ animated: Bool) {
@@ -92,6 +92,7 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
                 sceneNode = SCNNode(geometry:meshGeo)
                 count += 1
                 texcoords2.append([])
+                tex_bool.append([])
                 vertex_array.append([])
                 face_array.append([])
                 normal_array.append([])
@@ -100,6 +101,7 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
                 let normals = meshAnchor.geometry.normals
                 for i in 0..<verticles.count {
                     texcoords2[count].append(SIMD2<Float>(0, 0))
+                    tex_bool[count].append(false)
                     
                     let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * i))
                     let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
@@ -166,6 +168,7 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
                     vertex_array[index].append(vertex_array[index][Int(face_array[index][i])])
                     normal_array[index].append(normal_array[index][Int(face_array[index][i])])
                     texcoords2[index].append(SIMD2<Float>(0, 0))
+                    tex_bool[index].append(false)
                     new_face_array[index].append(Int32(vertex_array[index].count - 1))
                 }
                 
@@ -188,23 +191,38 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
         print("実行時間：\(Date().timeIntervalSince(start))")
     }
     
-    func calcTextureCoordinates5(num: Int, yoko: Float, tate: Float){
+    func calcTextureCoordinates5(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
         for (i, faces) in new_face_array.enumerated() {
             var points: [SCNVector3] = []
             var points_index: [Int] = []
             for (j, index) in faces.enumerated() {
                 let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
+                let inner = normal_array[i][Int(index)].x * cameraVector.x + normal_array[i][Int(index)].y * cameraVector.y + normal_array[i][Int(index)].z * cameraVector.z
+                let thita = acos(inner) * 180.0 / .pi
+                
                 if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
                     points.append(pt)
                     points_index.append(Int(index))
                 }
-                
                 if j % 3 == 2 {
-                    if points.count == 3 {
+                    if points_index.count == 3 {
                         for (k, p) in points.enumerated() {
                             let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
                             let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                            texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+                            if texcoords2[i][points_index[k]] != SIMD2<Float>(0, 0) {
+                                if tex_bool[i][points_index[k]] == false {
+                                    if thita <= 135 {
+                                        texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+                                        tex_bool[i][points_index[k]] = true
+                                    }
+                                }
+                            }
+                            else {
+                                texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+                                if thita <= 135 {
+                                    tex_bool[i][points_index[k]] = true
+                                }
+                            }
                         }
                     }
                     points = []
@@ -227,19 +245,39 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
             
             for i in 0..<count {
                 print("\(i+1)回目：")
-                let json_data = try? decoder.decode(json_parameta.self, from:results[0].json[i].json_data!)
+                
+//                self.asyncProcess(number: i) {
+//                    (number: Int, cameraVector: SCNVector3) -> Void in
+//                    print("#\(number) End")
+//                    self.calcTextureCoordinates5(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
+//                    if i+1 == count {
+//                        print("全周完了")
+//                        //DispatchQueue.main.sync {
+//                            if let node = self.sceneView.scene?.rootNode.childNode(withName: "mesh_node", recursively: false) {
+//                                node.opacity = 0.0
+//                            }
+//                            self.make()
+//                            self.activityView.isHidden = true
+//                        //}
+//                    }
+//                }
+                
+                
+                let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[0].json[i].json_data!)
                 let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                                 json_data!.cameraPosition.y,
                                                 json_data!.cameraPosition.z)
                 let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
                                                    json_data!.cameraEulerAngles.y,
-                                                   json_data!.cameraEulerAngles.z)
-
+                                                    json_data!.cameraEulerAngles.z)
+                let cameraVector = SCNVector3(json_data!.cameraVector.x,
+                                              json_data!.cameraVector.y,
+                                              json_data!.cameraVector.z)
                 let move = SCNAction.move(to: cameraPosition, duration: 0)
-                let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+                let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
                 cameraNode.runAction(SCNAction.group([move, rotation]),
                                      completionHandler: {
-                    self.calcTextureCoordinates5(num: i, yoko: yoko, tate: tate)
+                    self.calcTextureCoordinates5(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
                     if i+1 == count {
                         print("全周完了")
                         DispatchQueue.main.sync {
@@ -272,6 +310,27 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
 //            //scene.rootNode.addChildNode(node)
 //        }
 //        scene.rootNode.addChildNode(mesh_node)
+    }
+    
+    func asyncProcess(number: Int, completion: (_ number: Int, _ vector: SCNVector3) -> Void) {
+        print("#\(number) Start")
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[0].json[number].json_data!)
+        let cameraPosition = SCNVector3(-json_data!.cameraPosition.x,
+                                        -json_data!.cameraPosition.y,
+                                        -json_data!.cameraPosition.z)
+        let cameraEulerAngles = SCNVector3(-json_data!.cameraEulerAngles.x,
+                                           -json_data!.cameraEulerAngles.y,
+                                           -json_data!.cameraEulerAngles.z)
+        let cameraVector = SCNVector3(json_data!.cameraVector.x,
+                                      json_data!.cameraVector.y,
+                                      json_data!.cameraVector.z)
+        
+        if let node = sceneView.scene?.rootNode.childNode(withName: "mesh_node", recursively: false) {
+            node.position = cameraPosition
+            node.eulerAngles = cameraEulerAngles
+            print("node移動")
+        }
+        completion(number, cameraVector)
     }
     
     func make() {
@@ -433,7 +492,7 @@ class AddTextureModelController: UIViewController, ARSCNViewDelegate {
             for i in 0..<count {
                 print("\(i+1)回目：")
                 //change_camera(num: i, yoko: yoko, tate: tate)
-                let json_data = try? decoder.decode(json_parameta.self, from:results[0].json[i].json_data!)
+                let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[0].json[i].json_data!)
                 let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                                 json_data!.cameraPosition.y,
                                                 json_data!.cameraPosition.z)
