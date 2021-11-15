@@ -35,6 +35,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     var new_uiimage: UIImage!
     var uiimage_array: [UIImage] = []
     @IBOutlet var imageView: UIImageView!
+    @IBOutlet weak var ActivityView: UIActivityIndicatorView!
     
     var objectName_array: [String] = []
     @IBOutlet weak var delete_finish_button: UIButton!
@@ -67,6 +68,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         scene.rootNode.addChildNode(lightNode)
         
         delete_finish_button.isHidden = true
+        ActivityView.stopAnimating()
+        //ActivityView.isHidden = true
         
         if results[section_num].cells[cell_num].models.count < 2 {
             right_modelbutton.isHidden = true
@@ -111,7 +114,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
         //16384以下にする必要あり
         new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: (2880 / num) * CGFloat(yoko), height: (3840 / num) * CGFloat(tate), yoko: yoko, num: num)
-        imageView.image = new_uiimage
+        //imageView.image = new_uiimage
         
         print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
         //メッシュ情報初期化
@@ -678,9 +681,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         if let node = sceneView.scene!.rootNode.childNode(withName: "point", recursively: false) {
             node.removeFromParentNode()
         }
-//        if let node = sceneView.scene!.rootNode.childNode(withName: "tex_node", recursively: false) {
-//            node.removeFromParentNode()
-//        }
     }
     
     func convertType(type: ARGeometryPrimitiveType) -> SCNGeometryPrimitiveType {
@@ -694,15 +694,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
-    var tex_mode = 0
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
-        tex_mode = 0
-        make_texture(num: tex_mode)
+        //ActivityView.isHidden = false
+        ActivityView.startAnimating()
+        make_texture(num: 0)
     }
     
     @IBAction func tap_newmakeTexture(_ sender: UIButton) {
-        tex_mode = 1
-        make_texture(num: tex_mode)
+        //ActivityView.isHidden = false
+        ActivityView.startAnimating()
+        make_texture(num: 1)
     }
     
     @IBAction func tap_saveButton(_ sender: UIButton) {
@@ -774,21 +775,19 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     }
     
     func ComposeUIImage(UIImageArray : [UIImage], width: CGFloat, height : CGFloat, yoko: Float, num: CGFloat)->UIImage!{
-        // 指定された画像の大きさのコンテキストを用意.
+        // 指定された画像の大きさのコンテキストを用意
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         
         var tate_count = -1
-        // UIImageのある分回す.
         for (i,image) in UIImageArray.enumerated() {
             if i % Int(yoko) == 0 {
                 tate_count += 1
             }
-            // コンテキストに画像を描画する.
+            // コンテキストに画像を描画する
             image.draw(in: CGRect(x: CGFloat(i % Int(yoko)) * image.size.width/num, y: CGFloat(tate_count) * image.size.height/num, width: image.size.width/num, height: image.size.height/num))
         }
-        // コンテキストからUIImageを作る.
+        // コンテキストからUIImageを作る
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        // コンテキストを閉じる.
         UIGraphicsEndImageContext()
         
         return newImage
@@ -841,8 +840,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                             save_model()
                             delete_mesh()
                             if num == 0 {
+                                //ActivityView.isHidden = true
+                                ActivityView.stopAnimating()
                                 load_anchor(tex_bool: true)
                             } else {
+                                //ActivityView.isHidden = true
+                                ActivityView.stopAnimating()
                                 load_anchor2()
                             }
                         }
@@ -869,7 +872,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     func calcTextureCoordinates(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3) {
         for (i, mesh_anchor) in anchors.enumerated() {
             let verticles = mesh_anchor.geometry.vertices
-            let normals = mesh_anchor.geometry.normals
+            //let normals = mesh_anchor.geometry.normals
             for j in 0..<verticles.count {
                 let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * j))
                 let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
@@ -878,19 +881,36 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
                 let pt = sceneView.projectPoint(world_vector3)
                 
-                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * j))
-                let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                //let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * j))
+                //let normal = normalsPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
                 
-                let inner = normal.x * cameraVector.x + normal.y * cameraVector.y + normal.z * cameraVector.z
-                let thita = acos(inner) * 180.0 / .pi
+                //let inner = normal.x * cameraVector.x + normal.y * cameraVector.y + normal.z * cameraVector.z
+                //let thita = acos(inner) * 180.0 / .pi
                 
                 //if thita >= 135 {
                     if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                        texcoords2[i][j] = SIMD2<Float>(u, v)
-                    }
-                //}
+                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
+                        print("world3 = \(world_vector3)")
+                        let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
+                        if !hitResults.isEmpty {
+                            if hitResults[0].node.name! == "child_tex_node" {
+                                let hitPoints = hitResults[0].worldCoordinates
+                                print("\(hitPoints)")
+                                print("x：\(abs(world_vector3.x - hitPoints.x))")
+                                print("y：\(abs(world_vector3.y - hitPoints.y))")
+                                print("z：\(abs(world_vector3.z - hitPoints.z))")
+                                if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
+                                    let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                                    let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                                    texcoords2[i][j] = SIMD2<Float>(u, v)
+                                }
+                            }
+                        }
+//                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+//                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+//                        texcoords2[i][j] = SIMD2<Float>(u, v)
+                    //}
+                }
             }
         }
     }
@@ -905,6 +925,23 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 let thita = acos(inner) * 180.0 / .pi
                 
                 if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+//                    let world_vector3 = vertex_array[i][Int(index)]
+//                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
+//                        print("world3 = \(world_vector3)")
+//                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
+//                    if !hitResults.isEmpty {
+//                        if hitResults[0].node.name! == "child_tex_node" {
+//                            let hitPoints = hitResults[0].worldCoordinates
+//                                print("\(hitPoints)")
+//                            if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
+////                                print("x：\(abs(world_vector3.x - hitPoints.x))")
+////                                print("y：\(abs(world_vector3.y - hitPoints.y))")
+////                                print("z：\(abs(world_vector3.z - hitPoints.z))")
+//                                points.append(pt)
+//                                points_index.append(Int(index))
+//                            }
+//                        }
+//                    }
                     points.append(pt)
                     points_index.append(Int(index))
                 }
@@ -939,7 +976,75 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         print("calculate完了")
     }
     
-    //MARK: -その他
+    //MARK: - 確認用
+    var tap_count = -1
+    @IBAction func tap_moveCamera(_ sender: UIButton) {
+        tap_count += 1
+        
+        imageView.image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[tap_count].pic_data!)
+        
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[tap_count].json_data!)
+        let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+                                        json_data!.cameraPosition.y,
+                                        json_data!.cameraPosition.z)
+        let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+                                           json_data!.cameraEulerAngles.y,
+                                           json_data!.cameraEulerAngles.z)
+        
+        let move = SCNAction.move(to: cameraPosition, duration: 0)
+        let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+        cameraNode.runAction(SCNAction.group([move, rotation]),
+                             completionHandler: {
+        })
+        
+    }
+    
+    @IBAction func Make_depthModel(_ sender: Any) {
+        imageView.image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[0].pic_data!)
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[0].json_data!)
+        let intrinsics = simd_float3x3(json_data!.Intrinsics.x,
+                                       json_data!.Intrinsics.y,
+                                       json_data!.Intrinsics.z)
+        let viewMatrix = simd_float4x4(json_data!.ViewMatrix.x,
+                                       json_data!.ViewMatrix.y,
+                                       json_data!.ViewMatrix.z,
+                                       json_data!.ViewMatrix.w)
+        let depthArray = try? decoder.decode([Float32].self, from:results[section_num].cells[cell_num].models[current_model_num].depth[0].depth_data!)
+        print(depthArray)
+        
+        var vertice_data: [PointCloudVertex] = []
+        var depthSize = 186
+        let depthScreenScaleFactor = Float(self.sceneView.bounds.width * UIScreen.screens.first!.scale / CGFloat(depthSize))
+        for y in 0 ..< depthSize {
+            for x in 0 ..< depthSize {
+                let depth = depthArray![y * depthSize + x]
+                if depth < 0 {
+                    continue
+                }
+                let x_px = Float(x) * depthScreenScaleFactor
+                let y_px = Float(y) * depthScreenScaleFactor
+                // 2Dの深度情報を3Dに変換
+                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+                //ワールド座標に合わせてローカルから変換
+                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+
+//                let r = Float(pixelArray[((y+4) * 256 + (x+36)) * 4]) / Float(255)
+//                let g = Float(pixelArray[((y+4) * 256 + (x+36)) * 4 + 1]) / Float(255)
+//                let b = Float(pixelArray[((y+4) * 256 + (x+36)) * 4 + 2]) / Float(255)
+                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+                                                        y: worldPoint.y,
+                                                        z: worldPoint.z,
+                                                        r: 255,
+                                                        g: 255,
+                                                        b: 255))
+
+            }
+        }
+        let node = build_pointsNode(points: vertice_data)
+        self.scene.rootNode.addChildNode(node)
+    }
+    
+    //MARK: - その他
     private func build_pointsNode(points: [PointCloudVertex]) -> SCNNode {
         let vertexData = NSData(
             bytes: points,

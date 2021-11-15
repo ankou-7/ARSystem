@@ -46,6 +46,9 @@ struct MakeMap_parameta: Codable {
     var cameraPosition: Vector3Entity
     var cameraEulerAngles: Vector3Entity
     var cameraVector: Vector3Entity
+    
+    var Intrinsics: Vector33Entity
+    var ViewMatrix: Vector44Entity
 }
 
 struct json_parameta: Codable {

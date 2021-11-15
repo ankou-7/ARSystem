@@ -40,6 +40,7 @@ class Navi_Modelname: Object {
     
     let pic = List<pic_data>()
     let json = List<json_data>()
+    let depth = List<depth_data>()
     
     @objc dynamic var texture_pic: Data!
     @objc dynamic var texture_bool: Int = 0
@@ -87,6 +88,7 @@ class Data_parameta: Object {
     
     let pic = List<pic_data>()
     let json = List<json_data>()
+    let depth = List<depth_data>()
     
     let mesh_anchor = List<anchor_data>()
 }
@@ -99,6 +101,11 @@ class pic_data: Object {
 class json_data: Object {
     @objc dynamic var json_name: String = ""
     @objc dynamic var json_data: Data!
+}
+
+class depth_data: Object {
+    @objc dynamic var depth_name: String = ""
+    @objc dynamic var depth_data: Data!
 }
 
 //メッシュアンカー用

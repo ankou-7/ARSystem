@@ -141,7 +141,15 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
             guard let frame = self.sceneView.session.currentFrame else {
                 fatalError("Couldn't get the current ARFrame")
             }
-//            print(frame.camera.eulerAngles)
+            let camera = frame.camera
+            let cameraIntrinsics = camera.intrinsics.inverse
+            let flipYZ = simd_float4x4(
+                [1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, -1, 0],
+                [0, 0, 0, 1] )
+            let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
+            
             //2D → 3D変換用の内部パラメータ
             if let camera = self.sceneView.pointOfView {
                 let cameraPosition = camera.position
@@ -188,7 +196,16 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
                                                               z: cameraEulerAngles.z),
                                               cameraVector: Vector3Entity(x: tani_out_vec.x,
                                                                           y: tani_out_vec.y,
-                                                                          z: tani_out_vec.z))
+                                                                          z: tani_out_vec.z),
+                                              Intrinsics:
+                                                Vector33Entity(x: cameraIntrinsics.columns.0,
+                                                               y: cameraIntrinsics.columns.1,
+                                                               z: cameraIntrinsics.columns.2),
+                                              ViewMatrix:
+                                                Vector44Entity(x: viewMatrix.columns.0,
+                                                               y: viewMatrix.columns.1,
+                                                               z: viewMatrix.columns.2,
+                                                               w: viewMatrix.columns.3))
                 
                 let json_data = try! JSONEncoder().encode(entity)
                 
