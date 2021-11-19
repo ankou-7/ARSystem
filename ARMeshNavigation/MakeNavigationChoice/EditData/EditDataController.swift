@@ -889,26 +889,26 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 
                 //if thita >= 135 {
                     if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
-                        print("world3 = \(world_vector3)")
-                        let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
-                        if !hitResults.isEmpty {
-                            if hitResults[0].node.name! == "child_tex_node" {
-                                let hitPoints = hitResults[0].worldCoordinates
-                                print("\(hitPoints)")
-                                print("x：\(abs(world_vector3.x - hitPoints.x))")
-                                print("y：\(abs(world_vector3.y - hitPoints.y))")
-                                print("z：\(abs(world_vector3.z - hitPoints.z))")
-                                if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
-                                    let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-                                    let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                                    texcoords2[i][j] = SIMD2<Float>(u, v)
-                                }
-                            }
-                        }
-//                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-//                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-//                        texcoords2[i][j] = SIMD2<Float>(u, v)
+//                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
+//                        print("world3 = \(world_vector3)")
+//                        let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
+//                        if !hitResults.isEmpty {
+//                            if hitResults[0].node.name! == "child_tex_node" {
+//                                let hitPoints = hitResults[0].worldCoordinates
+//                                print("\(hitPoints)")
+//                                print("x：\(abs(world_vector3.x - hitPoints.x))")
+//                                print("y：\(abs(world_vector3.y - hitPoints.y))")
+//                                print("z：\(abs(world_vector3.z - hitPoints.z))")
+//                                if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
+//                                    let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+//                                    let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+//                                    texcoords2[i][j] = SIMD2<Float>(u, v)
+//                                }
+//                            }
+//                        }
+                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                        texcoords2[i][j] = SIMD2<Float>(u, v)
                     //}
                 }
             }
@@ -926,13 +926,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 
                 if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
 //                    let world_vector3 = vertex_array[i][Int(index)]
-//                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
-//                        print("world3 = \(world_vector3)")
+////                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
+////                        print("world3 = \(world_vector3)")
 //                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
 //                    if !hitResults.isEmpty {
 //                        if hitResults[0].node.name! == "child_tex_node" {
 //                            let hitPoints = hitResults[0].worldCoordinates
-//                                print("\(hitPoints)")
+////                                print("\(hitPoints)")
 //                            if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
 ////                                print("x：\(abs(world_vector3.x - hitPoints.x))")
 ////                                print("y：\(abs(world_vector3.y - hitPoints.y))")
