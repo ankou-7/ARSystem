@@ -1,3 +1,4 @@
 opencv2.framework/
 Podfile.lock
 Pods/
+HandTracker.framework/
