@@ -6,4 +6,5 @@
 //
 
 #import "ShaderTypes.h"
+#import <HandTracker/HandTracker.h>
 #import "Matching_OpenCV.h"
