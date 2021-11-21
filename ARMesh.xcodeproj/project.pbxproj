@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -33,7 +33,6 @@
 		26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */; };
 		26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA26B2563CAC9008FE5EB /* art.scnassets */; };
 		B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */; };
-		B93657C73F8649A28906F5EB /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE26EB9CE5C141FA558A82F /* Pods_ARMesh_ARMeshUITests.framework */; };
 		CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0250D926380953003790E8 /* ObjectDataSource.swift */; };
 		CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */; };
 		CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */; };
@@ -83,6 +82,15 @@
 		CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF8D977A2683106000D6002A /* OpenCVManager.mm */; };
 		CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8D977E2683147100D6002A /* FeatureMatching.storyboard */; };
 		CF8D97812683163300D6002A /* FeatureMatchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8D97802683163300D6002A /* FeatureMatchingController.swift */; };
+		CF98DE8027484EF90023A1E4 /* HandTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF98DE7E27484EF40023A1E4 /* HandTracker.framework */; platformFilter = ios; };
+		CF98DE8127484EF90023A1E4 /* HandTracker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CF98DE7E27484EF40023A1E4 /* HandTracker.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */; };
+		CF98DE9327485DDF0023A1E4 /* CVPixelBuffer+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */; };
+		CF98DE9427485DDF0023A1E4 /* CVReturnError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8E27485DDE0023A1E4 /* CVReturnError.swift */; };
+		CF98DE9527485DDF0023A1E4 /* PlaneIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8F27485DDE0023A1E4 /* PlaneIndex.swift */; };
+		CF98DE9627485DDF0023A1E4 /* CVMetalTexture+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE9027485DDF0023A1E4 /* CVMetalTexture+.swift */; };
+		CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE9127485DDF0023A1E4 /* BlueDress.swift */; };
+		CF98DE9927485DE70023A1E4 /* default.metal in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE9827485DE70023A1E4 /* default.metal */; };
 		CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */; };
 		CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */; };
 		CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */; };
@@ -90,7 +98,7 @@
 		CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */; };
 		CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */; };
 		CFD69EA326C7B71000E51949 /* Diff_PointCloudViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */; };
-		DB2BB5F06867ED9855D5ABEA /* Pods_ARMeshTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74676E971A0CEC363AC8C09 /* Pods_ARMeshTests.framework */; };
+		CFD96D3E2748222C00083E90 /* CheckARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD96D3D2748222C00083E90 /* CheckARViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +117,20 @@
 			remoteInfo = ARMeshNavigation;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CF98DE8227484EF90023A1E4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CF98DE8127484EF90023A1E4 /* HandTracker.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.debug.xcconfig"; sourceTree = "<group>"; };
@@ -148,7 +170,6 @@
 		B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.release.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.release.xcconfig"; sourceTree = "<group>"; };
 		C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.release.xcconfig"; sourceTree = "<group>"; };
-		CEE26EB9CE5C141FA558A82F /* Pods_ARMesh_ARMeshUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh_ARMeshUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF0250D926380953003790E8 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceModelData.storyboard; sourceTree = "<group>"; };
 		CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelDataController.swift; sourceTree = "<group>"; };
@@ -200,6 +221,14 @@
 		CF8D977D2683130000D6002A /* OpenCVManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVManager.h; sourceTree = "<group>"; };
 		CF8D977E2683147100D6002A /* FeatureMatching.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = FeatureMatching.storyboard; sourceTree = "<group>"; };
 		CF8D97802683163300D6002A /* FeatureMatchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureMatchingController.swift; sourceTree = "<group>"; };
+		CF98DE7E27484EF40023A1E4 /* HandTracker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HandTracker.framework; sourceTree = "<group>"; };
+		CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+.swift"; sourceTree = "<group>"; };
+		CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+.swift"; sourceTree = "<group>"; };
+		CF98DE8E27485DDE0023A1E4 /* CVReturnError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVReturnError.swift; sourceTree = "<group>"; };
+		CF98DE8F27485DDE0023A1E4 /* PlaneIndex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaneIndex.swift; sourceTree = "<group>"; };
+		CF98DE9027485DDF0023A1E4 /* CVMetalTexture+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVMetalTexture+.swift"; sourceTree = "<group>"; };
+		CF98DE9127485DDF0023A1E4 /* BlueDress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlueDress.swift; sourceTree = "<group>"; };
+		CF98DE9827485DE70023A1E4 /* default.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = default.metal; sourceTree = "<group>"; };
 		CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimePointCloudController.swift; sourceTree = "<group>"; };
 		CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoicePictureData.storyboard; sourceTree = "<group>"; };
 		CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckPictureChoiceController.swift; sourceTree = "<group>"; };
@@ -207,7 +236,7 @@
 		CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureChoiceController.swift; sourceTree = "<group>"; };
 		CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud.storyboard; sourceTree = "<group>"; };
 		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
-		E74676E971A0CEC363AC8C09 /* Pods_ARMeshTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMeshTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFD96D3D2748222C00083E90 /* CheckARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckARViewController.swift; sourceTree = "<group>"; };
 		EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -216,6 +245,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF98DE8027484EF90023A1E4 /* HandTracker.framework in Frameworks */,
 				CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */,
 				B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */,
 			);
@@ -225,7 +255,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB2BB5F06867ED9855D5ABEA /* Pods_ARMeshTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,7 +262,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B93657C73F8649A28906F5EB /* Pods_ARMesh_ARMeshUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +473,8 @@
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				26AAA2382563C997008FE5EB /* NavigationEditModel.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
+				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
+				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
 			path = EditData;
 			sourceTree = "<group>";
@@ -504,6 +534,20 @@
 			path = FeatureMatching;
 			sourceTree = "<group>";
 		};
+		CF98DE8B27485DC60023A1E4 /* Blue */ = {
+			isa = PBXGroup;
+			children = (
+				CF98DE9127485DDF0023A1E4 /* BlueDress.swift */,
+				CF98DE9027485DDF0023A1E4 /* CVMetalTexture+.swift */,
+				CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */,
+				CF98DE8E27485DDE0023A1E4 /* CVReturnError.swift */,
+				CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */,
+				CF98DE8F27485DDE0023A1E4 /* PlaneIndex.swift */,
+				CF98DE9827485DE70023A1E4 /* default.metal */,
+			);
+			path = Blue;
+			sourceTree = "<group>";
+		};
 		CFD69E9426C50DA500E51949 /* ChoiceData */ = {
 			isa = PBXGroup;
 			children = (
@@ -547,8 +591,7 @@
 			children = (
 				CF8D977426830F3700D6002A /* opencv2.framework */,
 				B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */,
-				CEE26EB9CE5C141FA558A82F /* Pods_ARMesh_ARMeshUITests.framework */,
-				E74676E971A0CEC363AC8C09 /* Pods_ARMeshTests.framework */,
+				CF98DE7E27484EF40023A1E4 /* HandTracker.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -565,6 +608,7 @@
 				26AAA1EA2563C802008FE5EB /* Frameworks */,
 				26AAA1EB2563C802008FE5EB /* Resources */,
 				D9EAAFC585B9110FF0F7C117 /* [CP] Embed Pods Frameworks */,
+				CF98DE8227484EF90023A1E4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -813,9 +857,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF98DE9627485DDF0023A1E4 /* CVMetalTexture+.swift in Sources */,
 				2632F46225F04482006B7366 /* Helpers.swift in Sources */,
 				CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */,
 				CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */,
+				CF98DE9527485DDF0023A1E4 /* PlaneIndex.swift in Sources */,
 				CF8D97812683163300D6002A /* FeatureMatchingController.swift in Sources */,
 				CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */,
 				26AAA2552563C998008FE5EB /* Information.swift in Sources */,
@@ -834,10 +880,12 @@
 				CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */,
 				CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */,
 				CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */,
+				CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */,
 				CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */,
 				26474EEC256AEA02000C1456 /* ColabNavigationEditModel.swift in Sources */,
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				26AAA2592563C998008FE5EB /* NavigationEditModel.swift in Sources */,
+				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
 				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,
@@ -847,7 +895,9 @@
 				26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */,
 				CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */,
 				2632F45425F04193006B7366 /* Shaders.metal in Sources */,
+				CF98DE9927485DE70023A1E4 /* default.metal in Sources */,
 				CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */,
+				CFD96D3E2748222C00083E90 /* CheckARViewController.swift in Sources */,
 				26AAA2562563C998008FE5EB /* MakeNavigationController.swift in Sources */,
 				26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */,
 				26AAA25B2563C998008FE5EB /* UseNavigationChoiceController.swift in Sources */,
@@ -860,12 +910,14 @@
 				26AAA2502563C998008FE5EB /* PopOverController.swift in Sources */,
 				26AAA25F2563C998008FE5EB /* NavigationChoiceController.swift in Sources */,
 				CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */,
+				CF98DE9327485DDF0023A1E4 /* CVPixelBuffer+.swift in Sources */,
 				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
 				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
 				CF30EF3C262BAA7C00C13B66 /* ColabDataChoiceController.swift in Sources */,
 				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,
 				26AAA1F52563C802008FE5EB /* Experience.rcproject in Sources */,
 				CF30EF8E262D982000C13B66 /* MapExpansionTransmitController.swift in Sources */,
+				CF98DE9427485DDF0023A1E4 /* CVReturnError.swift in Sources */,
 				CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */,
 				26AAA2522563C998008FE5EB /* TitleViewController.swift in Sources */,
 			);
