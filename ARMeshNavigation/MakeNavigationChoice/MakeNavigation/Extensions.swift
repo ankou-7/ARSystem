@@ -26,13 +26,21 @@ extension CVPixelBuffer {
         //width = 256
         // 画面の縦方向の中央部分のデータを取得。取得順番は上下逆転。
         for x in (Int((width / 2) - (size / 2)) ..< Int((width / 2) + (size / 2))).reversed() {
+        //for x in (0 ..< width).reversed() {
             // 画面の横方向の中央部分のデータを取得。取得順番は左右逆転。
             for y in (sideCutoff ..< (height - sideCutoff)).reversed() {
                 let index = y * width + x
                 dataArray.append(pointer[index])
             }
         }
+//        for x in (0 ..< width).reversed() {
+//            for y in (0 ..< height).reversed() {
+//                let index = y * width + x
+//                dataArray.append(pointer[index])
+//            }
+//        }
         CVPixelBufferUnlockBaseAddress(self, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+        print("dataArray_count：\(dataArray.count)")
         return (dataArray, size)
     }
 }
@@ -86,7 +94,10 @@ extension ARFrame {
 
     private func cropPortraitCenterSquareMap<T>(_ pixelBuffer: CVPixelBuffer, _ aspectRatio: CGFloat) -> ([T], Int) {
 
-        let viewPortSize = CGSize(width: 1.0, height: aspectRatio)
+        //aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
+        //let viewPortSize = CGSize(width: 1.0, height: aspectRatio)
+        //let viewPortSize = CGSize(width: 834.0, height: 1150.0)
+        let viewPortSize = CGSize(width: 834.0/1150.0, height: 1.0)
         var displayTransform = self.displayTransform(for: .portrait, viewportSize: viewPortSize)
         // ポートレートの場合、X軸Y軸共に反転
         var flipTransform =  CGAffineTransform(scaleX: -1, y: -1)
@@ -96,7 +107,9 @@ extension ARFrame {
         displayTransform = displayTransform.concatenating(flipTransform)
         let sideCutoff = Int((1.0 - (1.0 / displayTransform.c)) / 2.0 * CGFloat(pixelBuffer.height))
         
-        print("sideCutoff:\(sideCutoff)") //4
+        print("displayTransform:\(displayTransform)")
+        //CGAffineTransform(a: 0.0, b: -1.0, c: 1.0341726618705038, d: -0.0, tx: -0.017086330935252025, ty: 1.0)
+        print("sideCutoff:\(sideCutoff)") //3
         print("height:\(pixelBuffer.height)") //192
         print("width:\(pixelBuffer.width)") //256
 

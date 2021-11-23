@@ -69,6 +69,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var parameta_flag = false
     
     private let orientation = UIInterfaceOrientation.portrait
+    @IBOutlet weak var depthImage: UIImageView!
     
     //metal用のRendererのインスタンス
     private var renderer: Renderer!
@@ -360,6 +361,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         guard let frame = self.sceneView.session.currentFrame else {
             fatalError("Couldn't get the current ARFrame")
         }
+        guard let depthMap = frame.smoothedSceneDepth?.depthMap else {
+            fatalError("Couldn't get the current depthMap")
+        }
 //        let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
 //        let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
 //        let resizeScale = CGFloat(256) / CGFloat(2880)
@@ -388,7 +392,23 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             }
         }
         
+//        CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+//        let baseAddress = CVPixelBufferGetBaseAddress(depthMap)
+//        let width = CVPixelBufferGetWidth(depthMap)
+//        let height = CVPixelBufferGetHeight(depthMap)
+//        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
+//        var depthArray: [Float32] = []
+//        for x in (0 ..< 256).reversed() {
+//            for y in (0 ..< 192).reversed() {
+//                let index = y * width + x
+//                depthArray.append(pointer[index])
+//            }
+//        }
+//        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+        
+        //let depthSize = 192 - 6
         let depthScreenScaleFactor = Float(self.sceneView.bounds.width * UIScreen.screens.first!.scale / CGFloat(depthSize))
+        //let depthScreenScaleFactor_h = Float(self.sceneView.bounds.height * UIScreen.screens.first!.scale / CGFloat(256))
         
         // 信頼度が高い深度情報のみ3Dモデル化
 //        let isConfidentDepth: (Int, Int) -> Bool = { (x, y) in
@@ -396,25 +416,17 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //            return depthArray[y * depthSize + x] >= 0.0
 //        }
         
-        for y in 0 ..< depthSize {
+        for y in 0 ..< depthSize { //256 {
             for x in 0 ..< depthSize {
-                // 頂点座標を作成（最終的に表示しないものも作る）
                 let depth = depthArray[y * depthSize + x]
                 if depth < 0 {
                     continue
                 }
                 let x_px = Float(x) * depthScreenScaleFactor
                 let y_px = Float(y) * depthScreenScaleFactor
-                // 2Dの深度情報を3Dに変換
-                let localPoint = IntrinsicsInversed * simd_float3(x_px, y_px, 1) * depth
-                //ワールド座標に合わせてローカルから変換
-                let worldPoint = localToworld * simd_float4(localPoint, 1)
-                //worldPoint = worldPoint / worldPoint.w
-                //print(worldPoint.w) //1.0
                 
-//                let r = Float(pixelArray[((y+4) * 256 + (x+36)) * 4]) / Float(255)
-//                let g = Float(pixelArray[((y+4) * 256 + (x+36)) * 4 + 1]) / Float(255)
-//                let b = Float(pixelArray[((y+4) * 256 + (x+36)) * 4 + 2]) / Float(255)
+                let localPoint = IntrinsicsInversed * simd_float3(x_px, y_px, 1) * depth
+                let worldPoint = localToworld * simd_float4(localPoint, 1)
                 vertice_data.append(PointCloudVertex(x: worldPoint.x,
                                                         y: worldPoint.y,
                                                         z: worldPoint.z,
@@ -422,19 +434,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                                                         g: 255,
                                                         b: 255))
                 
-//                vertices.append(SCNVector3(worldPoint.x, worldPoint.y, worldPoint.z))
             }
         }
-//        print(vertice_data.count)
         let node = buildNode(points: vertice_data)
-//        // ジオメトリ作成
-//        let vertexSource = SCNGeometrySource(vertices: vertices)
-//        let geometryElement = SCNGeometryElement(indices: indices, primitiveType: .triangles)
-//        let geometry = SCNGeometry(sources: [vertexSource], elements: [geometryElement])
-//
-//        // ノード作成
-//        let node = SCNNode(geometry: geometry)
-//        node.position = .init(x: 0, y: 0, z: 0)
         self.scene.rootNode.addChildNode(node)
     }
     
@@ -483,126 +485,163 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var pre_eulerAngles = SCNVector3(0,0,0)
     
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        guard let frame = self.sceneView.session.currentFrame else {
+            fatalError("Couldn't get the current ARFrame")
+        }
+        if frame.smoothedSceneDepth?.depthMap != nil {
+            let depthMap = frame.smoothedSceneDepth?.depthMap
+            let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
+            let depth_cgImage = UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+            //UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))
+            depthImage.image = depth_cgImage
+        }
+    }
+    
     @objc func update() {
         //if depth_flag == true {
             if parameta_flag == true {
                 guard let frame = self.sceneView.session.currentFrame else {
                     fatalError("Couldn't get the current ARFrame")
                 }
-                jpeg_count += 1
+                if frame.smoothedSceneDepth?.depthMap != nil {
+                    let depthMap = frame.smoothedSceneDepth?.depthMap
                 
-                //2D → 3D変換用の内部パラメータ
-                let camera = frame.camera
+                    jpeg_count += 1
+                    
+                    //2D → 3D変換用の内部パラメータ
+                    let camera = frame.camera
 
-                let cameraIntrinsics = camera.intrinsics.inverse
-                let flipYZ = simd_float4x4(
-                    [1, 0, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 0, -1, 0],
-                    [0, 0, 0, 1] )
-                let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
-                
-                var json_data = Data()
-                
-                if let camera = self.sceneView.pointOfView {
-                    let cameraPosition = camera.position
-                    //let cameraEulerAngles = camera.eulerAngles
-                    let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
-                    pre_eulerAngles = camera.eulerAngles
+                    let cameraIntrinsics = camera.intrinsics.inverse
+                    let flipYZ = simd_float4x4(
+                        [1, 0, 0, 0],
+                        [0, 1, 0, 0],
+                        [0, 0, -1, 0],
+                        [0, 0, 0, 1] )
+                    let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
                     
-                    let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
-                    let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
-                    let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+                    var json_data = Data()
                     
-                    let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
-                    let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
-                    
-                    let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
-                    
-                    let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
-                    let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
-                    let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
-                    let out_vec_size: Float = sqrt(a * a + b * b + c * c)
-                    
-                    let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
-                    
-                    let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
-                    print(inner * 180.0 / .pi )
-                    //180の時にメッシュと並行
-                    //90の時にメッシュと垂直
-                    
-                    //RGB画像
-                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
-                    let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                    let imageData = uiImage.jpegData(compressionQuality: 0.5) //toJPEGData()
-                    
-                    let entity = MakeMap_parameta(cameraPosition:
-                                                    Vector3Entity(x: cameraPosition.x,
-                                                                  y: cameraPosition.y,
-                                                                  z: cameraPosition.z),
-                                                  cameraEulerAngles:
-                                                    Vector3Entity(x: cameraEulerAngles.x,
-                                                                  y: cameraEulerAngles.y,
-                                                                  z: cameraEulerAngles.z),
-                                                  cameraVector:
-                                                    Vector3Entity(x: tani_out_vec.x,
-                                                                  y: tani_out_vec.y,
-                                                                  z: tani_out_vec.z),
-                                                  Intrinsics:
-                                                    Vector33Entity(x: cameraIntrinsics.columns.0,
-                                                                   y: cameraIntrinsics.columns.1,
-                                                                   z: cameraIntrinsics.columns.2),
-                                                  ViewMatrix:
-                                                    Vector44Entity(x: viewMatrix.columns.0,
-                                                                   y: viewMatrix.columns.1,
-                                                                   z: viewMatrix.columns.2,
-                                                                   w: viewMatrix.columns.3))
-                    
-                    json_data = try! JSONEncoder().encode(entity)
-                    
-//                    guard let depthMap = frame.smoothedSceneDepth?.depthMap else {
-//                        fatalError("Couldn't get the depthMap")
-//                    }
-//                    let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap)
-//                    let depth_cgImage = UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-//                    let depthData = depth_cgImage.jpegData(compressionQuality: 0.5)
-                    // depthMapのCPU配置
-//                    CVPixelBufferLockBaseAddress(depthMap, .readOnly)
-//                    let base = CVPixelBufferGetBaseAddress(depthMap) // 先頭ポインタの取得
-//                    let width = CVPixelBufferGetWidth(depthMap) // 横幅の取得
-//                    let height = CVPixelBufferGetHeight(depthMap) // 縦幅の取得
-//                    print("width:\(width)")
-//                    print("height:\(height)")
-//                    let bindPtr = base?.bindMemory(to: Float32.self, capacity: width * height)
-//                    let bufPtr = UnsafeBufferPointer(start: bindPtr, count: width * height)
-//                    let depthArray = Array(bufPtr)
-//                    CVPixelBufferUnlockBaseAddress(depthMap, .readOnly)
-//                    let fixedArray = depthArray.map({ $0.isNaN ? 0 : $0 })
-//                    print(fixedArray.count)
-                    
-//                    //深度画像
-                    let aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
-                    var (depthArray, depthSize) = frame.cropPortraitCenterSquareDepth(aspectRatio: aspectRatio)
-                    print("depthSize:\(depthSize)")
-                    print("depthArray.count:\(depthArray.count)")
-
-                    // 深度の信頼度情報を取得
-                    let (depthConfidenceArray, _) = frame.cropPortraitCenterSquareDepthConfidence(aspectRatio: aspectRatio)
-                    print("depthConfidenceArray.count:\(depthConfidenceArray.count)")
-                    // 信頼度が高い深度情報のみ抽出
-                    if depthArray.count != depthConfidenceArray.count  {
-                        depthArray = depthConfidenceArray.enumerated().map {
-                            // 信頼度が high 未満は深度を -1 に書き換え
-                            return $0.element >= UInt8(ARConfidenceLevel.high.rawValue) ? depthArray[$0.offset] : -1
-                        }
+                    if let camera = self.sceneView.pointOfView {
+                        let cameraPosition = camera.position
+                        //let cameraEulerAngles = camera.eulerAngles
+                        let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
+                        pre_eulerAngles = camera.eulerAngles
+                        
+                        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
+                        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
+                        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+                        
+                        let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
+                        let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
+                        
+                        let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
+                        
+                        let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
+                        let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
+                        let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
+                        let out_vec_size: Float = sqrt(a * a + b * b + c * c)
+                        
+                        let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
+                        
+                        let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
+                        print(inner * 180.0 / .pi )
+                        //180の時にメッシュと並行
+                        //90の時にメッシュと垂直
+                        
+                        //RGB画像
+                        let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
+                        let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+                        let imageData = uiImage.jpegData(compressionQuality: 0.5) //toJPEGData()
+                        
+                        let entity = MakeMap_parameta(cameraPosition:
+                                                        Vector3Entity(x: cameraPosition.x,
+                                                                      y: cameraPosition.y,
+                                                                      z: cameraPosition.z),
+                                                      cameraEulerAngles:
+                                                        Vector3Entity(x: cameraEulerAngles.x,
+                                                                      y: cameraEulerAngles.y,
+                                                                      z: cameraEulerAngles.z),
+                                                      cameraVector:
+                                                        Vector3Entity(x: tani_out_vec.x,
+                                                                      y: tani_out_vec.y,
+                                                                      z: tani_out_vec.z),
+                                                      Intrinsics:
+                                                        Vector33Entity(x: cameraIntrinsics.columns.0,
+                                                                       y: cameraIntrinsics.columns.1,
+                                                                       z: cameraIntrinsics.columns.2),
+                                                      ViewMatrix:
+                                                        Vector44Entity(x: viewMatrix.columns.0,
+                                                                       y: viewMatrix.columns.1,
+                                                                       z: viewMatrix.columns.2,
+                                                                       w: viewMatrix.columns.3))
+                        
+                        json_data = try! JSONEncoder().encode(entity)
+                        
+                        
+//                        let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
+//                        let depth_cgImage = UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))//UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+//                        let depthMapData = depth_cgImage.jpegData(compressionQuality: 0.5)!
+                        
+//                        let depthMapData = toData(pixelBuffer: depthMap)
+                        
+                        //②
+    //                    CVPixelBufferLockBaseAddress(depthMap, .readOnly)
+    //                    let base = CVPixelBufferGetBaseAddress(depthMap) // 先頭ポインタの取得
+    //                    let width = CVPixelBufferGetWidth(depthMap) // 横幅の取得
+    //                    let height = CVPixelBufferGetHeight(depthMap) // 縦幅の取得
+    //                    print("width:\(width)")
+    //                    print("height:\(height)")
+    //                    let bindPtr = base?.bindMemory(to: Float32.self, capacity: width * height)
+    //                    let bufPtr = UnsafeBufferPointer(start: bindPtr, count: width * height)
+    //                    let depthArray = Array(bufPtr)
+    //                    CVPixelBufferUnlockBaseAddress(depthMap, .readOnly)
+    //                    let fixedArray = depthArray.map({ $0.isNaN ? 0 : $0 })
+    //                    print(fixedArray.count)
+    //                    print(fixedArray)
+                        
+                        //①
+//                        CVPixelBufferLockBaseAddress(depthMap!, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+//                        let baseAddress = CVPixelBufferGetBaseAddress(depthMap!)
+//                        let width = CVPixelBufferGetWidth(depthMap!)
+//                        let height = CVPixelBufferGetHeight(depthMap!)
+//                        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
+//                        var depthArray: [Float32] = []
+//                        for x in (0 ..< 256).reversed() {
+//                            for y in (0 ..< 192).reversed() {
+//                                let index = y * width + x
+//                                depthArray.append(pointer[index])
+//                            }
+//                        }
+//                        CVPixelBufferUnlockBaseAddress(depthMap!, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+                        
+    //                    //深度画像
+                        //③
+//                        let aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
+//                        var (depthArray, depthSize) = frame.cropPortraitCenterSquareDepth(aspectRatio: aspectRatio)
+//                        print("depthSize:\(depthSize)")
+//                        print("depthArray.count:\(depthArray.count)")
+//    //
+//    //                    // 深度の信頼度情報を取得
+//                        let (depthConfidenceArray, _) = frame.cropPortraitCenterSquareDepthConfidence(aspectRatio: aspectRatio)
+//                        print("depthConfidenceArray.count:\(depthConfidenceArray.count)")
+//                        // 信頼度が高い深度情報のみ抽出
+//                        if depthArray.count != depthConfidenceArray.count  {
+//                            depthArray = depthConfidenceArray.enumerated().map {
+//                                // 信頼度が high 未満は深度を -1 に書き換え
+//                                return $0.element >= UInt8(ARConfidenceLevel.high.rawValue) ? depthArray[$0.offset] : -1
+//                            }
+//                        }
+                        
+//                        let depthMapData: Data = try! JSONEncoder().encode(depthArray)
+    //                    var depthDataArray: [depthMap_data] = []
+    //                    for i in depthArray {
+    //                        depthDataArray.append(depthMap_data(depth: i))
+    //                    }
+                        
+                        
+                        save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data)
                     }
-//                    var depthDataArray: [depthMap_data] = []
-//                    for i in depthArray {
-//                        depthDataArray.append(depthMap_data(depth: i))
-//                    }
-                    let depthMapData: Data = try! JSONEncoder().encode(depthArray)
-                    
-                    save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthMapData)
                 }
             }
             
@@ -610,8 +649,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //}
     }
     
+    func screenTransformed(frame: ARFrame, ciImage: CIImage, orientation: UIInterfaceOrientation, viewPort: CGRect) -> CIImage {
+        let transform = screenTransform(frame: frame, orientation: orientation, viewPortSize: viewPort.size, captureSize: ciImage.extent.size)
+        return ciImage.transformed(by: transform).cropped(to: viewPort)
+    }
+
+    func screenTransform(frame: ARFrame, orientation: UIInterfaceOrientation, viewPortSize: CGSize, captureSize: CGSize) -> CGAffineTransform {
+        let normalizeTransform = CGAffineTransform(scaleX: 1.0/captureSize.width, y: 1.0/captureSize.height)
+        let flipTransform = (orientation.isPortrait) ? CGAffineTransform(scaleX: -1, y: -1).translatedBy(x: -1, y: -1) : .identity
+        let displayTransform = frame.displayTransform(for: orientation, viewportSize: viewPortSize)
+        let toViewPortTransform = CGAffineTransform(scaleX: viewPortSize.width, y: viewPortSize.height)
+        return normalizeTransform.concatenating(flipTransform).concatenating(displayTransform).concatenating(toViewPortTransform)
+    }
+    
     //jpegデータ保存
-    func save_jpeg(filename: String, jpegData: Data, jsonData: Data, depthData: Data) {
+    func save_jpeg(filename: String, jpegData: Data, jsonData: Data) {
         
         let realm = try! Realm()
         let results = realm.objects(Data_parameta.self)
@@ -622,8 +674,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
                                                                         "json_data": jsonData]))
             
-            results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
-                                                                          "depth_data": depthData]))
+//            results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
+//                                                                          "depth_data": depthData]))
         }
         
 //        // DocumentディレクトリのfileURLを取得

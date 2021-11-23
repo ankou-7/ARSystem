@@ -39,6 +39,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     var objectName_array: [String] = []
     @IBOutlet weak var delete_finish_button: UIButton!
+    @IBOutlet weak var depth_button: UIButton!
     
     var cameraNode = SCNNode()
     var lastGestureScale: Float = 1.0
@@ -68,6 +69,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         scene.rootNode.addChildNode(lightNode)
         
         delete_finish_button.isHidden = true
+        depth_button.isHidden = true
         ActivityView.stopAnimating()
         //ActivityView.isHidden = true
         
@@ -146,7 +148,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     @IBAction func tap_colorNode(_ sender: UIButton) {
         delete_mesh()
-        load_anchor(tex_bool: true)
+        if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
+            load_anchor(tex_bool: true)
+        } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 2 {
+            load_anchor2()
+        }
     }
     
     @IBAction func tap_meshNode(_ sender: UIButton) {
@@ -889,16 +895,34 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 
                 //if thita >= 135 {
                     if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-//                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
-//                        print("world3 = \(world_vector3)")
-//                        let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
+                        let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
+                        if hitResults.count > 1 {
+                            for (k, _) in hitResults.enumerated() {
+                                if hitResults[k].node.name! == "child_tex_node" {
+                                    let hitPoints = hitResults[k].worldCoordinates
+                                    if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
+                                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                                        texcoords2[i][j] = SIMD2<Float>(u, v)
+                                    }
+                                    break
+                                }
+                            }
+                        } else if hitResults.count == 1 {
+                            if hitResults[0].node.name! == "child_tex_node" {
+                                let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                                let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                                texcoords2[i][j] = SIMD2<Float>(u, v)
+                            }
+                        } else if hitResults.count == 0 {
+                            let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                            let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                            texcoords2[i][j] = SIMD2<Float>(u, v)
+                        }
+                        
 //                        if !hitResults.isEmpty {
 //                            if hitResults[0].node.name! == "child_tex_node" {
 //                                let hitPoints = hitResults[0].worldCoordinates
-//                                print("\(hitPoints)")
-//                                print("x：\(abs(world_vector3.x - hitPoints.x))")
-//                                print("y：\(abs(world_vector3.y - hitPoints.y))")
-//                                print("z：\(abs(world_vector3.z - hitPoints.z))")
 //                                if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
 //                                    let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
 //                                    let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
@@ -906,9 +930,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //                                }
 //                            }
 //                        }
-                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                        texcoords2[i][j] = SIMD2<Float>(u, v)
+//                        let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+//                        let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+//                        texcoords2[i][j] = SIMD2<Float>(u, v)
                     //}
                 }
             }
@@ -921,29 +945,32 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             var points_index: [Int] = []
             for (j, index) in faces.enumerated() {
                 let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
-                let inner = normal_array[i][Int(index)].x * cameraVector.x + normal_array[i][Int(index)].y * cameraVector.y + normal_array[i][Int(index)].z * cameraVector.z
-                let thita = acos(inner) * 180.0 / .pi
+                //let inner = normal_array[i][Int(index)].x * cameraVector.x + normal_array[i][Int(index)].y * cameraVector.y + normal_array[i][Int(index)].z * cameraVector.z
+                //let thita = acos(inner) * 180.0 / .pi
                 
                 if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-//                    let world_vector3 = vertex_array[i][Int(index)]
-////                        print("pt = (\(pt.x), \(pt.y)のときーーーーーーーーーーーーーー")
-////                        print("world3 = \(world_vector3)")
-//                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
-//                    if !hitResults.isEmpty {
-//                        if hitResults[0].node.name! == "child_tex_node" {
-//                            let hitPoints = hitResults[0].worldCoordinates
-////                                print("\(hitPoints)")
-//                            if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
-////                                print("x：\(abs(world_vector3.x - hitPoints.x))")
-////                                print("y：\(abs(world_vector3.y - hitPoints.y))")
-////                                print("z：\(abs(world_vector3.z - hitPoints.z))")
-//                                points.append(pt)
-//                                points_index.append(Int(index))
-//                            }
-//                        }
-//                    }
-                    points.append(pt)
-                    points_index.append(Int(index))
+                    let world_vector3 = vertex_array[i][Int(index)]
+                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
+                    if hitResults.count > 1 {
+                        for (k, _) in hitResults.enumerated() {
+                            if hitResults[k].node.name! == "child_tex_node" {
+                                let hitPoints = hitResults[k].worldCoordinates
+                                if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
+                                    points.append(pt)
+                                    points_index.append(Int(index))
+                                }
+                                break
+                            }
+                        }
+                    } else if hitResults.count == 1 {
+                        if hitResults[0].node.name! == "child_tex_node" {
+                            points.append(pt)
+                            points_index.append(Int(index))
+                        }
+                    } else if hitResults.count == 0 {
+                        points.append(pt)
+                        points_index.append(Int(index))
+                    }
                 }
                 if j % 3 == 2 {
                     if points_index.count == 3 {
@@ -979,7 +1006,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     //MARK: - 確認用
     var tap_count = -1
     @IBAction func tap_moveCamera(_ sender: UIButton) {
-        tap_count += 1
+        if tap_count < results[section_num].cells[cell_num].models[current_model_num].pic.count - 1 {
+            tap_count += 1
+        }
         
         imageView.image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[tap_count].pic_data!)
         
@@ -1000,8 +1029,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     }
     
     @IBAction func Make_depthModel(_ sender: Any) {
-        imageView.image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[0].pic_data!)
-        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[0].json_data!)
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[tap_count].json_data!)
         let intrinsics = simd_float3x3(json_data!.Intrinsics.x,
                                        json_data!.Intrinsics.y,
                                        json_data!.Intrinsics.z)
@@ -1009,39 +1037,136 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                                        json_data!.ViewMatrix.y,
                                        json_data!.ViewMatrix.z,
                                        json_data!.ViewMatrix.w)
-        let depthArray = try? decoder.decode([Float32].self, from:results[section_num].cells[cell_num].models[current_model_num].depth[0].depth_data!)
-        print(depthArray)
+        
+        let depthArray = try? decoder.decode([Float32].self, from:results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!)
+        print(depthArray?.count)
+        
+//        let depth_image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!)
+//        print(depth_image?.size)
+//        let depthMap = (depth_image?.pixelBuffer())!
+//        print(depthMap)
+//        let depthMap = toPixelBuffer(results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!, width: 256, height: 192, pixelFormat: kCVPixelFormatType_32BGRA)
+        
+//        CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+//        let baseAddress = CVPixelBufferGetBaseAddress(depthMap)
+//        let width = CVPixelBufferGetWidth(depthMap)
+//        let height = CVPixelBufferGetHeight(depthMap)
+//        print(width)
+//        print(height)
+//        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
+//        var depthArray: [Float32] = []
+//        for x in (0 ..< 256).reversed() {
+//            for y in (0 ..< 192).reversed() {
+//                let index = y * width + x
+//                depthArray.append(pointer[index])
+//            }
+//        }
+//        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+//        print(depthArray)
         
         var vertice_data: [PointCloudVertex] = []
         var depthSize = 186
         let depthScreenScaleFactor = Float(self.sceneView.bounds.width * UIScreen.screens.first!.scale / CGFloat(depthSize))
-        for y in 0 ..< depthSize {
-            for x in 0 ..< depthSize {
-                let depth = depthArray![y * depthSize + x]
-                if depth < 0 {
-                    continue
-                }
+        let depthScreenScaleFactor_h = Float(self.sceneView.bounds.height * UIScreen.screens.first!.scale / CGFloat(256))
+        print(depthScreenScaleFactor)
+        print(depthScreenScaleFactor_h)
+        print(sceneView.bounds.width)
+        print(sceneView.bounds.height)
+        print(UIScreen.screens.first!.scale)
+//        for y in 0 ..< depthSize {
+//            for x in 0 ..< depthSize {
+//                let depth = depthArray![y * depthSize + x]
+//                if depth < 0 {
+//                    continue
+//                }
+//                let x_px = Float(x) * depthScreenScaleFactor
+//                let y_px = Float(y) * depthScreenScaleFactor
+//                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+//                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+//                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+//                                                        y: worldPoint.y,
+//                                                        z: worldPoint.z,
+//                                                        r: 255,
+//                                                        g: 255,
+//                                                        b: 255))
+//            }
+//        }
+        
+        //②
+//        for x in (0 ..< 256) {
+//            for y in 0 ..< 192 {
+//                let depth = depthArray![y * 256 + x]
+////                if depth < 0 {
+////                    continue
+////                }
+//                let x_px = Float(192-y) * depthScreenScaleFactor
+//                let y_px = Float(256-x) * depthScreenScaleFactor_h
+//                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+//                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+//                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+//                                                        y: worldPoint.y,
+//                                                        z: worldPoint.z,
+//                                                        r: 255,
+//                                                        g: 255,
+//                                                        b: 255))
+//
+//            }
+//        }
+        
+//        for x in (0 ..< 192) {
+//            for y in 0 ..< 256 {
+//                let depth = depthArray![y * 192 + x]
+//                if depth < 0 {
+//                    continue
+//                }
+//                let x_px = Float(x) * depthScreenScaleFactor
+//                let y_px = Float(y) * depthScreenScaleFactor_h
+//                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+//                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+//                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+//                                                        y: worldPoint.y,
+//                                                        z: worldPoint.z,
+//                                                        r: 255,
+//                                                        g: 255,
+//                                                        b: 255))
+//
+//            }
+//        }
+        
+        //①
+        for y in 0 ..< 256 {
+            for x in 0 ..< 192 {
+                let depth = depthArray![y * 192 + x]
+//                if depth < 0 {
+//                    continue
+//                }
                 let x_px = Float(x) * depthScreenScaleFactor
-                let y_px = Float(y) * depthScreenScaleFactor
-                // 2Dの深度情報を3Dに変換
-                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
-                //ワールド座標に合わせてローカルから変換
+                let y_px = Float(y) * depthScreenScaleFactor_h
+                let localPoint = intrinsics * simd_float3(x_px, y_px-300, 1) * depth
                 let worldPoint = viewMatrix * simd_float4(localPoint, 1)
-
-//                let r = Float(pixelArray[((y+4) * 256 + (x+36)) * 4]) / Float(255)
-//                let g = Float(pixelArray[((y+4) * 256 + (x+36)) * 4 + 1]) / Float(255)
-//                let b = Float(pixelArray[((y+4) * 256 + (x+36)) * 4 + 2]) / Float(255)
                 vertice_data.append(PointCloudVertex(x: worldPoint.x,
-                                                        y: worldPoint.y,
-                                                        z: worldPoint.z,
-                                                        r: 255,
-                                                        g: 255,
-                                                        b: 255))
+                                                     y: worldPoint.y,
+                                                     z: worldPoint.z,
+                                                     r: 255,
+                                                     g: 255,
+                                                     b: 255))
 
             }
         }
+        
         let node = build_pointsNode(points: vertice_data)
+        node.position = SCNVector3(x: 0, y: 0, z: 0)
+        node.name = "depth"
+        choiceNode_name = node.name!
         self.scene.rootNode.addChildNode(node)
+        
+        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+            node.removeFromParentNode()
+        }
+        let axis = ObjectOrigin().makeAxisNode()
+        axis.position = SCNVector3(x: 0, y: 0, z: 0)
+        axis.scale = SCNVector3(2.0, 2.0, 2.0)
+        sceneView.scene!.rootNode.addChildNode(axis)
     }
     
     //MARK: - その他

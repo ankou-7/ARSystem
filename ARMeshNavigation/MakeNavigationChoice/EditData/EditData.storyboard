@@ -461,6 +461,7 @@
                     <connections>
                         <outlet property="ActivityView" destination="KOs-gL-ufa" id="DiT-dX-AnB"/>
                         <outlet property="delete_finish_button" destination="cT7-Pd-pKF" id="p1m-9D-lJg"/>
+                        <outlet property="depth_button" destination="P2k-OW-C6M" id="9xM-7K-3AV"/>
                         <outlet property="imageView" destination="Xs8-EH-W3u" id="AAE-Xl-hCI"/>
                         <outlet property="left_modelbutton" destination="W9t-4u-SvZ" id="jSM-Of-xA2"/>
                         <outlet property="modelname_label" destination="gsO-eN-2KE" id="SXv-f1-dE8"/>

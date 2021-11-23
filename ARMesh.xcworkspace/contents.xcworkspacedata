@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:ARMeshNavigation/MakeNavigationChoice/EditData/BlueDress">
-   </FileRef>
-   <FileRef
       location = "group:ARMesh.xcodeproj">
    </FileRef>
    <FileRef

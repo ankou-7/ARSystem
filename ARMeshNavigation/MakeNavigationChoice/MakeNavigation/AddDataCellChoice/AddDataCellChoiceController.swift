@@ -240,13 +240,13 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                         }
                     }
                     
-                    if data_parameta_results[i].depth.count > 0 {
-                        for j in 0...data_parameta_results[i].depth.count-1 {
-                            results[section_num].cells[cell_num].models[i].depth.append(
-                                depth_data(value: ["depth_name": data_parameta_results[i].depth[j].depth_name,
-                                                  "depth_data": data_parameta_results[i].depth[j].depth_data]))
-                        }
-                    }
+//                    if data_parameta_results[i].depth.count > 0 {
+//                        for j in 0...data_parameta_results[i].depth.count-1 {
+//                            results[section_num].cells[cell_num].models[i].depth.append(
+//                                depth_data(value: ["depth_name": data_parameta_results[i].depth[j].depth_name,
+//                                                  "depth_data": data_parameta_results[i].depth[j].depth_data]))
+//                        }
+//                    }
                 }
                 
             }
