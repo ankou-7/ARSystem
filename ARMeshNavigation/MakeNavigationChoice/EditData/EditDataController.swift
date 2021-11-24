@@ -30,6 +30,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     var vertex_array: [[SCNVector3]] = []
     var normal_array: [[SCNVector3]] = []
     var face_array: [[Int32]] = []
+    var face_bool: [[Int]] = []
     var new_face_array: [[Int32]] = []
     
     var new_uiimage: UIImage!
@@ -129,9 +130,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             tex_bool.append([])
             vertex_array.append([])
             face_array.append([])
+            face_bool.append([])
             new_face_array.append([])
             normal_array.append([])
         }
+        
+//        let realm = try! Realm()
+//        try! realm.write {
+//            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 0
+//        }
         
         if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
             load_anchor(tex_bool: true)
@@ -648,12 +655,17 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         print("load完了")
     }
     
-    func save_model() {
+    func save_model(num: Int) {
         for (i, _) in anchors.enumerated() {
             let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
             let vertices_data = Data(bytes: vertex_array[i], count: MemoryLayout<SCNVector3>.size * vertex_array[i].count)
             let normals_data = Data(bytes: normal_array[i], count: MemoryLayout<SCNVector3>.size * normal_array[i].count)
-            let faces_data = try! JSONEncoder().encode(new_face_array[i])
+            var faces_data = Data()
+            if num == 1 {
+                faces_data = try! JSONEncoder().encode(new_face_array[i])
+            } else {
+                faces_data = try! JSONEncoder().encode(face_array[i])
+            }
             
             let realm = try! Realm()
             try! realm.write {
@@ -666,7 +678,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
         let realm = try! Realm()
         try! realm.write {
-            if vertex_array[0].count == 0 {
+            if num == 0 {
                 results[section_num].cells[cell_num].models[current_model_num].texture_bool = 1
             } else {
                 results[section_num].cells[cell_num].models[current_model_num].texture_bool = 2
@@ -712,8 +724,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         make_texture(num: 1)
     }
     
+    @IBAction func tap_makeTexture3(_ sender: UIButton) {
+        ActivityView.startAnimating()
+        make_texture(num: 2)
+    }
+    
     @IBAction func tap_saveButton(_ sender: UIButton) {
-        save_model()
+        //save_model()
     }
     
     func Make_meshInfo_Array() {
@@ -722,6 +739,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             tex_bool[i] = []
             vertex_array[i] = []
             face_array[i] = []
+            face_bool[i] = []
             normal_array[i] = []
             
             let verticles = meshAnchor.geometry.vertices
@@ -750,6 +768,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                     let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
                     face_array[i].append(per_face)
                 }
+                face_bool[i].append(-1)
             }
         }
     }
@@ -837,13 +856,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                                      completionHandler: { [self] in
                     if num == 0 {
                         calcTextureCoordinates(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
-                    } else {
+                    } else if num == 1 {
                         calcTextureCoordinates5(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
+                    } else if num == 2 {
+                        calcTextureCoordinates10(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
                     }
                     if i+1 == count {
                         DispatchQueue.main.sync {
                             //Alert()
-                            save_model()
+                            save_model(num: num)
                             delete_mesh()
                             if num == 0 {
                                 //ActivityView.isHidden = true
@@ -995,6 +1016,80 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //                            }
                         }
                     }
+                    
+                    points = []
+                    points_index = []
+                }
+            }
+        }
+        print("calculate完了")
+    }
+    
+    func calcTextureCoordinates10(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
+        for (i, faces) in face_array.enumerated() {
+            var points: [SCNVector3] = []
+            var points_index: [Int] = []
+            var face_count = -1
+            for (j, index) in faces.enumerated() {
+                let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
+                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                    //奥行き判定
+//                    let world_vector3 = vertex_array[i][Int(index)]
+//                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
+//                    if hitResults.count > 1 {
+//                        for (k, _) in hitResults.enumerated() {
+//                            if hitResults[k].node.name! == "child_tex_node" {
+//                                let hitPoints = hitResults[k].worldCoordinates
+//                                if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
+//                                    points.append(pt)
+//                                    points_index.append(Int(index))
+//                                }
+//                                break
+//                            }
+//                        }
+//                    } else if hitResults.count == 1 {
+//                        if hitResults[0].node.name! == "child_tex_node" {
+//                            points.append(pt)
+//                            points_index.append(Int(index))
+//                        }
+//                    } else if hitResults.count == 0 {
+//                        points.append(pt)
+//                        points_index.append(Int(index))
+//                    }
+                    points.append(pt)
+                    points_index.append(Int(index))
+                }
+
+                //面ごとの処理
+                if j % 3 == 2 {
+                    face_count += 1
+                    if points_index.count == 3 {
+                        for (k, p) in points.enumerated() {
+                            let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                            let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                            texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+                        }
+                        face_bool[i][face_count] = i
+                    }
+                    
+                    else if points_index.count == 2 || points_index.count == 1 && face_bool[i][face_count] != -1 {
+                        for p_index in points_index {
+                            vertex_array[i].append(vertex_array[i][p_index])
+                            normal_array[i].append(normal_array[i][p_index])
+                            texcoords2[i].append(texcoords2[i][p_index])
+                            tex_bool[i].append(false)
+                            
+                            let p = face_array[i].indices.filter{face_array[i][$0] == p_index}
+                            for l in p {
+                                if face_bool[i][face_count] == face_bool[i][Int(floor(Double(l)/3.0))] {
+                                    face_array[i][l] = Int32(vertex_array[i].count-1)
+                                }
+                            }
+                            //face_array[i][p_index] = Int32(vertex_array[i].count-1)
+                        }
+                        
+                    }
+                    
                     points = []
                     points_index = []
                 }
