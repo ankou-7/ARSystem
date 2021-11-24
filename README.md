@@ -20,6 +20,10 @@ https://github.com/opencv/opencv/releases
 
 ![スクリーンショット 2021-11-03 14 25 49](https://user-images.githubusercontent.com/61243751/140013533-615a63b6-003f-45b6-8700-5f7f69e06d04.png)
 
+3, MediaPipeの追加
+
+https://github.com/noppefoxwolf/HandTracker/releases
+
 ## 機能概要
 
 
