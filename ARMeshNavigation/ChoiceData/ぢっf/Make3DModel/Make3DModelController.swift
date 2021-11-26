@@ -1470,9 +1470,6 @@ extension CGImage {
 
     func pixelData() -> [UInt8]? {
 //        guard let colorSpace = colorSpace else { return nil }
-//
-//        let totalBytes = height * bytesPerRow
-//        var pixelData = [UInt8](repeating: 0, count: totalBytes)
 
         let totalBytes = height * bytesPerRow
         var pixelData = [UInt8](repeating: 0, count: totalBytes)

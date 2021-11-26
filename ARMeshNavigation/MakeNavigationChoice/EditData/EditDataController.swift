@@ -100,6 +100,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        let image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[0].pic_data!)
+        let pixel_image = image?.ciImage?.createCGImage().pixelData()
+        print(pixel_image)
+        imageView.image = image
+        
 
         for s in results[section_num].cells[cell_num].models[current_model_num].obj {
             objectName_array.append(s.name_identify)
