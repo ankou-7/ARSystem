@@ -32,6 +32,7 @@
 		26AAA25F2563C998008FE5EB /* NavigationChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */; };
 		26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */; };
 		26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA26B2563CAC9008FE5EB /* art.scnassets */; };
+		26C878EF274F554200B8BE4E /* HandTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C878EE274F554000B8BE4E /* HandTracker.framework */; platformFilter = ios; };
 		B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */; };
 		CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0250D926380953003790E8 /* ObjectDataSource.swift */; };
 		CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */; };
@@ -165,6 +166,7 @@
 		26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationChoiceController.swift; sourceTree = "<group>"; };
 		26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceDataAllCheckController.swift; sourceTree = "<group>"; };
 		26AAA26B2563CAC9008FE5EB /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		26C878EE274F554000B8BE4E /* HandTracker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HandTracker.framework; sourceTree = "<group>"; };
 		5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.release.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.release.xcconfig"; sourceTree = "<group>"; };
 		9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -245,6 +247,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26C878EF274F554200B8BE4E /* HandTracker.framework in Frameworks */,
 				CF98DE8027484EF90023A1E4 /* HandTracker.framework in Frameworks */,
 				CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */,
 				B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */,
@@ -591,6 +594,7 @@
 			children = (
 				CF8D977426830F3700D6002A /* opencv2.framework */,
 				B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */,
+				26C878EE274F554000B8BE4E /* HandTracker.framework */,
 				CF98DE7E27484EF40023A1E4 /* HandTracker.framework */,
 			);
 			name = Frameworks;
