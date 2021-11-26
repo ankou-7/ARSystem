@@ -840,6 +840,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
         DispatchQueue.global().sync {
             Make_meshInfo_Array()
+            print(texcoords2[0].count)
+            print(vertex_array[0].count)
+            print(face_array[0].count)
+            print(face_bool[0].count)
             if num == 1 {
                 remake_mesh()
             }
@@ -1070,36 +1074,65 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 if j % 3 == 2 {
                     face_count += 1
                     if points_index.count == 3 {
+                        face_bool[i][face_count] = i
                         for (k, p) in points.enumerated() {
+                            //各頂点のuv座標を計算
                             let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
                             let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
                             texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
-                        }
-                        face_bool[i][face_count] = i
-                    }
-                    
-                    else if points_index.count == 2 || points_index.count == 1 && face_bool[i][face_count] != -1 {
-                        for p_index in points_index {
-                            vertex_array[i].append(vertex_array[i][p_index])
-                            normal_array[i].append(normal_array[i][p_index])
-                            texcoords2[i].append(texcoords2[i][p_index])
-                            tex_bool[i].append(false)
                             
-                            let p = face_array[i].indices.filter{face_array[i][$0] == p_index}
-                            for l in p {
-                                if face_bool[i][face_count] == face_bool[i][Int(floor(Double(l)/3.0))] {
-                                    face_array[i][l] = Int32(vertex_array[i].count-1)
-                                }
-                            }
-                            //face_array[i][p_index] = Int32(vertex_array[i].count-1)
+//                            //隣り合ってる面について
+//                            let count0 = face_array[i].indices.filter{face_array[i][$0] == points_index[k]}
+//                            for l in count0 {
+//                                if i != face_bool[i][Int(floor(Double(l)/3.0))] && -1 != face_bool[i][Int(floor(Double(l)/3.0))] {
+//                                    vertex_array[i].append(vertex_array[i][l])
+//                                    normal_array[i].append(normal_array[i][l])
+//                                    texcoords2[i].append(texcoords2[i][l])
+//                                    tex_bool[i].append(false)
+//
+//                                    face_array[i][l] = Int32(vertex_array[i].count-1)
+//                                    let pp = face_array[i].indices.filter{face_array[i][$0] == l}
+//                                    for ll in pp {
+//                                        if face_bool[i][Int(floor(Double(l)/3.0))] == face_bool[i][Int(floor(Double(ll)/3.0))] {
+//                                            face_array[i][ll] = Int32(vertex_array[i].count-1)
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                         
+                        
+//                        for (k, p) in points.enumerated() {
+//                            let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+//                            let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+//                            texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+//                        }
+//                        face_bool[i][face_count] = i
                     }
+                    
+//                    else if points_index.count == 2 || points_index.count == 1 && face_bool[i][face_count] != -1 {
+//                        for p_index in points_index {
+//                            vertex_array[i].append(vertex_array[i][p_index])
+//                            normal_array[i].append(normal_array[i][p_index])
+//                            texcoords2[i].append(texcoords2[i][p_index])
+//                            tex_bool[i].append(false)
+//
+//                            let p = face_array[i].indices.filter{face_array[i][$0] == p_index}
+//                            for l in p {
+//                                if face_bool[i][face_count] == face_bool[i][Int(floor(Double(l)/3.0))] {
+//                                    face_array[i][l] = Int32(vertex_array[i].count-1)
+//                                }
+//                            }
+//                            //face_array[i][p_index] = Int32(vertex_array[i].count-1)
+//                        }
+//
+//                    }
                     
                     points = []
                     points_index = []
                 }
             }
+            
         }
         print("calculate完了")
     }
