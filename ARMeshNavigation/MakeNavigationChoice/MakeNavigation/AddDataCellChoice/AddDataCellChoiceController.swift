@@ -175,14 +175,14 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
             let documentsDirectory = paths[0]
             
             if navityu_results[i].exit_mesh == 1 {
-                do {
-                    print("mesh書き込み")
-                    let old_modelname: String? = "\(documentsDirectory)/\(navityu_results[i].modelname).scn"
-                    let new_modelname: String? =  "\(documentsDirectory)/\(objName).scn"
-                    try FileManager.default.moveItem(atPath: old_modelname!, toPath: new_modelname!)
-                } catch {
-                    fatalError()
-                }
+//                do {
+//                    print("mesh書き込み")
+//                    let old_modelname: String? = "\(documentsDirectory)/\(navityu_results[i].modelname).scn"
+//                    let new_modelname: String? =  "\(documentsDirectory)/\(objName).scn"
+//                    try FileManager.default.moveItem(atPath: old_modelname!, toPath: new_modelname!)
+//                } catch {
+//                    fatalError()
+//                }
             }
             if navityu_results[i].exit_point == 1 {
                 do {
@@ -240,13 +240,13 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                         }
                     }
                     
-//                    if data_parameta_results[i].depth.count > 0 {
-//                        for j in 0...data_parameta_results[i].depth.count-1 {
-//                            results[section_num].cells[cell_num].models[i].depth.append(
-//                                depth_data(value: ["depth_name": data_parameta_results[i].depth[j].depth_name,
-//                                                  "depth_data": data_parameta_results[i].depth[j].depth_data]))
-//                        }
-//                    }
+                    if data_parameta_results[i].depth.count > 0 {
+                        for j in 0...data_parameta_results[i].depth.count-1 {
+                            results[section_num].cells[cell_num].models[i].depth.append(
+                                depth_data(value: ["depth_name": data_parameta_results[i].depth[j].depth_name,
+                                                  "depth_data": data_parameta_results[i].depth[j].depth_data]))
+                        }
+                    }
                 }
                 
             }

@@ -76,6 +76,7 @@
 		CF3D80C3262B9C03007904E6 /* UseNavigationChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80C2262B9C03007904E6 /* UseNavigationChoice.storyboard */; };
 		CF3D80CC262B9CCF007904E6 /* SaveDataNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */; };
 		CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */; };
+		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
@@ -215,6 +216,7 @@
 		CF3D80C2262B9C03007904E6 /* UseNavigationChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UseNavigationChoice.storyboard; sourceTree = "<group>"; };
 		CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SaveDataNavigation.storyboard; sourceTree = "<group>"; };
 		CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDataChoiceController.swift; sourceTree = "<group>"; };
+		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
@@ -451,6 +453,7 @@
 			isa = PBXGroup;
 			children = (
 				2682062E25C3F7BC00519E42 /* Renderer.swift */,
+				CF3E928327532A670029C166 /* depth_Renderer.swift */,
 				2632F45325F04193006B7366 /* Shaders.metal */,
 				2632F45925F0420A006B7366 /* MetalBuffer.swift */,
 				2632F45825F041DF006B7366 /* ShaderTypes.h */,
@@ -887,6 +890,7 @@
 				CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */,
 				CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */,
 				26474EEC256AEA02000C1456 /* ColabNavigationEditModel.swift in Sources */,
+				CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */,
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				26AAA2592563C998008FE5EB /* NavigationEditModel.swift in Sources */,
 				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,

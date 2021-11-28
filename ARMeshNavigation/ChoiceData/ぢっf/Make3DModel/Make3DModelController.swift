@@ -1466,33 +1466,6 @@ public func buildNode2(points: [PointCloudVertex]) -> SCNNode {
     
 }
 
-extension CGImage {
-
-    func pixelData() -> [UInt8]? {
-//        guard let colorSpace = colorSpace else { return nil }
-
-        let totalBytes = height * bytesPerRow
-        var pixelData = [UInt8](repeating: 0, count: totalBytes)
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        
-//        print("bytesPerRow:\(bytesPerRow)")
-//        print("bitsPerComponent:\(bitsPerComponent)")
-        
-        guard let context = CGContext(
-            data: &pixelData,
-            width: width,
-            height: height,
-            bitsPerComponent: bitsPerComponent, //8
-            bytesPerRow: bytesPerRow, //1024
-            space: colorSpace,
-            bitmapInfo: bitmapInfo.rawValue)
-            else { fatalError() }
-        context.draw(self, in: CGRect(x: 0.0, y: 0.0, width: CGFloat(width), height: CGFloat(height)))
-        
-        return pixelData
-    }
-}
-
 
 //        var points_2d = [[[simd_float2]]](repeating: [[simd_float2]](repeating: [simd_float2(0,0)], count: 384), count: 512)
 //        //var points_2d: [[[Float]]] = [[[]]]

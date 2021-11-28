@@ -83,21 +83,23 @@ extension ARFrame {
     }
 
     func cropPortraitCenterSquareDepth(aspectRatio: CGFloat) -> ([Float32], Int) {
-        guard let pixelBuffer = self.smoothedSceneDepth?.depthMap else { return ([], 0) }
+        //guard let pixelBuffer = self.smoothedSceneDepth?.depthMap else { return ([], 0) }
+        guard let pixelBuffer = self.sceneDepth?.depthMap else { return ([], 0) }
         return cropPortraitCenterSquareMap(pixelBuffer, aspectRatio)
     }
 
     func cropPortraitCenterSquareDepthConfidence(aspectRatio: CGFloat) -> ([UInt8], Int) {
-        guard let pixelBuffer = self.smoothedSceneDepth?.confidenceMap else { return ([], 0) }
+        //guard let pixelBuffer = self.smoothedSceneDepth?.confidenceMap else { return ([], 0) }
+        guard let pixelBuffer = self.sceneDepth?.confidenceMap else { return ([], 0) }
         return cropPortraitCenterSquareMap(pixelBuffer, aspectRatio)
     }
 
     private func cropPortraitCenterSquareMap<T>(_ pixelBuffer: CVPixelBuffer, _ aspectRatio: CGFloat) -> ([T], Int) {
 
         //aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
-        //let viewPortSize = CGSize(width: 1.0, height: aspectRatio)
+        let viewPortSize = CGSize(width: 1.0, height: aspectRatio)
         //let viewPortSize = CGSize(width: 834.0, height: 1150.0)
-        let viewPortSize = CGSize(width: 834.0/1150.0, height: 1.0)
+        //let viewPortSize = CGSize(width: 834.0/1150.0, height: 1.0)
         var displayTransform = self.displayTransform(for: .portrait, viewportSize: viewPortSize)
         // ポートレートの場合、X軸Y軸共に反転
         var flipTransform =  CGAffineTransform(scaleX: -1, y: -1)

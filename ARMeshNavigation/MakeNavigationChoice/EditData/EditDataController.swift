@@ -31,12 +31,20 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     var normal_array: [[SCNVector3]] = []
     var face_array: [[Int32]] = []
     var face_bool: [[Int]] = []
+    
     var new_face_array: [[Int32]] = []
+    var new_vertex_array: [[SCNVector3]] = []
+    var new_normal_array: [[SCNVector3]] = []
+    var new_texcoords2: [[SIMD2<Float>]] = []
     
     var new_uiimage: UIImage!
     var uiimage_array: [UIImage] = []
     @IBOutlet var imageView: UIImageView!
+    @IBOutlet weak var imageView2: UIImageView!
     @IBOutlet weak var ActivityView: UIActivityIndicatorView!
+    
+    var pixelData: [UInt8] = []
+    var new_pixelData: [UInt8] = [UInt8](repeating: 0, count: 44236800)
     
     var objectName_array: [String] = []
     @IBOutlet weak var delete_finish_button: UIButton!
@@ -70,7 +78,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         scene.rootNode.addChildNode(lightNode)
         
         delete_finish_button.isHidden = true
-        depth_button.isHidden = true
+        //depth_button.isHidden = true
         ActivityView.stopAnimating()
         //ActivityView.isHidden = true
         
@@ -98,13 +106,260 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
+    func triming(pointA: CGPoint, pointB: CGPoint) -> [CGPoint] {
+        let Ax = Int(pointA.x)
+        let Ay = Int(pointA.y)
+        let Bx = Int(pointB.x)
+        let By = Int(pointB.y)
+        let n = abs(Bx - Ax) //横
+        let m = abs(By - Ay) //縦
+        
+        var index: [CGPoint] = []
+        var r_x = 1
+        var r_y = -1
+        if Bx - Ax < 0 {
+            r_x = -1
+        }
+        if By - Ay > 0 {
+            r_y = 1
+        }
+        
+        if n == 0 {
+            let nx = Ax
+            var ny = Ay
+            index.append(CGPoint(x: nx, y: ny))
+            for _ in 1...m {
+                ny += r_y
+                index.append(CGPoint(x: nx, y: ny))
+            }
+        } else if m == 0 {
+            var nx = Ax
+            let ny = Ay
+            index.append(CGPoint(x: nx, y: ny))
+            for _ in 1...n {
+                nx += r_x
+                index.append(CGPoint(x: nx, y: ny))
+            }
+        } else {
+            if m >= n {
+                if (m % n) == 0 {
+                    let p = m / n
+                    var nx = Ax
+                    var ny = Ay
+                    index.append(CGPoint(x: nx, y: ny))
+                    for _ in 1...n {
+                        nx += r_x
+                        for _ in 0..<p {
+                            ny += r_y
+                            index.append(CGPoint(x: nx, y: ny))
+                        }
+                    }
+                }
+                if (m % n) != 0 {
+                    let p = Int(floor(Double(m / n)))//m / n
+                    let q = m % n
+                    //let r = Int(floor(Double(n / q)))
+                    var nx = Ax
+                    var ny = Ay
+                    index.append(CGPoint(x: nx, y: ny))
+                    for i in 1...n {
+                        nx += r_x
+                        for _ in 0..<p {
+                            ny += r_y
+                            index.append(CGPoint(x: nx, y: ny))
+                        }
+                        if i == n {
+                            for _ in 0..<q {
+                                ny += r_y
+                                index.append(CGPoint(x: nx, y: ny))
+                            }
+                        }
+                    }
+                }
+            } else if m < n {
+                if (n % m) == 0 {
+                    let p = m / n
+                    var nx = Ax
+                    var ny = Ay
+                    index.append(CGPoint(x: nx, y: ny))
+                    for _ in 1...m {
+                        ny += r_y
+                        for _ in 0..<p {
+                            nx += r_x
+                            index.append(CGPoint(x: nx, y: ny))
+                        }
+                    }
+                }
+                if (n % m) != 0 {
+                    let p = Int(floor(Double(n / m)))//m / n
+                    let q = m % n
+                    var nx = Ax
+                    var ny = Ay
+                    index.append(CGPoint(x: nx, y: ny))
+                    for i in 1...m {
+                        ny += r_y
+                        for _ in 0..<p {
+                            nx += r_x
+                            index.append(CGPoint(x: nx, y: ny))
+                        }
+                        if i == m {
+                            for _ in 0..<q {
+                                nx += r_x
+                                index.append(CGPoint(x: nx, y: ny))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return index
+    }
+    
+    func makeX(y: Int, pointA: CGPoint, pointB: CGPoint) -> Int {
+        let a = Float(pointB.y - pointA.y) / Float(pointB.x - pointA.x)
+        let x = (CGFloat(y) - pointA.y) / CGFloat(a) + pointA.x
+        //print(x)
+        return Int(round(x))
+    }
+    
+    func get_pixelData(pixelData: [UInt8], pointA: CGPoint, pointB: CGPoint, pointC: CGPoint) {
+//        var index: [CGPoint] = []
+//        index.append(contentsOf: triming(pointA: a, pointB: b))
+//        index.append(contentsOf: triming(pointA: a, pointB: c))
+//        index.append(contentsOf: triming(pointA: b, pointB: c))
+        
+        var XArray = [Int(pointA.x), Int(pointB.x), Int(pointC.x)]
+        var YArray = [Int(pointA.y), Int(pointB.y), Int(pointC.y)]
+        var points = [pointA, pointB, pointC]
+        print(points)
+        let sortedXArray = XArray.enumerated().sorted{ $0.element < $1.element }.map{ $0.offset }
+        let sortedYArray = YArray.enumerated().sorted{ $0.element < $1.element }.map{ $0.offset }
+        //print(sortedYArray)
+        
+//        XArray.sort()
+//        YArray.sort()
+//        print(XArray)
+//        print(YArray)
+        
+        for y in YArray[sortedYArray[0]]...YArray[sortedYArray[1]] {
+            if (points[sortedYArray[1]].x < points[sortedYArray[2]].x) {
+                let left = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[1]])
+                let right = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[2]])
+                //print("i, left, right = \(y), \(left), \(right)")
+                if left < right {
+                    for i in left...right {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                } else {
+                    for i in right...left {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                }
+            } else if (points[sortedYArray[1]].x > points[sortedYArray[2]].x) {
+                let left = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[2]])
+                let right = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[1]])
+                //print("i, left, right = \(y), \(left), \(right)")
+                if left < right {
+                    for i in left...right {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                } else {
+                    for i in right...left {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                }
+            }
+        }
+        for y in YArray[sortedYArray[1]]...YArray[sortedYArray[2]] {
+            if (points[sortedYArray[0]].x < points[sortedYArray[1]].x) {
+                let left = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[0]])
+                let right = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[1]])
+                //print("i, left, right = \(y), \(left), \(right)")
+                if left < right {
+                    for i in left...right {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                } else {
+                    for i in right...left {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                }
+            } else if (points[sortedYArray[0]].x > points[sortedYArray[1]].x) {
+                let left = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[1]])
+                let right = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[0]])
+                //print("i, left, right = \(y), \(left), \(right)")
+                if left < right {
+                    for i in left...right {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                } else {
+                    for i in right...left {
+                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+                    }
+                }
+            }
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        print(results[section_num].cells[cell_num].models[current_model_num].pic)
+        print(results[section_num].cells[cell_num].models[current_model_num].depth)
+        
         let image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[0].pic_data!)
-        let pixel_image = image?.ciImage?.createCGImage().pixelData()
-        print(pixel_image)
         imageView.image = image
+        pixelData = (image?.cgImage!.pixelData())!
+        //print(pixel_image)
+        print(pixelData.count)
+        print(pixelData[0..<20])
+        
+//        var new_pixelData: [UInt8] = [UInt8](repeating: 0, count: pixelData!.count)
+//        for i in 4*2880*1000 ..< 4*2880*1050 + 1 {
+//            new_pixelData[i] = pixelData![i]
+//        }
+//        for (i, n) in pixelData!.enumerated() {
+//            if i > 4*2880*100 && i < 4*2880*1000 {
+//                new_pixelData.append(n)
+//            } else {
+//                new_pixelData.append(255)
+//            }
+//        }
+        
+//        let a = CGPoint(x: 1500, y: 3200)
+//        let b = CGPoint(x: 2800, y: 3500)
+//        let c = CGPoint(x: 2000, y: 3000)
+//
+//        let start = Date()
+//        get_pixelData(pixelData: pixelData, pointA: a, pointB: b, pointC: c)
+//        imageView2.image = image?.cgImage!.makeImage(pixelData: new_pixelData)
+//        let elapsed = Date().timeIntervalSince(start)
+//        print("処理時間：\(elapsed)")
         
 
         for s in results[section_num].cells[cell_num].models[current_model_num].obj {
@@ -125,7 +380,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: (2880 / num) * CGFloat(yoko), height: (3840 / num) * CGFloat(tate), yoko: yoko, num: num)
         //imageView.image = new_uiimage
         
-        print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
+        //print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
         //メッシュ情報初期化
         for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
             let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
@@ -133,12 +388,17 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 anchors.append(meshAnchor)
             }
             texcoords2.append([])
+            normal_array.append([])
             tex_bool.append([])
             vertex_array.append([])
             face_array.append([])
             face_bool.append([])
+            
             new_face_array.append([])
-            normal_array.append([])
+            new_vertex_array.append([])
+            new_normal_array.append([])
+            new_face_array.append([])
+            new_texcoords2.append([])
         }
         
 //        let realm = try! Realm()
@@ -649,9 +909,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             )
             let faceSource = SCNGeometryElement(indices: faces!, primitiveType: .triangles)
             let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords!)
-            
+
             let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
             nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
+            
             let node = SCNNode(geometry: nodeGeometry)
             knownAnchors[anchors[i].identifier] = node
             tex_node.addChildNode(node)
@@ -663,14 +924,25 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     func save_model(num: Int) {
         for (i, _) in anchors.enumerated() {
-            let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
-            let vertices_data = Data(bytes: vertex_array[i], count: MemoryLayout<SCNVector3>.size * vertex_array[i].count)
-            let normals_data = Data(bytes: normal_array[i], count: MemoryLayout<SCNVector3>.size * normal_array[i].count)
+            var texcoords_data = Data()
+            var vertices_data = Data()
+            var normals_data = Data()
             var faces_data = Data()
-            if num == 1 {
+            
+            if num != 2 {
+                texcoords_data = try! JSONEncoder().encode(texcoords2[i])
+                vertices_data = Data(bytes: vertex_array[i], count: MemoryLayout<SCNVector3>.size * vertex_array[i].count)
+                normals_data = Data(bytes: normal_array[i], count: MemoryLayout<SCNVector3>.size * normal_array[i].count)
+                if num == 1 {
+                    faces_data = try! JSONEncoder().encode(new_face_array[i])
+                } else {
+                    faces_data = try! JSONEncoder().encode(face_array[i])
+                }
+            } else if num == 2 {
+                texcoords_data = try! JSONEncoder().encode(new_texcoords2[i])
+                vertices_data = Data(bytes: new_vertex_array[i], count: MemoryLayout<SCNVector3>.size * new_vertex_array[i].count)
+                normals_data = Data(bytes: new_normal_array[i], count: MemoryLayout<SCNVector3>.size * new_normal_array[i].count)
                 faces_data = try! JSONEncoder().encode(new_face_array[i])
-            } else {
-                faces_data = try! JSONEncoder().encode(face_array[i])
             }
             
             let realm = try! Realm()
@@ -679,7 +951,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices = vertices_data
                 results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals = normals_data
                 results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces = faces_data
-                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count = vertex_array[i].count
+                if num != 2 {
+                    results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count = vertex_array[i].count
+                } else if num == 2 {
+                    results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count = new_vertex_array[i].count
+                }
             }
         }
         let realm = try! Realm()
@@ -691,7 +967,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             }
         }
         print("save完了")
-        print(results[section_num].cells[cell_num].models[current_model_num])
+        //print(results[section_num].cells[cell_num].models[current_model_num])
     }
     
     func delete_mesh() {
@@ -839,11 +1115,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
         }
         DispatchQueue.global().sync {
+            let start = Date()
             Make_meshInfo_Array()
-            print(texcoords2[0].count)
-            print(vertex_array[0].count)
-            print(face_array[0].count)
-            print(face_bool[0].count)
             if num == 1 {
                 remake_mesh()
             }
@@ -869,10 +1142,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                     } else if num == 1 {
                         calcTextureCoordinates5(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
                     } else if num == 2 {
-                        calcTextureCoordinates10(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
+                        calcTextureCoordinates1000(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
                     }
                     if i+1 == count {
                         DispatchQueue.main.sync {
+                            let elapsed = Date().timeIntervalSince(start)
+                            print("処理時間：\(elapsed)")
                             //Alert()
                             save_model(num: num)
                             delete_mesh()
@@ -884,6 +1159,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                                 //ActivityView.isHidden = true
                                 ActivityView.stopAnimating()
                                 load_anchor2()
+//                                let image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[0].pic_data!)
+//                                imageView2.image = image?.cgImage!.makeImage(pixelData: new_pixelData)
                             }
                         }
                     }
@@ -970,6 +1247,186 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
+    func calcTextureCoordinates1000(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
+        for (i, mesh_anchor) in anchors.enumerated() {
+            var points: [SCNVector3] = []
+            var points_index: [Int] = []
+            var face_count = new_face_array[i].count - 1
+            let verticles = mesh_anchor.geometry.vertices
+            let faces = mesh_anchor.geometry.faces
+            for j in 0..<faces.count {
+                for offset in 0..<faces.indexCountPerPrimitive {
+                    let vertexIndexAddress = faces.buffer.contents().advanced(by: (j * faces.indexCountPerPrimitive + offset) * MemoryLayout<UInt32>.size)
+                    let per_face_index = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+                    let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * Int(per_face_index)))
+                    let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                    let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+                    let world_vertex4 = simd_mul(mesh_anchor.transform, vertex4)
+                    let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+                    let pt = sceneView.projectPoint(world_vector3)
+                    if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                        let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
+                        if hitResults.count > 1 {
+                            for (hit, _) in hitResults.enumerated() {
+                                if hitResults[hit].node.name! == "child_tex_node" {
+                                    let hitPoints = hitResults[hit].worldCoordinates
+                                    if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
+                                        points.append(pt)
+                                        points_index.append(Int(per_face_index))
+                                    }
+                                    break
+                                }
+                            }
+                        } else if hitResults.count == 1 {
+                            if hitResults[0].node.name! == "child_tex_node" {
+                                points.append(pt)
+                                points_index.append(Int(per_face_index))
+                            }
+                        } else if hitResults.count == 0 {
+                            points.append(pt)
+                            points_index.append(Int(per_face_index))
+                        }
+                        if offset == 0 && points_index.count < 1 {
+                            break
+                        }
+//                        points.append(pt)
+//                        points_index.append(Int(per_face_index))
+                    }
+                }
+                if points_index.count == 3 {
+                    for (k, p) in points.enumerated() {
+                        face_count += 1
+                        let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                        let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                        new_texcoords2[i].append(SIMD2<Float>(u, v))
+                        new_face_array[i].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
+                        new_vertex_array[i].append(vertex_array[i][points_index[k]])
+                        new_normal_array[i].append(normal_array[i][points_index[k]])
+                    }
+                }
+                points = []
+                points_index = []
+            }
+            
+        }
+        print("calculate完了")
+    }
+    
+    func calcTextureCoordinates100(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
+        for (i, faces) in face_array.enumerated() {
+            var points: [SCNVector3] = []
+            var points_index: [Int] = []
+            var all_points: [[SCNVector3]] = []
+            var all_points_index: [[Int]] = []
+            var face_count = new_face_array[i].count - 1 //-1
+            var now_face_count = -1
+            
+            for (j, index) in faces.enumerated() {
+                let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
+                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                    let world_vector3 = vertex_array[i][Int(index)]
+                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
+                    
+                    if hitResults.count > 1 {
+                        for (k, _) in hitResults.enumerated() {
+                            if hitResults[k].node.name! == "child_tex_node" {
+                                let hitPoints = hitResults[k].worldCoordinates
+                                if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
+                                    points.append(pt)
+                                    points_index.append(Int(index))
+                                }
+                                break
+                            }
+                        }
+                    } else if hitResults.count == 1 {
+                        if hitResults[0].node.name! == "child_tex_node" {
+                            points.append(pt)
+                            points_index.append(Int(index))
+                        }
+                    } else if hitResults.count == 0 {
+                        points.append(pt)
+                        points_index.append(Int(index))
+                    }
+//                    points.append(pt)
+//                    points_index.append(Int(index))
+                }
+                
+                //面ごとの処理
+                if j % 3 == 2 {
+                    now_face_count += 1
+                    if points_index.count == 3 {
+                        all_points_index.append(points_index)
+                        all_points.append(points)
+                    }
+                    points = []
+                    points_index = []
+                }
+            }
+            
+            for l in 0..<all_points_index.count {
+            //if face_bool[i][now_face_count] == -1 {
+                face_bool[i][now_face_count] = i
+                for (k, p) in all_points[l].enumerated() {
+                    face_count += 1
+                    let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                    let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                    new_texcoords2[i].append(SIMD2<Float>(u, v))
+                    new_face_array[i].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
+                    new_vertex_array[i].append(vertex_array[i][all_points_index[l][k]])
+                    new_normal_array[i].append(normal_array[i][all_points_index[l][k]])
+                }
+            }
+            all_points_index = []
+            all_points = []
+        }
+        print("calculate完了")
+//                        if num == 0 {
+//                            get_pixelData(pixelData: pixelData,
+//                                          pointA: CGPoint(x: CGFloat(points[0].x)/834 * 2880,
+//                                                          y: CGFloat(points[0].y)/1150 * 3840),
+//                                          pointB: CGPoint(x: CGFloat(points[1].x)/834 * 2880,
+//                                                          y: CGFloat(points[1].y)/1150 * 3840),
+//                                          pointC: CGPoint(x: CGFloat(points[2].x)/834 * 2880,
+//                                                          y: CGFloat(points[2].y)/1150 * 3840))
+//                        }
+                        
+////                        if face_bool[i][now_face_count] == -1 {
+//                            face_bool[i][now_face_count] = i
+//                            for (k, p) in points.enumerated() {
+//                                face_count += 1
+//                                let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+//                                let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+//                                new_texcoords2[i].append(SIMD2<Float>(u, v))
+//                                //texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
+//
+//                                new_face_array[i].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
+//                                new_vertex_array[i].append(vertex_array[i][points_index[k]])
+//                                new_normal_array[i].append(normal_array[i][points_index[k]])
+                                
+//                                let verticles = anchors[i].geometry.vertices
+//                                let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * k))
+//                                let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+//                                let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+//                                let world_vertex4 = simd_mul(anchors[i].transform, vertex4)
+//                                let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+//                                new_vertex_array[i].append(world_vector3)
+//
+//                                let normals = anchors[i].geometry.normals
+//                                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * k))
+//                                let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
+//                                new_normal_array[i].append(normal)
+                                
+//                            }
+//                        }
+//                    }
+//                    points = []
+//                    points_index = []
+//                }
+//            }
+//        }
+//        print("calculate完了")
+    }
+        
     func calcTextureCoordinates5(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
         for (i, faces) in new_face_array.enumerated() {
             var points: [SCNVector3] = []
@@ -1163,144 +1620,155 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     }
     
     @IBAction func Make_depthModel(_ sender: Any) {
-        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[tap_count].json_data!)
-        let intrinsics = simd_float3x3(json_data!.Intrinsics.x,
-                                       json_data!.Intrinsics.y,
-                                       json_data!.Intrinsics.z)
-        let viewMatrix = simd_float4x4(json_data!.ViewMatrix.x,
-                                       json_data!.ViewMatrix.y,
-                                       json_data!.ViewMatrix.z,
-                                       json_data!.ViewMatrix.w)
+        if tap_count < results[section_num].cells[cell_num].models[current_model_num].pic.count - 1 {
+            tap_count += 1
+        }
+        imageView.image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[tap_count].pic_data!)
+        let depth_array = try? decoder.decode([PointCloudVertex].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data! as Data)
+        print(depth_array![0...30])
         
-        let depthArray = try? decoder.decode([Float32].self, from:results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!)
-        print(depthArray?.count)
+        let node = build_pointsNode(points: depth_array!)
+        node.name = "depth"
+        self.scene.rootNode.addChildNode(node)
         
-//        let depth_image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!)
-//        print(depth_image?.size)
-//        let depthMap = (depth_image?.pixelBuffer())!
-//        print(depthMap)
-//        let depthMap = toPixelBuffer(results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!, width: 256, height: 192, pixelFormat: kCVPixelFormatType_32BGRA)
-        
-//        CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-//        let baseAddress = CVPixelBufferGetBaseAddress(depthMap)
-//        let width = CVPixelBufferGetWidth(depthMap)
-//        let height = CVPixelBufferGetHeight(depthMap)
-//        print(width)
-//        print(height)
-//        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
-//        var depthArray: [Float32] = []
-//        for x in (0 ..< 256).reversed() {
-//            for y in (0 ..< 192).reversed() {
-//                let index = y * width + x
-//                depthArray.append(pointer[index])
-//            }
-//        }
-//        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-//        print(depthArray)
-        
-        var vertice_data: [PointCloudVertex] = []
-        var depthSize = 186
-        let depthScreenScaleFactor = Float(self.sceneView.bounds.width * UIScreen.screens.first!.scale / CGFloat(depthSize))
-        let depthScreenScaleFactor_h = Float(self.sceneView.bounds.height * UIScreen.screens.first!.scale / CGFloat(256))
-        print(depthScreenScaleFactor)
-        print(depthScreenScaleFactor_h)
-        print(sceneView.bounds.width)
-        print(sceneView.bounds.height)
-        print(UIScreen.screens.first!.scale)
-//        for y in 0 ..< depthSize {
-//            for x in 0 ..< depthSize {
-//                let depth = depthArray![y * depthSize + x]
-//                if depth < 0 {
-//                    continue
-//                }
-//                let x_px = Float(x) * depthScreenScaleFactor
-//                let y_px = Float(y) * depthScreenScaleFactor
-//                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
-//                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
-//                vertice_data.append(PointCloudVertex(x: worldPoint.x,
-//                                                        y: worldPoint.y,
-//                                                        z: worldPoint.z,
-//                                                        r: 255,
-//                                                        g: 255,
-//                                                        b: 255))
-//            }
-//        }
-        
-        //②
-//        for x in (0 ..< 256) {
-//            for y in 0 ..< 192 {
-//                let depth = depthArray![y * 256 + x]
+//        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[tap_count].json_data!)
+//        let intrinsics = simd_float3x3(json_data!.Intrinsics.x,
+//                                       json_data!.Intrinsics.y,
+//                                       json_data!.Intrinsics.z)
+//        let viewMatrix = simd_float4x4(json_data!.ViewMatrix.x,
+//                                       json_data!.ViewMatrix.y,
+//                                       json_data!.ViewMatrix.z,
+//                                       json_data!.ViewMatrix.w)
+//
+//        let depthArray = try? decoder.decode([Float32].self, from:results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!)
+//        print(depthArray?.count)
+//
+////        let depth_image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!)
+////        print(depth_image?.size)
+////        let depthMap = (depth_image?.pixelBuffer())!
+////        print(depthMap)
+////        let depthMap = toPixelBuffer(results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data!, width: 256, height: 192, pixelFormat: kCVPixelFormatType_32BGRA)
+//
+////        CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+////        let baseAddress = CVPixelBufferGetBaseAddress(depthMap)
+////        let width = CVPixelBufferGetWidth(depthMap)
+////        let height = CVPixelBufferGetHeight(depthMap)
+////        print(width)
+////        print(height)
+////        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
+////        var depthArray: [Float32] = []
+////        for x in (0 ..< 256).reversed() {
+////            for y in (0 ..< 192).reversed() {
+////                let index = y * width + x
+////                depthArray.append(pointer[index])
+////            }
+////        }
+////        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+////        print(depthArray)
+//
+//        var vertice_data: [PointCloudVertex] = []
+//        var depthSize = 186
+//        let depthScreenScaleFactor = Float(self.sceneView.bounds.width * UIScreen.screens.first!.scale / CGFloat(depthSize))
+//        let depthScreenScaleFactor_h = Float(self.sceneView.bounds.height * UIScreen.screens.first!.scale / CGFloat(256))
+//        print(depthScreenScaleFactor)
+//        print(depthScreenScaleFactor_h)
+//        print(sceneView.bounds.width)
+//        print(sceneView.bounds.height)
+//        print(UIScreen.screens.first!.scale)
+////        for y in 0 ..< depthSize {
+////            for x in 0 ..< depthSize {
+////                let depth = depthArray![y * depthSize + x]
 ////                if depth < 0 {
 ////                    continue
 ////                }
-//                let x_px = Float(192-y) * depthScreenScaleFactor
-//                let y_px = Float(256-x) * depthScreenScaleFactor_h
-//                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
-//                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
-//                vertice_data.append(PointCloudVertex(x: worldPoint.x,
-//                                                        y: worldPoint.y,
-//                                                        z: worldPoint.z,
-//                                                        r: 255,
-//                                                        g: 255,
-//                                                        b: 255))
+////                let x_px = Float(x) * depthScreenScaleFactor
+////                let y_px = Float(y) * depthScreenScaleFactor
+////                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+////                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+////                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+////                                                        y: worldPoint.y,
+////                                                        z: worldPoint.z,
+////                                                        r: 255,
+////                                                        g: 255,
+////                                                        b: 255))
+////            }
+////        }
 //
-//            }
-//        }
-        
-//        for x in (0 ..< 192) {
-//            for y in 0 ..< 256 {
+//        //②
+////        for x in (0 ..< 256) {
+////            for y in 0 ..< 192 {
+////                let depth = depthArray![y * 256 + x]
+//////                if depth < 0 {
+//////                    continue
+//////                }
+////                let x_px = Float(192-y) * depthScreenScaleFactor
+////                let y_px = Float(256-x) * depthScreenScaleFactor_h
+////                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+////                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+////                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+////                                                        y: worldPoint.y,
+////                                                        z: worldPoint.z,
+////                                                        r: 255,
+////                                                        g: 255,
+////                                                        b: 255))
+////
+////            }
+////        }
+//
+////        for x in (0 ..< 192) {
+////            for y in 0 ..< 256 {
+////                let depth = depthArray![y * 192 + x]
+////                if depth < 0 {
+////                    continue
+////                }
+////                let x_px = Float(x) * depthScreenScaleFactor
+////                let y_px = Float(y) * depthScreenScaleFactor_h
+////                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+////                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
+////                vertice_data.append(PointCloudVertex(x: worldPoint.x,
+////                                                        y: worldPoint.y,
+////                                                        z: worldPoint.z,
+////                                                        r: 255,
+////                                                        g: 255,
+////                                                        b: 255))
+////
+////            }
+////        }
+//
+//        //①
+//        for y in 0 ..< 256 {
+//            for x in 0 ..< 192 {
 //                let depth = depthArray![y * 192 + x]
-//                if depth < 0 {
-//                    continue
-//                }
+////                if depth < 0 {
+////                    continue
+////                }
 //                let x_px = Float(x) * depthScreenScaleFactor
 //                let y_px = Float(y) * depthScreenScaleFactor_h
-//                let localPoint = intrinsics * simd_float3(x_px, y_px, 1) * depth
+//                let localPoint = intrinsics * simd_float3(x_px, y_px-300, 1) * depth
 //                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
 //                vertice_data.append(PointCloudVertex(x: worldPoint.x,
-//                                                        y: worldPoint.y,
-//                                                        z: worldPoint.z,
-//                                                        r: 255,
-//                                                        g: 255,
-//                                                        b: 255))
+//                                                     y: worldPoint.y,
+//                                                     z: worldPoint.z,
+//                                                     r: 255,
+//                                                     g: 255,
+//                                                     b: 255))
 //
 //            }
 //        }
-        
-        //①
-        for y in 0 ..< 256 {
-            for x in 0 ..< 192 {
-                let depth = depthArray![y * 192 + x]
-//                if depth < 0 {
-//                    continue
-//                }
-                let x_px = Float(x) * depthScreenScaleFactor
-                let y_px = Float(y) * depthScreenScaleFactor_h
-                let localPoint = intrinsics * simd_float3(x_px, y_px-300, 1) * depth
-                let worldPoint = viewMatrix * simd_float4(localPoint, 1)
-                vertice_data.append(PointCloudVertex(x: worldPoint.x,
-                                                     y: worldPoint.y,
-                                                     z: worldPoint.z,
-                                                     r: 255,
-                                                     g: 255,
-                                                     b: 255))
-
-            }
-        }
-        
-        let node = build_pointsNode(points: vertice_data)
-        node.position = SCNVector3(x: 0, y: 0, z: 0)
-        node.name = "depth"
-        choiceNode_name = node.name!
-        self.scene.rootNode.addChildNode(node)
-        
-        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
-            node.removeFromParentNode()
-        }
-        let axis = ObjectOrigin().makeAxisNode()
-        axis.position = SCNVector3(x: 0, y: 0, z: 0)
-        axis.scale = SCNVector3(2.0, 2.0, 2.0)
-        sceneView.scene!.rootNode.addChildNode(axis)
+//
+//        let node = build_pointsNode(points: vertice_data)
+//        node.position = SCNVector3(x: 0, y: 0, z: 0)
+//        node.name = "depth"
+//        choiceNode_name = node.name!
+//        self.scene.rootNode.addChildNode(node)
+//
+//        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+//            node.removeFromParentNode()
+//        }
+//        let axis = ObjectOrigin().makeAxisNode()
+//        axis.position = SCNVector3(x: 0, y: 0, z: 0)
+//        axis.scale = SCNVector3(2.0, 2.0, 2.0)
+//        sceneView.scene!.rootNode.addChildNode(axis)
     }
     
     //MARK: - その他

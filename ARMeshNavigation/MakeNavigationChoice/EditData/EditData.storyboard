@@ -431,6 +431,10 @@
                                     <action selector="tap_makeTexture3:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="RSb-5Z-trm"/>
                                 </connections>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ejg-ja-Vjf">
+                                <rect key="frame" x="341" y="125" width="250" height="250"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uxY-IE-l79"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -487,6 +491,7 @@
                         <outlet property="delete_finish_button" destination="cT7-Pd-pKF" id="p1m-9D-lJg"/>
                         <outlet property="depth_button" destination="P2k-OW-C6M" id="9xM-7K-3AV"/>
                         <outlet property="imageView" destination="Xs8-EH-W3u" id="AAE-Xl-hCI"/>
+                        <outlet property="imageView2" destination="ejg-ja-Vjf" id="Tgd-QK-rFW"/>
                         <outlet property="left_modelbutton" destination="W9t-4u-SvZ" id="jSM-Of-xA2"/>
                         <outlet property="modelname_label" destination="gsO-eN-2KE" id="SXv-f1-dE8"/>
                         <outlet property="right_modelbutton" destination="bg8-nC-QUg" id="C75-LY-MIT"/>

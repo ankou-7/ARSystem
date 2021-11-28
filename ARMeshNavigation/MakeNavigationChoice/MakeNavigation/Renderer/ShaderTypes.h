@@ -21,6 +21,7 @@ enum BufferIndices {
     kPointCloudUniforms = 0,
     kParticleUniforms = 1,
     kGridPoints = 2,
+    kDepthUniforms = 3,
 };
 
 struct RGBUniforms {
@@ -55,5 +56,8 @@ struct ParticleUniforms {
     float confidence;
 };
 
+struct DepthUniforms {
+    simd_float3 position;
+};
 
 #endif /* ShaderTypes_h */

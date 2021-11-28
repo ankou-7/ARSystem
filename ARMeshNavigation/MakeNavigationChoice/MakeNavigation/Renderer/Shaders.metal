@@ -62,6 +62,24 @@ vertex void unprojectVertex(uint vertexID [[vertex_id]],
     particleUniforms[currentPointIndex].confidence = confidence;
 }
 
+//depth計算
+vertex void depth(uint id [[vertex_id]],
+                  constant PointCloudUniforms &uniforms [[buffer(0)]],
+                  constant float2 *gridPoints [[buffer(1)]],
+                  device DepthUniforms *depthUniforms [[buffer(2)]],
+                  texture2d<float, access::sample> depthTexture [[texture(0)]]) {
+    
+    const auto gridPoint = gridPoints[id];
+    const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + id) % uniforms.maxPoints;
+    const auto texCoord = gridPoint / uniforms.cameraResolution;
+    const auto depth = depthTexture.sample(colorSampler, texCoord).r;
+    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
+    float4 projectedPosition = uniforms.viewProjectionMatrix * position;
+    projectedPosition /= projectedPosition.w;
+    
+    depthUniforms[currentPointIndex].position = projectedPosition.xyz;
+}
+
 
 //// Camera's RGB vertex shader outputs
 //struct RGBVertexOut {
