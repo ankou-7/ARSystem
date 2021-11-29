@@ -58,6 +58,7 @@ struct ParticleUniforms {
 
 struct DepthUniforms {
     simd_float3 position;
+    float confidence;
 };
 
 #endif /* ShaderTypes_h */

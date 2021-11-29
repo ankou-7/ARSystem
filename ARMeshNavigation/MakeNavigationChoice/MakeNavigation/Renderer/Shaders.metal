@@ -64,20 +64,24 @@ vertex void unprojectVertex(uint vertexID [[vertex_id]],
 
 //depth計算
 vertex void depth(uint id [[vertex_id]],
-                  constant PointCloudUniforms &uniforms [[buffer(0)]],
-                  constant float2 *gridPoints [[buffer(1)]],
-                  device DepthUniforms *depthUniforms [[buffer(2)]],
-                  texture2d<float, access::sample> depthTexture [[texture(0)]]) {
+                  constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
+                  device DepthUniforms *depthUniforms [[buffer(kParticleUniforms)]],
+                  constant float2 *gridPoints [[buffer(kGridPoints)]],
+                  texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]],
+                  texture2d<unsigned int, access::sample> confidenceTexture [[texture(kTextureConfidence)]]) {
     
     const auto gridPoint = gridPoints[id];
     const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + id) % uniforms.maxPoints;
     const auto texCoord = gridPoint / uniforms.cameraResolution;
     const auto depth = depthTexture.sample(colorSampler, texCoord).r;
     const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
-    float4 projectedPosition = uniforms.viewProjectionMatrix * position;
+    float4 projectedPosition = position;//uniforms.viewProjectionMatrix *
     projectedPosition /= projectedPosition.w;
     
+    const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
+    
     depthUniforms[currentPointIndex].position = projectedPosition.xyz;
+    depthUniforms[currentPointIndex].confidence = confidence;
 }
 
 

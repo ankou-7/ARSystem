@@ -265,6 +265,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     sceneView: self.sceneView)
                 self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
                 
+                self.lastCameraTransform = self.sceneView.session.currentFrame?.camera.transform
+                
 
                 //配置したscnオブジェクトを削除
                 //for name in self.place_object_name {
@@ -368,6 +370,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     @IBAction func kari_make_model(_ sender: UIButton) {
         
+        let depth_array = self.depth_pointCloudRenderer.depth_point()
+        var depth_points: [PointCloudVertex] = []
+        for depth in depth_array {
+            depth_points.append(PointCloudVertex(x: depth.x,
+                                                 y: depth.y,
+                                                 z: depth.z,
+                                                 r: 255,
+                                                 g: 255,
+                                                 b: 255))
+            
+        }
+        let node = buildNode(points: vertice_data)
+        self.scene.rootNode.addChildNode(node)
         
 //        guard let depthMap = frame.sceneDepth?.depthMap else {
 //            fatalError("Couldn't get the current depthMap")
@@ -539,87 +554,87 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     @objc func update() {
         //if depth_flag == true {
-            if parameta_flag == true {
-                guard let frame = self.sceneView.session.currentFrame else {
-                    fatalError("Couldn't get the current ARFrame")
-                }
-//                if frame.smoothedSceneDepth?.depthMap != nil {
-//                    let depthMap = frame.smoothedSceneDepth?.depthMap
+        if parameta_flag == true {
+            guard let frame = self.sceneView.session.currentFrame else {
+                fatalError("Couldn't get the current ARFrame")
+            }
+            if shouldAccumulate(frame: frame) {
                 
-                    jpeg_count += 1
+                jpeg_count += 1
+                
+                //2D → 3D変換用の内部パラメータ
+                let camera = frame.camera
+                
+                let cameraIntrinsics = camera.intrinsics.inverse
+                let flipYZ = simd_float4x4(
+                    [1, 0, 0, 0],
+                    [0, 1, 0, 0],
+                    [0, 0, -1, 0],
+                    [0, 0, 0, 1] )
+                let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
+                
+                var json_data = Data()
+                
+                if let camera = self.sceneView.pointOfView {
+                    let cameraPosition = camera.position
+                    //let cameraEulerAngles = camera.eulerAngles
+                    let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
+                    pre_eulerAngles = camera.eulerAngles
                     
-                    //2D → 3D変換用の内部パラメータ
-                    let camera = frame.camera
-
-                    let cameraIntrinsics = camera.intrinsics.inverse
-                    let flipYZ = simd_float4x4(
-                        [1, 0, 0, 0],
-                        [0, 1, 0, 0],
-                        [0, 0, -1, 0],
-                        [0, 0, 0, 1] )
-                    let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
+                    let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
+                    let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
+                    let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
                     
-                    var json_data = Data()
+                    let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
+                    let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
                     
-                    if let camera = self.sceneView.pointOfView {
-                        let cameraPosition = camera.position
-                        //let cameraEulerAngles = camera.eulerAngles
-                        let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
-                        pre_eulerAngles = camera.eulerAngles
-                        
-                        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
-                        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
-                        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
-                        
-                        let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
-                        let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
-                        
-                        let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
-                        
-                        let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
-                        let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
-                        let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
-                        let out_vec_size: Float = sqrt(a * a + b * b + c * c)
-                        
-                        let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
-                        
-                        let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
-                        print(inner * 180.0 / .pi )
-                        //180の時にメッシュと並行
-                        //90の時にメッシュと垂直
-                        
-                        //RGB画像
-                        let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
-                        let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                        let imageData = uiImage.jpegData(compressionQuality: 0.5) //toJPEGData()
-                        
-                        let entity = MakeMap_parameta(cameraPosition:
-                                                        Vector3Entity(x: cameraPosition.x,
-                                                                      y: cameraPosition.y,
-                                                                      z: cameraPosition.z),
-                                                      cameraEulerAngles:
-                                                        Vector3Entity(x: cameraEulerAngles.x,
-                                                                      y: cameraEulerAngles.y,
-                                                                      z: cameraEulerAngles.z),
-                                                      cameraVector:
-                                                        Vector3Entity(x: tani_out_vec.x,
-                                                                      y: tani_out_vec.y,
-                                                                      z: tani_out_vec.z),
-                                                      Intrinsics:
-                                                        Vector33Entity(x: cameraIntrinsics.columns.0,
-                                                                       y: cameraIntrinsics.columns.1,
-                                                                       z: cameraIntrinsics.columns.2),
-                                                      ViewMatrix:
-                                                        Vector44Entity(x: viewMatrix.columns.0,
-                                                                       y: viewMatrix.columns.1,
-                                                                       z: viewMatrix.columns.2,
-                                                                       w: viewMatrix.columns.3))
-                        
-                        json_data = try! JSONEncoder().encode(entity)
-                        
-                        let depthData = depth_pointCloudRenderer.depthData()
-                        
-                        save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                    let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
+                    
+                    let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
+                    let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
+                    let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
+                    let out_vec_size: Float = sqrt(a * a + b * b + c * c)
+                    
+                    let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
+                    
+                    let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
+                    print(inner * 180.0 / .pi )
+                    //180の時にメッシュと並行
+                    //90の時にメッシュと垂直
+                    
+                    //RGB画像
+                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
+                    let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+                    let imageData = uiImage.jpegData(compressionQuality: 0.5) //toJPEGData()
+                    
+                    let entity = MakeMap_parameta(cameraPosition:
+                                                    Vector3Entity(x: cameraPosition.x,
+                                                                  y: cameraPosition.y,
+                                                                  z: cameraPosition.z),
+                                                  cameraEulerAngles:
+                                                    Vector3Entity(x: cameraEulerAngles.x,
+                                                                  y: cameraEulerAngles.y,
+                                                                  z: cameraEulerAngles.z),
+                                                  cameraVector:
+                                                    Vector3Entity(x: tani_out_vec.x,
+                                                                  y: tani_out_vec.y,
+                                                                  z: tani_out_vec.z),
+                                                  Intrinsics:
+                                                    Vector33Entity(x: cameraIntrinsics.columns.0,
+                                                                   y: cameraIntrinsics.columns.1,
+                                                                   z: cameraIntrinsics.columns.2),
+                                                  ViewMatrix:
+                                                    Vector44Entity(x: viewMatrix.columns.0,
+                                                                   y: viewMatrix.columns.1,
+                                                                   z: viewMatrix.columns.2,
+                                                                   w: viewMatrix.columns.3))
+                    
+                    json_data = try! JSONEncoder().encode(entity)
+                    
+                    let depthData = depth_pointCloudRenderer.depthData()
+                    
+                    save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                }
                         
 //                        let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
 //                        let depth_cgImage = UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))//UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
@@ -691,22 +706,22 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //}
     }
     
-    func screenTransformed(frame: ARFrame, ciImage: CIImage, orientation: UIInterfaceOrientation, viewPort: CGRect) -> CIImage {
-        let transform = screenTransform(frame: frame, orientation: orientation, viewPortSize: viewPort.size, captureSize: ciImage.extent.size)
-        return ciImage.transformed(by: transform).cropped(to: viewPort)
-    }
+    private let cameraRotationThreshold = cos(2 * .degreesToRadian)
+    private let cameraTranslationThreshold: Float = pow(0.02, 2)
+    var lastCameraTransform: simd_float4x4!
+    
+    private func shouldAccumulate(frame: ARFrame) -> Bool {
+        //return true
+        let cameraTransform = frame.camera.transform
+        let shouldAccum = dot(cameraTransform.columns.2, lastCameraTransform.columns.2) <= cameraRotationThreshold
+          || distance_squared(cameraTransform.columns.3, lastCameraTransform.columns.3) >= cameraTranslationThreshold
 
-    func screenTransform(frame: ARFrame, orientation: UIInterfaceOrientation, viewPortSize: CGSize, captureSize: CGSize) -> CGAffineTransform {
-        let normalizeTransform = CGAffineTransform(scaleX: 1.0/captureSize.width, y: 1.0/captureSize.height)
-        let flipTransform = (orientation.isPortrait) ? CGAffineTransform(scaleX: -1, y: -1).translatedBy(x: -1, y: -1) : .identity
-        let displayTransform = frame.displayTransform(for: orientation, viewportSize: viewPortSize)
-        let toViewPortTransform = CGAffineTransform(scaleX: viewPortSize.width, y: viewPortSize.height)
-        return normalizeTransform.concatenating(flipTransform).concatenating(displayTransform).concatenating(toViewPortTransform)
+        return shouldAccum
     }
     
     //jpegデータ保存
     func save_jpeg(filename: String, jpegData: Data, jsonData: Data, depthData: Data) {
-        
+        print("save")
         let realm = try! Realm()
         let results = realm.objects(Data_parameta.self)
         try! realm.write {
@@ -720,17 +735,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                                                                           "depth_data": depthData]))
         }
         
-//        // DocumentディレクトリのfileURLを取得
-//        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
-////            // ディレクトリのパスにファイル名をつなげてファイルのフルパスを作る
-//            let targetTextFilePath_depthMap = documentDirectoryFileURL.appendingPathComponent("depth_\(filename).data")
-//            do {
-//                try depthMapData.write(to: targetTextFilePath_depthMap)
-//            } catch {
-//                print("エラー")
-//            }
-//        }
-        
+        lastCameraTransform = sceneView.session.currentFrame?.camera.transform
     }
     
     func Make_mesh_obj() {
@@ -866,13 +871,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
-        if pointCloud_flag == true {
-            //pointCloudRenderer.draw()
+        if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100()
-//            guard let frame = self.sceneView.session.currentFrame else {
-//                fatalError("Couldn't get the current ARFrame")
-//            }
-            //depth_pointCloudRenderer.draw()
+            if pointCloud_flag == true {
+                pointCloudRenderer.draw()
+            }
         }
         
     }
@@ -922,29 +925,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     @IBAction func Check_navidata(_ sender: Any) {
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
-        print(results)
-        
         let storyboard = UIStoryboard(name: "CheckDataCell", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataCellController") as! CheckDataCellController
-//        vc.section_num = section_num
-//        vc.cell_num = cell_num
-        //vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
     
     @IBAction func Finish_navigate(_ sender: Any) {
         timer.invalidate()
-        
-        let realm = try! Realm()
-        let results = realm.objects(Data_parameta.self)
-        print(results[self.recording_count].pic)
-        
         let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
-        //vc.view.backgroundColor = UIColor.white
-        //vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -960,17 +949,10 @@ extension  SCNGeometry {
         let vertices = meshAnchor.geometry.vertices
         let faces = meshAnchor.geometry.faces
         
-        // use the MTL buffer that ARKit gives us
         let vertexSource = SCNGeometrySource(buffer: vertices.buffer, vertexFormat: vertices.format, semantic: .vertex, vertexCount: vertices.count, dataOffset: vertices.offset, dataStride: vertices.stride)
-        
-        // but we need to create our own copy of the faces..
         let faceData = Data(bytesNoCopy: faces.buffer.contents(), count: faces.buffer.length, deallocator: .none)
-        
-        // create the geometry element
         let geometryElement = SCNGeometryElement(data: faceData, primitiveType: .triangles, primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
         let geometry = SCNGeometry(sources: [vertexSource], elements: [geometryElement])
-        
-        // assign a material suitable for default visualization
         let defaultMaterial = SCNMaterial()
         defaultMaterial.fillMode = .lines
         defaultMaterial.diffuse.contents = UIColor.green //UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)

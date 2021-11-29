@@ -11,8 +11,8 @@ import ARKit
 import SwiftUI
 
 final class depth_Renderer {
-    var maxPoints: Int32 = 256*192
-    var numPoints: Int = 256*192
+    var maxPoints: Int32 = 128*96//256*192
+    var numPoints: Int = 128*96//256*192
     var particleSize: Float = 10.0
     //画面の向きを設定
     private let orientation = UIInterfaceOrientation.portrait
@@ -244,7 +244,6 @@ final class depth_Renderer {
             let renderEncoder = sceneView.currentRenderCommandEncoder else {
                 return
         }
-        
 
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
         commandBuffer.addCompletedHandler { [weak self] commandBuffer in
@@ -261,10 +260,10 @@ final class depth_Renderer {
         currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
         PointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
 
-        if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
-            accumulatePoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
+        if updateDepthTextures(frame: currentFrame) {
+            accumulateDepthPoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
         }
-
+        
         commandBuffer.commit()
     }
     
@@ -272,7 +271,7 @@ final class depth_Renderer {
 
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
 
-        var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
+        var retainingTextures = [depthTexture, confidenceTexture]
         commandBuffer.addCompletedHandler { buffer in
             retainingTextures.removeAll()
         }
@@ -280,9 +279,10 @@ final class depth_Renderer {
         renderEncoder.setDepthStencilState(relaxedStencilState)
         renderEncoder.setRenderPipelineState(depthPipelineState)
         renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
-        renderEncoder.setVertexBuffer(gridPointsBuffer)
         renderEncoder.setVertexBuffer(particlesDepthBuffer)
+        renderEncoder.setVertexBuffer(gridPointsBuffer)
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
+        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
         renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
 
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % Int(maxPoints)
@@ -294,101 +294,34 @@ final class depth_Renderer {
     //depthデータ取得用
     func depthData() -> Data {
         print(particlesDepthBuffer.count)
-        var vertex_array: [PointCloudVertex] = []
+        print(particlesDepthBuffer[100])
+        print(particlesDepthBuffer[100].confidence)
+        var depth_array: [PointCloudVertex] = []
         for i in 0..<currentPointCount {
             let point = particlesDepthBuffer[i]
-            vertex_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
+            depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
         }
+
+        let depthData = try! JSONEncoder().encode(depth_array)
         
-        let vertex_data = try! JSONEncoder().encode(vertex_array)
-        return vertex_data
+//        var depth_array: [SCNVector3] = []
+//        for i in 0..<currentPointCount {
+//            let point = particlesDepthBuffer[i]
+//            depth_array.append(SCNVector3(x: point.position.x, y: point.position.y, z: point.position.z))
+//        }
+//        let depthData = Data(bytes: depth_array, count: MemoryLayout<SCNVector3>.size * depth_array.count)
+        
+        
+        return depthData
     }
     
-
-    func send_Data(num: Int) -> (Int, Data) {
-        var data_array: [PointCloudVertex] = []
-        for i in num..<currentPointCount {
-            let point = particlesBuffer[i]
-            let colors = point.color
-            data_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: colors.x, g: colors.y, b: colors.z))
-        }
-        let points_data = try! JSONEncoder().encode(data_array)
-        return (currentPointCount, points_data)
-    }
-
-    func send_Data_String(num: Int) -> (Int, String) {
-        var data_String = ""
-        for i in num..<currentPointCount {
-            let point = particlesBuffer[i]
-            let colors = point.color
-            //data_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: colors.x, g: colors.y, b: colors.z))
-            if point.position.x == 0.0 || point.position.y == 0.0 || point.position.z == 0.0 || colors.x == 0.0 || colors.y == 0.0 || colors.z == 0.0 {
-                continue
-            }
-            data_String += "\(point.position.x):\(point.position.y):\(point.position.z):\(colors.x):\(colors.y):\(colors.z):"
-        }
-        return (currentPointCount, data_String)
-    }
-
-    func savePointsToFile(failname: String) {
-      guard !self.isSavingFile else { return }
-      self.isSavingFile = true
-
-        // 1
-        var fileToWrite = ""
-
-        // 2
+    func depth_point() -> [SCNVector3] {
+        var depth_array: [SCNVector3] = []
         for i in 0..<currentPointCount {
-
-            // 3
-            let point = particlesBuffer[i]
-            let colors = point.color
-
-//            // 4
-//            let red = colors.x * 255.0
-//            let green = colors.y * 255.0
-//            let blue = colors.z * 255.0
-//
-//            // 5
-//            let pvValue = "\(point.position.x) \(point.position.y) \(point.position.z) \(Int(red)) \(Int(green)) \(Int(blue)) 255"
-//            fileToWrite += pvValue
-//            fileToWrite += "\r\n"
-
-            vertice_data.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: colors.x, g: colors.y, b: colors.z))
+            let point = particlesDepthBuffer[i]
+            depth_array.append(SCNVector3(x: point.position.x, y: point.position.y, z: point.position.z))
         }
-
-        fileToWrite += String(currentPointCount)
-
-        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
-            let targetDataFilePath = documentDirectoryFileURL.appendingPathComponent("\(failname).data")
-            let targetTextFilePath = documentDirectoryFileURL.appendingPathComponent("\(failname).txt")
-
-
-            //let vertexData = NSData(bytes: vertice_data, length: MemoryLayout<PointCloudVertex>.size * vertice_data.count)
-
-            //let vertexData = Data(bytes: vertice_data, count: MemoryLayout<PointCloudVertex>.size * vertice_data.count)
-
-            let vertexData = try! JSONEncoder().encode(vertice_data)
-
-            do {
-                try vertexData.write(to: targetDataFilePath)
-                try fileToWrite.write(to: targetTextFilePath, atomically: true, encoding: String.Encoding.ascii)
-            } catch {
-                print("Failed to write PLY file", error)
-            }
-            print("保存完了")
-        }
-    }
-
-    func realtime_vertice(pre_count: Int) -> (Int, [PointCloudVertex]) {
-        var points: [PointCloudVertex] = []
-        for i in 0..<currentPointCount {
-            let point = particlesBuffer[i]
-            let colors = point.color
-            points.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: colors.x, g: colors.y, b: colors.z))
-        }
-        print(points.count)
-        return (currentPointCount, points)
+        return depth_array
     }
 
 }
@@ -465,7 +398,6 @@ private extension depth_Renderer {
                 points.append(cameraPoint)
             }
         }
-        //print(points)
 
         return points
     }
