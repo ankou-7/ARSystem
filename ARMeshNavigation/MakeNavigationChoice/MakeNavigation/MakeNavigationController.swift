@@ -24,6 +24,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     let scene = SCNScene()
     @IBOutlet weak var status_label: UILabel!
     
+    let calayer = LayerView()
+    var canvasLayer: CALayer {
+            return sceneView.layer
+    }
+    
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
     var pointCloud_flag = false
@@ -107,6 +112,52 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         numGridPoints_label.text = "\(numGridPoints)個/frame"
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+        
+//        let wallNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
+//        wallNode.geometry?.firstMaterial?.diffuse.contents = UIColor.init(red: 0, green: 0, blue: 255, alpha:0.3)
+//        wallNode.position = SCNVector3(0,0,-0.3)
+//        sceneView.scene.rootNode.addChildNode(wallNode)
+        
+        // グラデーションレイヤーの生成
+//        let gradLayer = CAGradientLayer()
+//        gradLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 500)
+//        gradLayer.colors =
+//        gradLayer.colors = [
+//            UIColor.blue.cgColor,
+//            UIColor.red.cgColor,
+//        ]
+        
+//        canvasLayer.backgroundColor = CGColor.init(red: 255, green: 0, blue: 255, alpha: 0.5)
+//        canvasLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 300)
+        
+//        let newLayer = CALayer()
+//        newLayer.backgroundColor = CGColor.init(red: 0, green: 0, blue: 255, alpha: 0.3)
+//        newLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 1150)
+        
+//        let upLayer = CALayer()
+//        upLayer.backgroundColor = CGColor.init(red: 255, green: 0, blue: 0, alpha: 0.3)
+//        upLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 1150)
+//
+//        newLayer.addSublayer(upLayer)
+//
+//        let line = UIBezierPath();
+////        line.move(to: CGPoint(x: 0, y: 0));
+////        line.addLine(to: CGPoint(x: 0, y: 1150));
+////        line.addLine(to: CGPoint(x: 834, y: 1150));
+////        line.addLine(to: CGPoint(x: 834, y: 0));
+//        line.move(to: CGPoint(x: 30, y: 80));
+//        line.addLine(to: CGPoint(x: 200, y: 450));
+//        line.addLine(to: CGPoint(x: 300, y: 280));
+//        line.close()
+//
+//        let ovalShapeLayer = CAShapeLayer()
+//        ovalShapeLayer.path = line.cgPath
+//
+//        // マスクを設定
+//        //upLayer.mask = ovalShapeLayer
+        
+        // 描写
+        //canvasLayer.addSublayer(newLayer)
         
     }
     
@@ -540,16 +591,16 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var pre_eulerAngles = SCNVector3(0,0,0)
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        guard let frame = self.sceneView.session.currentFrame else {
-            fatalError("Couldn't get the current ARFrame")
-        }
-        if frame.sceneDepth?.depthMap != nil {
-            let depthMap = frame.sceneDepth?.depthMap
-            let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
-            let depth_cgImage = UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-            //UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))
-            depthImage.image = depth_cgImage
-        }
+//        guard let frame = self.sceneView.session.currentFrame else {
+//            fatalError("Couldn't get the current ARFrame")
+//        }
+//        if frame.sceneDepth?.depthMap != nil {
+//            let depthMap = frame.sceneDepth?.depthMap
+//            let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
+//            let depth_cgImage = UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+//            //UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))
+//            depthImage.image = depth_cgImage
+//        }
     }
     
     @objc func update() {
@@ -571,7 +622,12 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     [0, 1, 0, 0],
                     [0, 0, -1, 0],
                     [0, 0, 0, 1] )
-                let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
+                let viewMatrix = camera.viewMatrix(for: orientation)
+                let viewMatrixInverse = viewMatrix.inverse * flipYZ
+                
+                let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: self.sceneView.bounds.size, zNear: 0.001, zFar: 1000.0)
+                print(camera.imageResolution)
+                print(self.sceneView.bounds.size)
                 
                 var json_data = Data()
                 
@@ -623,11 +679,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                                                     Vector33Entity(x: cameraIntrinsics.columns.0,
                                                                    y: cameraIntrinsics.columns.1,
                                                                    z: cameraIntrinsics.columns.2),
-                                                  ViewMatrix:
+                                                  ViewMatrixInverse:
+                                                    Vector44Entity(x: viewMatrixInverse.columns.0,
+                                                                   y: viewMatrixInverse.columns.1,
+                                                                   z: viewMatrixInverse.columns.2,
+                                                                   w: viewMatrixInverse.columns.3),
+                                                  viewMatrix:
                                                     Vector44Entity(x: viewMatrix.columns.0,
                                                                    y: viewMatrix.columns.1,
                                                                    z: viewMatrix.columns.2,
-                                                                   w: viewMatrix.columns.3))
+                                                                   w: viewMatrix.columns.3),
+                                                  projectionMatrix:
+                                                    Vector44Entity(x: projectionMatrix.columns.0,
+                                                                   y: projectionMatrix.columns.1,
+                                                                   z: projectionMatrix.columns.2,
+                                                                   w: projectionMatrix.columns.3))
                     
                     json_data = try! JSONEncoder().encode(entity)
                     
@@ -954,7 +1020,7 @@ extension  SCNGeometry {
         let geometryElement = SCNGeometryElement(data: faceData, primitiveType: .triangles, primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
         let geometry = SCNGeometry(sources: [vertexSource], elements: [geometryElement])
         let defaultMaterial = SCNMaterial()
-        defaultMaterial.fillMode = .lines
+        defaultMaterial.fillMode = .lines //.fill
         defaultMaterial.diffuse.contents = UIColor.green //UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
         geometry.materials = [defaultMaterial]
         

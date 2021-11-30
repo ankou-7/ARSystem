@@ -148,7 +148,10 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
                 [0, 1, 0, 0],
                 [0, 0, -1, 0],
                 [0, 0, 0, 1] )
-            let viewMatrix = camera.viewMatrix(for: orientation).inverse * flipYZ
+            let viewMatrix = camera.viewMatrix(for: orientation)
+            let viewMatrixInverse = viewMatrix.inverse * flipYZ
+            
+            let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: camera.imageResolution, zNear: 0.001, zFar: 1000.0)
             
             //2D → 3D変換用の内部パラメータ
             if let camera = self.sceneView.pointOfView {
@@ -194,18 +197,29 @@ class MakeMapViewController: UIViewController, ARSCNViewDelegate, ARSessionDeleg
                                                 Vector3Entity(x: cameraEulerAngles.x,
                                                               y: cameraEulerAngles.y,
                                                               z: cameraEulerAngles.z),
-                                              cameraVector: Vector3Entity(x: tani_out_vec.x,
-                                                                          y: tani_out_vec.y,
-                                                                          z: tani_out_vec.z),
+                                              cameraVector:
+                                                Vector3Entity(x: tani_out_vec.x,
+                                                              y: tani_out_vec.y,
+                                                              z: tani_out_vec.z),
                                               Intrinsics:
                                                 Vector33Entity(x: cameraIntrinsics.columns.0,
                                                                y: cameraIntrinsics.columns.1,
                                                                z: cameraIntrinsics.columns.2),
-                                              ViewMatrix:
+                                              ViewMatrixInverse:
+                                                Vector44Entity(x: viewMatrixInverse.columns.0,
+                                                               y: viewMatrixInverse.columns.1,
+                                                               z: viewMatrixInverse.columns.2,
+                                                               w: viewMatrixInverse.columns.3),
+                                              viewMatrix:
                                                 Vector44Entity(x: viewMatrix.columns.0,
                                                                y: viewMatrix.columns.1,
                                                                z: viewMatrix.columns.2,
-                                                               w: viewMatrix.columns.3))
+                                                               w: viewMatrix.columns.3),
+                                              projectionMatrix:
+                                                Vector44Entity(x: projectionMatrix.columns.0,
+                                                               y: projectionMatrix.columns.1,
+                                                               z: projectionMatrix.columns.2,
+                                                               w: projectionMatrix.columns.3))
                 
                 let json_data = try! JSONEncoder().encode(entity)
                 

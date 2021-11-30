@@ -48,7 +48,10 @@ struct MakeMap_parameta: Codable {
     var cameraVector: Vector3Entity
     
     var Intrinsics: Vector33Entity
-    var ViewMatrix: Vector44Entity
+    var ViewMatrixInverse: Vector44Entity
+    
+    var viewMatrix: Vector44Entity
+    var projectionMatrix: Vector44Entity
 }
 
 struct json_parameta: Codable {
