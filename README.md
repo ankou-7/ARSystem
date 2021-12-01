@@ -18,7 +18,7 @@ https://github.com/opencv/opencv/releases
 
 インストールしたファイルをプロジェクト内に入れる
 
-![スクリーンショット 2021-11-03 14 25 49](https://user-images.githubusercontent.com/61243751/140013533-615a63b6-003f-45b6-8700-5f7f69e06d04.png)
+![スクリーンショット 2021-12-02 5 21 59](https://user-images.githubusercontent.com/61243751/144308206-0ee36b37-9cfa-4ff0-b016-86d446845c1a.png)
 
 3, MediaPipeの追加
 
