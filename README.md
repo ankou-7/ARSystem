@@ -24,7 +24,7 @@ https://github.com/noppefoxwolf/HandTracker/releases
 
 ## 機能概要
 
-![Videotogif](https://user-images.githubusercontent.com/61243751/144309500-0fbbe3e7-1eb3-41f1-91f5-2ec3006e8d68.gif)
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/61243751/144311168-25d93b41-b921-49aa-aa52-67c7a9fdac70.gif)
 
 
 
