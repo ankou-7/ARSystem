@@ -354,4 +354,14 @@ fragment float4 fragment_func2(Vertex2 in [[stage_in]],
     return in.color;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+kernel void calcu(const device float *inputData [[ buffer(0) ]],
+                         device float *outputData [[ buffer(1) ]],
+                         uint id [[ thread_position_in_grid ]])
+{
+    float result = inputData[id];
+    result += 1.0f;
+    outputData[id] = result;
+}
+
 

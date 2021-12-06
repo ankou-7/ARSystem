@@ -57,6 +57,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     @IBOutlet var right_modelbutton: UIButton!
     @IBOutlet var modelname_label: UILabel!
     
+    private var calculate: CalculateRenderer!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -974,10 +976,36 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
+    var calcuMatrix: [float4x4] = []
+    func make_calcuParameta() {
+        let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        for i in 0..<count {
+            let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
+            
+            let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
+                                           json_data!.viewMatrix.y,
+                                           json_data!.viewMatrix.z,
+                                           json_data!.viewMatrix.w)
+            let projectionMatrix = simd_float4x4(json_data!.projectionMatrix.x,
+                                                 json_data!.projectionMatrix.y,
+                                                 json_data!.projectionMatrix.z,
+                                                 json_data!.projectionMatrix.w)
+            let matrix = projectionMatrix * viewMatrix
+            calcuMatrix.append(matrix)
+        }
+    }
+    
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         //ActivityView.isHidden = false
-        ActivityView.startAnimating()
-        make_texture(num: 0)
+        //ActivityView.startAnimating()
+        //make_texture(num: 0)
+        
+        self.calculate = CalculateRenderer(anchor: anchors[0], metalDevice: self.sceneView.device!)
+        self.calculate.drawRectResized(size: self.sceneView.bounds.size)
+        
+        make_calcuParameta()
+        
+        calculate.calcu()
     }
     
     @IBAction func tap_newmakeTexture(_ sender: UIButton) {

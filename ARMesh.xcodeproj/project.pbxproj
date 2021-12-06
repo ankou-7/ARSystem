@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2628D273256A72C4002607F3 /* ARColabNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2628D272256A72C4002607F3 /* ARColabNavigationController.swift */; };
+		262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */; };
 		2632F45425F04193006B7366 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45325F04193006B7366 /* Shaders.metal */; };
 		2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45925F0420A006B7366 /* MetalBuffer.swift */; };
 		2632F46225F04482006B7366 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F46125F04482006B7366 /* Helpers.swift */; };
@@ -138,6 +139,7 @@
 /* Begin PBXFileReference section */
 		0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.debug.xcconfig"; sourceTree = "<group>"; };
 		2628D272256A72C4002607F3 /* ARColabNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARColabNavigationController.swift; sourceTree = "<group>"; };
+		262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculateRenderer.swift; sourceTree = "<group>"; };
 		2632F45325F04193006B7366 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		2632F45825F041DF006B7366 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		2632F45925F0420A006B7366 /* MetalBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalBuffer.swift; sourceTree = "<group>"; };
@@ -482,6 +484,7 @@
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				26AAA2382563C997008FE5EB /* NavigationEditModel.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
+				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
 				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
 				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
@@ -886,6 +889,7 @@
 				CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */,
 				CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */,
 				CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */,
+				262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */,
 				CF3D806B262B5364007904E6 /* MakeNavigationChoiceController.swift in Sources */,
 				CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */,
 				CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */,

@@ -47,7 +47,6 @@ struct PointCloudUniforms {
     simd_float2 pan_move;
     matrix_float4x4 rotate;
     float scale;
-    
 };
 
 struct ParticleUniforms {
