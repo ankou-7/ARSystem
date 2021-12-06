@@ -1020,7 +1020,7 @@ extension  SCNGeometry {
         let geometryElement = SCNGeometryElement(data: faceData, primitiveType: .triangles, primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
         let geometry = SCNGeometry(sources: [vertexSource], elements: [geometryElement])
         let defaultMaterial = SCNMaterial()
-        defaultMaterial.fillMode = .lines //.fill
+        defaultMaterial.fillMode = .lines
         defaultMaterial.diffuse.contents = UIColor.green //UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
         geometry.materials = [defaultMaterial]
         
