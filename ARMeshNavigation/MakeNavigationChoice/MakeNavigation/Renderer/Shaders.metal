@@ -365,3 +365,50 @@ kernel void calcu(const device float *inputData [[ buffer(0) ]],
 }
 
 
+kernel void calcu2(const device float3 *vertices [[ buffer(0) ]],
+                   const device float3 *normals [[ buffer(1) ]],
+                   const device int3 *faces [[ buffer(2) ]],
+                   constant CalcuUniforms &uniforms [[ buffer(3) ]],
+                   device float2 *texcoords [[buffer(4)]],
+                         uint id [[ thread_position_in_grid ]])
+{
+    const auto faceID = faces[id];
+    const auto x = faceID.x;
+    const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[id],1);
+    const auto clipSpacePosition = uniforms.matrix * vertexPoint4;
+    const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
+    const auto pt = simd_float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                (1 - (-normalizedDeviceCoordinate.z + 1)));
+    if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+        const auto u = pt.x / (834 * uniforms.yoko)  + (0 % uniforms.yoko) / uniforms.yoko;
+        const auto v = pt.y / (1150 * uniforms.tate) + (0 / uniforms.yoko) / uniforms.tate;
+        texcoords[id] = float2(u, v);
+    }
+    
+}
+
+kernel void calcu3(const device float3 *vertices [[ buffer(0) ]],
+                   const device float3 *normals [[ buffer(1) ]],
+                   const device uint3 *faces [[ buffer(2) ]],
+                   device float2 *texcoords [[buffer(3)]],
+                   device float3 *new_vertices [[ buffer(4) ]],
+                   device float3 *new_normals [[ buffer(5) ]],
+                   device uint *new_faces [[ buffer(6)]],
+                   uint id [[ thread_position_in_grid]])
+{
+//    const auto faceID = faces[id*3];
+//    new_faces[3*id] = faceID.x;
+    
+    new_vertices[3*id] = vertices[0];
+    
+//    new_faces[3*id] = faceID.x;
+//    new_faces[3*id + 1] = faceID.y;
+//    new_faces[3*id + 2] = faceID.z;
+//    new_vertices[3*id] = vertices[faceID.x];
+//    new_vertices[3*id + 1] = vertices[faceID.y];
+//    new_vertices[3*id + 2] = vertices[faceID.z];
+//    new_normals[3*id] = normals[faceID.x];
+//    new_normals[3*id + 1] = normals[faceID.y];
+//    new_normals[3*id + 2] = normals[faceID.z];
+}

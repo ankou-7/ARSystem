@@ -1123,7 +1123,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasu;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -1150,7 +1150,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasu;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

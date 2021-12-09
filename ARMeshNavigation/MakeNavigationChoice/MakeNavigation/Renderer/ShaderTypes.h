@@ -60,4 +60,11 @@ struct DepthUniforms {
     float confidence;
 };
 
+struct CalcuUniforms {
+    matrix_float4x4 matrix;
+    matrix_float4x4 transform;
+    int yoko;
+    int tate;
+};
+
 #endif /* ShaderTypes_h */

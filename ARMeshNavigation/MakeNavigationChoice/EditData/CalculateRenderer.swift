@@ -9,6 +9,7 @@ import Metal
 import MetalKit
 import ARKit
 import SwiftUI
+import RealmSwift
 
 class CalculateRenderer {
     private let device: MTLDevice
@@ -17,9 +18,21 @@ class CalculateRenderer {
     private var pipeline: MTLComputePipelineState!
     private var viewportSize = CGSize()
     
+    private let anchor: ARMeshAnchor
     private let vertices: MTLBuffer
     private let normals: MTLBuffer
     private let faces: MTLBuffer
+    private let face_count: Int
+    
+    let results = try! Realm().objects(Navi_SectionTitle.self)
+    let decoder = JSONDecoder()
+    
+    var matrix: [float4x4]!
+    var calcuUniforms: CalcuUniforms = {
+        var unifotms = CalcuUniforms()
+        
+        return unifotms
+    }()
     
     init(anchor: ARMeshAnchor, metalDevice device: MTLDevice) {
         self.device = device
@@ -27,16 +40,164 @@ class CalculateRenderer {
         library = device.makeDefaultLibrary()!
         commandQueue = device.makeCommandQueue()!
         
-        let function = library.makeFunction(name: "calcu")!
+        let function = library.makeFunction(name: "calcu2")!
         pipeline = try! device.makeComputePipelineState(function: function)
         
+        self.anchor = anchor
         self.vertices = anchor.geometry.vertices.buffer
         self.normals = anchor.geometry.normals.buffer
         self.faces = anchor.geometry.faces.buffer
+        self.face_count = anchor.geometry.faces.count
     }
     
     func drawRectResized(size: CGSize) {
         viewportSize = size
+    }
+    
+    func calcu3() {
+        let commandBuffer = commandQueue.makeCommandBuffer()!
+        let encoder = commandBuffer.makeComputeCommandEncoder()!
+        encoder.setComputePipelineState(pipeline)
+        
+        //main処理
+        encoder.setBuffer(vertices, offset: 0, index: 0)
+        encoder.setBuffer(normals, offset: 0, index: 1)
+        encoder.setBuffer(faces, offset: 0, index: 2)
+        
+        let texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count * 3)
+        let texcoordsBuffer = device.makeBuffer(bytes: texcoords, length: MemoryLayout<SIMD2<Float>>.stride * face_count * 3, options: .storageModeShared)
+        encoder.setBuffer(texcoordsBuffer, offset: 0, index: 3)
+        
+        let new_vertices = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
+        let new_verticesBuffer = device.makeBuffer(bytes: new_vertices, length: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, options: .storageModeShared)
+        encoder.setBuffer(new_verticesBuffer, offset: 0, index: 4)
+        
+        let new_normals = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
+        let new_normalsBuffer = device.makeBuffer(bytes: new_normals, length: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, options: .storageModeShared)
+        encoder.setBuffer(new_normalsBuffer, offset: 0, index: 5)
+        
+        let new_faces = [UInt32](repeating: UInt32(0), count: face_count * 3)
+        let new_facesBuffer = device.makeBuffer(bytes: new_faces, length: MemoryLayout<UInt32>.stride * face_count * 3, options: .storageModeShared)
+        encoder.setBuffer(new_facesBuffer, offset: 0, index: 6)
+        
+        let width = 32
+        let threadsPerGroup = MTLSize(width: width, height: 1, depth: 1)
+        let numThreadgroups = MTLSize(width: (face_count + width - 1) / width, height: 1, depth: 1)
+        encoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerGroup)
+        
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        
+//        let data = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<UInt32>.stride * face_count * 3, deallocator: .none)
+//        var resultData = [UInt32](repeating: UInt32(0), count: face_count * 3)
+//        resultData = data.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<UInt32>(start: $0, count: data.count/MemoryLayout<UInt32>.size))
+//        }
+//        //結果の表示
+//        var face_array: [UInt32] = []
+//        for j in 0..<anchor.geometry.faces.count {
+//            for offset in 0..<anchor.geometry.faces.indexCountPerPrimitive {
+//                let vertexIndexAddress = anchor.geometry.faces.buffer.contents().advanced(by: (j * anchor.geometry.faces.indexCountPerPrimitive + offset) * MemoryLayout<UInt32>.size)
+//                let per_face_index = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+//                face_array.append(UInt32(per_face_index))
+//            }
+//        }
+        
+        let data = Data(bytesNoCopy: new_verticesBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, deallocator: .none)
+        var resultData = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
+        resultData = data.withUnsafeBytes {
+            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: data.count/MemoryLayout<SIMD3<Float>>.size))
+        }
+        //print("[Input data]: \(face_array)")
+        print("[Result data]: \(resultData)")
+    }
+    
+    func calcu2() -> SCNNode {
+        let commandBuffer = commandQueue.makeCommandBuffer()!
+        let encoder = commandBuffer.makeComputeCommandEncoder()!
+        encoder.setComputePipelineState(pipeline)
+        
+        //main処理
+        encoder.setBuffer(vertices, offset: 0, index: 0)
+        encoder.setBuffer(normals, offset: 0, index: 1)
+        encoder.setBuffer(faces, offset: 0, index: 2)
+        
+//        let matrixBuffer = device.makeBuffer(bytes: [matrix[0]], length: MemoryLayout<float4x4>.stride, options: .storageModeShared)
+//        encoder.setBuffer(matrixBuffer, offset: 0, index: 3)
+        
+        let count = results[0].cells[0].models[0].pic.count
+        let yoko: Float = 17.0
+        let tate: Float = ceil(Float(count)/yoko)
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[0].cells[0].models[0].json[0].json_data!)
+        let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
+                                       json_data!.viewMatrix.y,
+                                       json_data!.viewMatrix.z,
+                                       json_data!.viewMatrix.w)
+        let projectionMatrix = simd_float4x4(json_data!.projectionMatrix.x,
+                                             json_data!.projectionMatrix.y,
+                                             json_data!.projectionMatrix.z,
+                                             json_data!.projectionMatrix.w)
+        let matrix = projectionMatrix * viewMatrix
+        calcuUniforms.tate = Int32(tate)
+        calcuUniforms.yoko = Int32(yoko)
+        calcuUniforms.matrix = matrix
+        calcuUniforms.transform = anchor.transform
+        
+        let CalcuUniformsBuffer = device.makeBuffer(bytes: [calcuUniforms], length: MemoryLayout<CalcuUniforms>.stride, options: .storageModeShared)
+        encoder.setBuffer(CalcuUniformsBuffer, offset: 0, index: 3)
+        
+        var texcoords: [SIMD2<Float>] = []
+        for _ in 0..<face_count {
+            texcoords.append(SIMD2<Float>(0,0))
+        }
+        let texcoordsBuffer = device.makeBuffer(bytes: texcoords, length: MemoryLayout<SIMD2<Float>>.stride * face_count, options: .storageModeShared)
+        encoder.setBuffer(texcoordsBuffer, offset: 0, index: 4)
+        
+        let width = 32
+        let threadsPerGroup = MTLSize(width: width, height: 1, depth: 1)
+        let numThreadgroups = MTLSize(width: (face_count + width - 1) / width, height: 1, depth: 1)
+        encoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerGroup)
+        
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        
+        let data = Data(bytesNoCopy: texcoordsBuffer!.contents(), count: MemoryLayout<SIMD2<Float>>.stride * face_count, deallocator: .none)
+        var resultData = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count)
+        resultData = data.withUnsafeBytes {
+            Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: data.count/MemoryLayout<SIMD2<Float>>.size))
+        }
+        //結果の表示
+        print("[Input data]: \(texcoords)")
+        print("[Result data]: \(resultData)")
+        
+        let node = build(texcoords: resultData)
+    
+        return node
+    }
+    
+    func build(texcoords: [SIMD2<Float>]) -> SCNNode {
+        let verticles = anchor.geometry.vertices
+        let normals = anchor.geometry.normals
+        let faces = anchor.geometry.faces
+        
+        let verticesSource = SCNGeometrySource(buffer: verticles.buffer, vertexFormat: verticles.format, semantic: .vertex, vertexCount: verticles.count, dataOffset: verticles.offset, dataStride: verticles.stride)
+        let normalsSource = SCNGeometrySource(buffer: normals.buffer, vertexFormat: normals.format, semantic: .normal, vertexCount: normals.count, dataOffset: normals.offset, dataStride: normals.stride)
+        let data = Data(bytes: faces.buffer.contents(), count: faces.buffer.length)
+        let facesElement = SCNGeometryElement(data: data, primitiveType: .triangles, primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
+        var sources = [verticesSource, normalsSource]
+        
+        let textureCoordinates = SCNGeometrySource(textureCoordinates2: texcoords)
+        sources.append(textureCoordinates)
+        
+        let nodeGeometry = SCNGeometry(sources: sources, elements: [facesElement])
+        nodeGeometry.firstMaterial?.diffuse.contents = UIImage(data: results[0].cells[0].models[0].texture_pic)
+        
+        let node = SCNNode(geometry: nodeGeometry)
+        node.simdTransform = anchor.transform
+        
+        return node
     }
     
     func calcu() {
@@ -45,18 +206,15 @@ class CalculateRenderer {
         
         encoder.setComputePipelineState(pipeline)
         
-        var inputData:[[Float]] = []
-        for i in 0..<2 {
-            inputData.append([])
-            for _ in 0...100-1 {
-                inputData[i].append(Float(arc4random_uniform(UInt32(100))))
-            }
+        var inputData:[Float] = []
+        for _ in 0...100-1 {
+            inputData.append(Float(arc4random_uniform(UInt32(100))))
         }
-        let inputBuffer = device.makeBuffer(bytes: inputData, length: 2 * MemoryLayout<Float>.stride * inputData.count, options:.storageModeShared)
+        let inputBuffer = device.makeBuffer(bytes: inputData, length: MemoryLayout<Float>.stride * inputData.count, options:.storageModeShared)
         encoder.setBuffer(inputBuffer, offset: 0, index: 0)
-        //let outputData = [Float](repeating: 0, count: inputData.count)
-        let outputData = [[Float]](repeating: [Float](repeating: 0, count: inputData[0].count), count:2)
-        let outputDataBuffer = device.makeBuffer(bytes: outputData, length: 2 * MemoryLayout<Float>.stride * outputData[0].count, options:.storageModeShared)
+        let outputData = [Float](repeating: 0, count: inputData.count)
+        //let outputData = [[Float]](repeating: [Float](repeating: 0, count: inputData[0].count), count:2)
+        let outputDataBuffer = device.makeBuffer(bytes: outputData, length: MemoryLayout<Float>.stride * outputData.count, options:.storageModeShared)
         encoder.setBuffer(outputDataBuffer, offset: 0, index: 1)
         
         let width = 32
@@ -75,26 +233,28 @@ class CalculateRenderer {
         //print(pipeline.threadExecutionWidth) //32
         
         //結果をresultDataに格納
-        let data = Data(bytesNoCopy: outputDataBuffer!.contents(), count: 2 * MemoryLayout<Float>.stride * outputData[0].count, deallocator: .none)
+        let data = Data(bytesNoCopy: outputDataBuffer!.contents(), count: MemoryLayout<Float>.stride * outputData.count, deallocator: .none)
         var resultData = [Float](repeating: 1, count: outputData.count * 2)
         resultData = data.withUnsafeBytes {
             Array(UnsafeBufferPointer<Float>(start: $0, count: data.count/MemoryLayout<Float>.size))
         }
         
-        for i in 0..<100 {
-            print(outputDataBuffer[i])
-        }
         //結果の表示
         print("[Input data]: \(inputData)")
         print("[Result data]: \(resultData)")
-        
-//        encoder.setBuffer(vertices, offset: 0, index: 0)
-//        encoder.setBuffer(normals, offset: 0, index: 1)
-//        encoder.setBuffer(faces, offset: 0, index: 2)
     }
     
     func read() {
         print(vertices)
     }
 
+}
+
+extension SCNGeometrySource {
+    convenience init(textureCoordinates2 texcoord: [SIMD2<Float>]) {
+        let stride = MemoryLayout<SIMD2<Float>>.stride
+        let bytePerComponent = MemoryLayout<Float>.stride
+        let data = Data(bytes: texcoord, count: stride * texcoord.count)
+        self.init(data: data, semantic: SCNGeometrySource.Semantic.texcoord, vectorCount: texcoord.count, usesFloatComponents: true, componentsPerVector: 2, bytesPerComponent: bytePerComponent, dataOffset: 0, dataStride: stride)
+    }
 }
