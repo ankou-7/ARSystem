@@ -1011,10 +1011,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //        self.calculate.CalcuUniforms.tate = Int32(tate)
 //        self.calculate.CalcuUniforms.transform = anchors[0].transform
 
-        for i in 0..<2 {//anchors.count {
+        for i in 0..<1 {//anchors.count {
             self.calculate = CalculateRenderer(anchor: anchors[i], metalDevice: self.sceneView.device!)
             self.calculate.drawRectResized(size: self.sceneView.bounds.size)
-            self.calculate.calcu3()
+            self.calculate.calcu4()
 //            let node = calculate.calcu2()
 //            sceneView.scene?.rootNode.addChildNode(node)
         }

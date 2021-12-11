@@ -388,27 +388,17 @@ kernel void calcu2(const device float3 *vertices [[ buffer(0) ]],
     
 }
 
-kernel void calcu3(const device float3 *vertices [[ buffer(0) ]],
-                   const device float3 *normals [[ buffer(1) ]],
-                   const device uint3 *faces [[ buffer(2) ]],
+kernel void calcu3(constant float3 *vertices [[ buffer(0) ]],
+                   constant float3 *normals [[ buffer(1) ]],
+                   constant uint *faces [[ buffer(2) ]],
                    device float2 *texcoords [[buffer(3)]],
                    device float3 *new_vertices [[ buffer(4) ]],
                    device float3 *new_normals [[ buffer(5) ]],
                    device uint *new_faces [[ buffer(6)]],
-                   uint id [[ thread_position_in_grid]])
+                   device MeshUniforms *meshUniforms [[ buffer(7)]],
+                   uint id [[ thread_position_in_grid ]])
 {
-//    const auto faceID = faces[id*3];
-//    new_faces[3*id] = faceID.x;
-    
-    new_vertices[3*id] = vertices[0];
-    
-//    new_faces[3*id] = faceID.x;
-//    new_faces[3*id + 1] = faceID.y;
-//    new_faces[3*id + 2] = faceID.z;
-//    new_vertices[3*id] = vertices[faceID.x];
-//    new_vertices[3*id + 1] = vertices[faceID.y];
-//    new_vertices[3*id + 2] = vertices[faceID.z];
-//    new_normals[3*id] = normals[faceID.x];
-//    new_normals[3*id + 1] = normals[faceID.y];
-//    new_normals[3*id + 2] = normals[faceID.z];
+    new_vertices[id] = vertices[faces[id]].xyz;
+    new_normals[id] = normals[faces[id]];
+    meshUniforms[id].vertexs = vertices[faces[id]].xyz;
 }

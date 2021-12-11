@@ -123,3 +123,8 @@ struct Texture: Resource {
     let index: Int
 }
 
+extension MTLComputeCommandEncoder {
+    func setBuffer<T>(_ Buffer: MetalBuffer<T>, offset: Int = 0) {
+        setBuffer(Buffer.buffer, offset: offset, index: Buffer.index)
+    }
+}

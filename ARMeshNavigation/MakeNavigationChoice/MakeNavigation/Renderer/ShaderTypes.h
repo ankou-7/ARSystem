@@ -67,4 +67,9 @@ struct CalcuUniforms {
     int tate;
 };
 
+struct MeshUniforms {
+    simd_float3 vertexs;
+    simd_float3 normals;
+};
+
 #endif /* ShaderTypes_h */

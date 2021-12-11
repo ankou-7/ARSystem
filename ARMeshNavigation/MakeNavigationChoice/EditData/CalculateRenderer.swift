@@ -48,10 +48,120 @@ class CalculateRenderer {
         self.normals = anchor.geometry.normals.buffer
         self.faces = anchor.geometry.faces.buffer
         self.face_count = anchor.geometry.faces.count
+        
+        MeshUniformsBuffer = .init(device: device, count: face_count * 3, index: 7)
     }
     
     func drawRectResized(size: CGSize) {
         viewportSize = size
+    }
+    
+    var texcoords2: [SIMD2<Float>] = []
+    var vertex_array: [SCNVector3] = []
+    var normal_array: [SCNVector3] = []
+    var face_array: [Int32] = []
+    
+    var new_face_array: [Int32] = []
+    var new_vertex_array: [SCNVector3] = []
+    var new_normal_array: [SCNVector3] = []
+    var new_texcoords2: [SIMD2<Float>] = []
+    
+    private var MeshUniformsBuffer: MetalBuffer<MeshUniforms>
+    
+    func makeArray() {
+        let verticles = anchor.geometry.vertices
+        let normals = anchor.geometry.normals
+        for j in 0..<verticles.count {
+            
+            let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * j))
+            let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+            let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+            let world_vertex4 = simd_mul(anchor.transform, vertex4)
+            let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+            vertex_array.append(world_vector3)
+            
+            let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * j))
+            let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
+            normal_array.append(normal)
+        }
+        
+        let faces = anchor.geometry.faces
+        for j in 0..<faces.count {
+            let indicesPerFace = faces.indexCountPerPrimitive
+            for offset in 0..<indicesPerFace {
+                let vertexIndexAddress = faces.buffer.contents().advanced(by: (j * indicesPerFace + offset) * MemoryLayout<UInt32>.size)
+                let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+                face_array.append(per_face)
+                
+                new_face_array.append(Int32(face_array.count))
+                new_vertex_array.append(SCNVector3(x: 0, y: 0, z: 0))
+                new_normal_array.append(SCNVector3(x: 0, y: 0, z: 0))
+                texcoords2.append(SIMD2<Float>(0, 0))
+            }
+        }
+        
+        print(vertex_array.count)
+        print(new_vertex_array.count)
+        print(face_array.count)
+        print(new_face_array.count)
+    }
+    
+    func calcu4() {
+        let commandBuffer = commandQueue.makeCommandBuffer()!
+        let encoder = commandBuffer.makeComputeCommandEncoder()!
+        encoder.setComputePipelineState(pipeline)
+        
+        makeArray()
+        
+        //main処理
+        //入力
+        let vertexBuffer = device.makeBuffer(bytes: vertex_array, length: MemoryLayout<SIMD3<Float>>.stride * vertex_array.count, options: .storageModeShared)
+        let normalBuffer = device.makeBuffer(bytes: normal_array, length: MemoryLayout<SIMD3<Float>>.stride * normal_array.count, options: .storageModeShared)
+        let faceBuffer = device.makeBuffer(bytes: face_array, length: MemoryLayout<UInt32>.stride * face_count * 3, options: .storageModeShared)
+        
+        encoder.setBuffer(vertexBuffer, offset: 0, index: 0)
+        encoder.setBuffer(normalBuffer, offset: 0, index: 1)
+        encoder.setBuffer(faceBuffer, offset: 0, index: 2)
+        
+        //出力
+        let texcoordsBuffer = device.makeBuffer(bytes: texcoords2, length: MemoryLayout<SIMD2<Float>>.stride * face_count * 3, options: .storageModeShared)
+        let new_verticesBuffer = device.makeBuffer(bytes: new_vertex_array, length: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, options: .storageModeShared)
+        let new_normalsBuffer = device.makeBuffer(bytes: new_normal_array, length: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, options: .storageModeShared)
+        let new_facesBuffer = device.makeBuffer(bytes: new_face_array, length: MemoryLayout<UInt32>.stride * face_count * 3, options: .storageModeShared)
+        
+        encoder.setBuffer(texcoordsBuffer, offset: 0, index: 3)
+        encoder.setBuffer(new_verticesBuffer, offset: 0, index: 4)
+        encoder.setBuffer(new_normalsBuffer, offset: 0, index: 5)
+        encoder.setBuffer(new_facesBuffer, offset: 0, index: 6)
+        
+        encoder.setBuffer(MeshUniformsBuffer)
+        
+        let width = 32
+        let threadsPerGroup = MTLSize(width: width, height: 1, depth: 1)
+        let numThreadgroups = MTLSize(width: (face_count * 3 + width - 1) / width, height: 1, depth: 1)
+        encoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerGroup)
+        
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        
+//        let data = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<UInt32>.stride * face_count * 3, deallocator: .none)
+//        var resultData = [UInt32](repeating: UInt32(0), count: face_count * 3)
+//        resultData = data.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<UInt32>(start: $0, count: data.count/MemoryLayout<UInt32>.size))
+//        }
+        
+        let data = Data(bytesNoCopy: new_verticesBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, deallocator: .none)
+        var resultData = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
+        resultData = data.withUnsafeBytes {
+            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: data.count/MemoryLayout<SIMD3<Float>>.size))
+        }
+        
+        print("[Input data]: \(face_array)")
+        print(vertex_array)
+        print("[Result data]: \(resultData)")
+        
+        print(MeshUniformsBuffer[0])
     }
     
     func calcu3() {
