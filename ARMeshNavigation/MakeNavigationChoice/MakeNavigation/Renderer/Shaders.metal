@@ -365,40 +365,217 @@ kernel void calcu(const device float *inputData [[ buffer(0) ]],
 }
 
 
-kernel void calcu2(const device float3 *vertices [[ buffer(0) ]],
-                   const device float3 *normals [[ buffer(1) ]],
-                   const device int3 *faces [[ buffer(2) ]],
-                   constant CalcuUniforms &uniforms [[ buffer(3) ]],
-                   device float2 *texcoords [[buffer(4)]],
-                         uint id [[ thread_position_in_grid ]])
-{
-    const auto faceID = faces[id];
-    const auto x = faceID.x;
-    const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[id],1);
-    const auto clipSpacePosition = uniforms.matrix * vertexPoint4;
-    const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
-    const auto pt = simd_float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
-                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
-                                (1 - (-normalizedDeviceCoordinate.z + 1)));
-    if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
-        const auto u = pt.x / (834 * uniforms.yoko)  + (0 % uniforms.yoko) / uniforms.yoko;
-        const auto v = pt.y / (1150 * uniforms.tate) + (0 / uniforms.yoko) / uniforms.tate;
-        texcoords[id] = float2(u, v);
-    }
+//kernel void calcu2(const device float3 *vertices [[ buffer(0) ]],
+//                   const device float3 *normals [[ buffer(1) ]],
+//                   const device int3 *faces [[ buffer(2) ]],
+//                   constant CalcuUniforms &uniforms [[ buffer(3) ]],
+//                   device float2 *texcoords [[buffer(4)]],
+//                         uint id [[ thread_position_in_grid ]])
+//{
+//    const auto faceID = faces[id];
+//    const auto x = faceID.x;
+//    const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[id],1);
+//    const auto clipSpacePosition = uniforms.matrix * vertexPoint4;
+//    const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
+//    const auto pt = simd_float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+//                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+//                                (1 - (-normalizedDeviceCoordinate.z + 1)));
+//    if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+//        const auto u = pt.x / (834 * uniforms.yoko)  + (0 % uniforms.yoko) / uniforms.yoko;
+//        const auto v = pt.y / (1150 * uniforms.tate) + (0 / uniforms.yoko) / uniforms.tate;
+//        texcoords[id] = float2(u, v);
+//    }
+//    
+//}
+
+static simd_float4 clipPoint(simd_float3 vertexPoint, matrix_float4x4 matrix) {
+    const auto clipSpacePosition = matrix * simd_float4(vertexPoint, 1.0);
     
+    return clipSpacePosition / clipSpacePosition.w;
 }
 
 kernel void calcu3(constant float3 *vertices [[ buffer(0) ]],
                    constant float3 *normals [[ buffer(1) ]],
-                   constant uint *faces [[ buffer(2) ]],
+                   constant int *faces [[ buffer(2) ]],
                    device float2 *texcoords [[buffer(3)]],
                    device float3 *new_vertices [[ buffer(4) ]],
                    device float3 *new_normals [[ buffer(5) ]],
-                   device uint *new_faces [[ buffer(6)]],
-                   device MeshUniforms *meshUniforms [[ buffer(7)]],
+                   device int *new_faces [[ buffer(6)]],
+                   //device MeshUniforms *meshUniforms [[ buffer(7)]],
+                   constant float4x4 &uniforms [[ buffer(8) ]],
+                   constant anchorUniforms *anchorUnifoms [[ buffer(9) ]],
+                   device float4 *trys [[ buffer(10) ]],
                    uint id [[ thread_position_in_grid ]])
 {
-    new_vertices[id] = vertices[faces[id]].xyz;
-    new_normals[id] = normals[faces[id]];
-    meshUniforms[id].vertexs = vertices[faces[id]].xyz;
+    if (int(id) > anchorUnifoms[0].maxCount) {
+        return;
+    }
+    //float3 v = vertices[id].xyz;
+    new_faces[id] = int(id);
+    new_vertices[id] = vertices[faces[int(id)]];
+    new_normals[id] = normals[faces[int(id)]];
+    
+    float yoko = anchorUnifoms[0].yoko;
+    float tate = anchorUnifoms[0].tate;
+    
+    for (int i = 0; i < anchorUnifoms[0].calcuCount; i++) {
+        //const auto clipSpacePosition = uniforms[i] * float4(new_vertices[id], 1.0);
+        const auto normalizedDeviceCoordinate = clipPoint(new_vertices[id], matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));; //clipSpacePosition / clipSpacePosition.w;
+        const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                                    (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                    (1 - (-normalizedDeviceCoordinate.z + 1)));
+        trys[id] = float4(pt, 1.0);
+        if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+            const auto u = ((pt.x / (834 * yoko))  + (fmod(i,yoko) / yoko));
+            const auto v = ((pt.y / (1150 * tate)) + (floor(i / yoko) / tate));
+            texcoords[id] = float2(u, v);
+        }
+    }
+    
+    //const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[faces[int(id)]],1);
+    //new_vertices[id] = vertexPoint4.xyz;
+    
+    //meshUniforms[id].vertexs = vertices[faces[int(id)]];
+    //meshUniforms[id].normals = normals[faces[int(id)]];
+}
+
+static simd_float3 mul(simd_float3 vertexPoint, matrix_float4x4 matrix) {
+    const auto worldPoint4 = matrix * simd_float4(vertexPoint.x, vertexPoint.y, vertexPoint.z, 1.0);
+    
+    return simd_float3(worldPoint4.x, worldPoint4.y, worldPoint4.z);
+}
+
+kernel void calcu4(constant float3 *vertices [[ buffer(0) ]],
+                   constant float3 *normals [[ buffer(1) ]],
+                   constant int *faces [[ buffer(2) ]],
+                   device float2 *texcoords [[buffer(3)]],
+                   device float3 *new_vertices [[ buffer(4) ]],
+                   device float3 *new_normals [[ buffer(5) ]],
+                   device int *new_faces [[ buffer(6)]],
+                   //device MeshUniforms *meshUniforms [[ buffer(7)]],
+                   constant float4x4 &uniforms [[ buffer(8) ]],
+                   constant anchorUniforms &anchorUnifoms [[ buffer(9) ]],
+                   device int *trys [[ buffer(10) ]],
+                   device int *faceBool [[ buffer(11) ]],
+                   device float2 *facecoord [[ buffer(12) ]],
+                   constant int4 *vvv [[ buffer(13) ]],
+                   uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    float yoko = anchorUnifoms.yoko;
+    float tate = anchorUnifoms.tate;
+    
+    //const auto point3 = mul(float3(vvv[1].z, vvv[1].x, vvv[1].y), anchorUnifoms.transform);
+    //trys[id] = point3;
+    
+//    trys[0] = int3(vvv[0].x, vvv[0].y, vvv[0].w);
+//    trys[1] = int3(vvv[1].x, vvv[1].y, vvv[1].z);
+//    trys[2] = int3(vvv[2].x, vvv[2].y, vvv[2].z);
+    if (4*id < anchorUnifoms.maxCount) {
+        int n = 249;
+        trys[0] = vvv[n].x;
+        trys[1] = vvv[n].y;
+        trys[2] = vvv[n].z;
+        trys[3] = vvv[n].w;
+    }
+    
+    for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+        int count = 0;
+        
+        for (int j = 0; j < 3; j++) {
+            new_faces[id*3 + j] = int(id*3 + j);
+            new_vertices[id*3 + j] = vertices[faces[int(id*3 + j)]];
+            new_normals[id*3 + j] = normals[faces[int(id*3 + j)]];
+            
+            const auto normalizedDeviceCoordinate = clipPoint(new_vertices[id*3 + j], matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                        (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+                count += 1;
+                const auto u = ((pt.x / (834 * yoko))  + (fmod(i,yoko) / yoko));
+                const auto v = ((pt.y / (1150 * tate)) + (floor(i / yoko) / tate));
+                //texcoords[id*3 + j] = float2(u, v);
+                facecoord[id*3 + j] = float2(u, v);
+            }
+        }
+        
+        if (count == 3) {
+            faceBool[id] = 1;
+            texcoords[id*3] = facecoord[id*3];
+            texcoords[id*3 + 1] = facecoord[id*3 + 1];
+            texcoords[id*3 + 2] = facecoord[id*3 + 2];
+        }
+        
+    }
+    
+    //const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[faces[int(id)]],1);
+    //new_vertices[id] = vertexPoint4.xyz;
+    
+    //meshUniforms[id].vertexs = vertices[faces[int(id)]];
+    //meshUniforms[id].normals = normals[faces[int(id)]];
+}
+
+kernel void calcu5(constant float *vertices [[ buffer(0) ]],
+                   constant float *normals [[ buffer(1) ]],
+                   constant int *faces [[ buffer(2) ]],
+                   device float2 *texcoords [[buffer(3)]],
+                   device float3 *new_vertices [[ buffer(4) ]],
+                   device float3 *new_normals [[ buffer(5) ]],
+                   device int *new_faces [[ buffer(6)]],
+                   device float2 *facecoord [[ buffer(7) ]],
+                   constant float4x4 &uniforms [[ buffer(8) ]],
+                   constant anchorUniforms &anchorUnifoms [[ buffer(9) ]],
+                   constant float *depth [[ buffer(10) ]],
+                   device float3 *trys [[ buffer(11) ]],
+                   uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    float yoko = anchorUnifoms.yoko;
+    float tate = anchorUnifoms.tate;
+    
+    for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+        int count = 0;
+        for (int j = 0; j < 3; j++) {
+            new_faces[id*3 + j] = int(id*3 + j);
+            new_vertices[id*3 + j] = mul(float3(vertices[faces[int(id*3 + j)]*3 + 0],
+                                                vertices[faces[int(id*3 + j)]*3 + 1],
+                                                vertices[faces[int(id*3 + j)]*3 + 2]),
+                                         anchorUnifoms.transform);
+            new_normals[id*3 + j] = float3(normals[faces[int(id*3 + j)]*3 + 0],
+                                           normals[faces[int(id*3 + j)]*3 + 1],
+                                           normals[faces[int(id*3 + j)]*3 + 2]);
+            
+            const auto normalizedDeviceCoordinate = clipPoint(new_vertices[id*3 + j], matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                        (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+                const auto du = int(round((1 - pt.x / 834) * 95));
+                const auto dv = int(round((pt.y / 1150) * 127));
+                const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
+                const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
+                const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
+                const auto diff = pow(new_vertices[id*3 + j].x - deptPosi_x, 2) + pow(new_vertices[id*3 + j].y - deptPosi_y, 2) + pow(new_vertices[id*3 + j].z - deptPosi_z, 2);
+                if (diff < 0.04) {
+                    count += 1;
+                    const auto u = ((pt.x / (834 * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt.y / (1150 * tate)) + (floor(i / yoko) / tate));
+                    facecoord[id*3 + j] = float2(u, v);
+                }
+            }
+        }
+        
+        if (count == 3) {
+            texcoords[id*3] = facecoord[id*3];
+            texcoords[id*3 + 1] = facecoord[id*3 + 1];
+            texcoords[id*3 + 2] = facecoord[id*3 + 2];
+        }
+    }
 }

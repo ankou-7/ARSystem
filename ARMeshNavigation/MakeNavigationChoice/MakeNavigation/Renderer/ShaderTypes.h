@@ -62,9 +62,18 @@ struct DepthUniforms {
 
 struct CalcuUniforms {
     matrix_float4x4 matrix;
-    matrix_float4x4 transform;
     int yoko;
     int tate;
+};
+
+struct anchorUniforms {
+    matrix_float4x4 transform;
+    int calcuCount;
+    int yoko;
+    int tate;
+    int maxCount;
+    int arrayCount;
+    int depthCount;
 };
 
 struct MeshUniforms {

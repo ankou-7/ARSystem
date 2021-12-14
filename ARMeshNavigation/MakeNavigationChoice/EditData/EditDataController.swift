@@ -360,7 +360,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
         //16384以下にする必要あり
         new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: (2880 / num) * CGFloat(yoko), height: (3840 / num) * CGFloat(tate), yoko: yoko, num: num)
+        print(new_uiimage.size)
         //imageView.image = new_uiimage
+        let uiImage = new_uiimage
+        let imageData = uiImage!.jpegData(compressionQuality: 0.5)
+        let realm = try! Realm()
+        try! realm.write {
+            results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
+        }
         
         //メッシュ情報初期化
         for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
@@ -894,9 +901,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
             nodeGeometry.firstMaterial?.diffuse.contents = new_uiimage
             
+//            let defaultMaterial = SCNMaterial()
+//            defaultMaterial.fillMode = .lines
+//            defaultMaterial.diffuse.contents = UIColor.blue
+//            nodeGeometry.materials = [defaultMaterial]
+            
             let node = SCNNode(geometry: nodeGeometry)
             
             knownAnchors[anchors[i].identifier] = node
+            node.name = "child_tex_node"
             tex_node.addChildNode(node)
             //scene.rootNode.addChildNode(node)
         }
@@ -976,9 +989,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
     }
     
-    var calcuMatrix: [float4x4] = []
-    func make_calcuParameta() {
+    
+    func make_calcuParameta() -> ([float4x4], [depthPosition]) {
+        var calcuMatrix: [float4x4] = []
+        var depth: [depthPosition] = []
+        
         let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        let yoko: Float = 17.0
+        let tate: Float = ceil(Float(count)/yoko)
         for i in 0..<count {
             let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
             
@@ -992,39 +1010,74 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                                                  json_data!.projectionMatrix.w)
             let matrix = projectionMatrix * viewMatrix
             calcuMatrix.append(matrix)
+            
+            let depth_array = (try? decoder.decode([depthPosition].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[i].depth_data!))!
+            depth.append(contentsOf: depth_array)
         }
+        return (calcuMatrix, depth)
     }
     
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         //ActivityView.isHidden = false
-        //ActivityView.startAnimating()
+//        ActivityView.startAnimating()
         //make_texture(num: 0)
         
-        //make_calcuParameta()
+        let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        let yoko: Float = 17.0
+        let tate: Float = ceil(Float(count)/yoko)
+        let (calcuUnifoms, depth) = make_calcuParameta()
         //self.calculate.matrix = calcuMatrix
         
-//        self.calculate.CalcuUniforms.matrix = simd_float4x4([[2.298579, 0.029851807, -0.006072296, -0.0060722902],
-//                                                             [-0.045215275, 1.4241168, -0.5181078, -0.5181073],
-//                                                             [0.004856579, -0.8665272, -0.8552948, -0.855294],
-//                                                             [0.0, 0.0, -0.0010000009, 0.0]])//calcuMatrix[0]
-//        self.calculate.CalcuUniforms.yoko = Int32(yoko)
-//        self.calculate.CalcuUniforms.tate = Int32(tate)
-//        self.calculate.CalcuUniforms.transform = anchors[0].transform
-
-        for i in 0..<1 {//anchors.count {
-            self.calculate = CalculateRenderer(anchor: anchors[i], metalDevice: self.sceneView.device!)
+        var flag = 0
+        
+        
+        DispatchQueue.global().sync {
+            
+            let start = Date()
+            print("calcu開始")
+            //DispatchQueue.main.async { [self] in
+            
+            self.calculate = CalculateRenderer(section_num: section_num, cell_num: cell_num, model_num: current_model_num, anchor: anchors, metalDevice: self.sceneView.device!, calcuUniforms: calcuUnifoms, depth: depth, tate: Int(tate), yoko: Int(yoko))
             self.calculate.drawRectResized(size: self.sceneView.bounds.size)
-            self.calculate.calcu4()
-//            let node = calculate.calcu2()
-//            sceneView.scene?.rootNode.addChildNode(node)
+            
+            
+            DispatchQueue.main.async { [self] in
+                ActivityView.startAnimating()
+                for i in 0..<anchors.count {
+                    flag += self.calculate.calcu5(num: i)
+                    //let node = calculate.calcu4(num: 1)
+                    //sceneView.scene?.rootNode.addChildNode(node)
+                    print("\(flag)回目")
+                    print("配列中身：\(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i])")
+                    print("----------------------------------------------------------------------------------------")
+                    if flag == anchors.count {
+                        print("calcu終了")
+                        let elapsed = Date().timeIntervalSince(start)
+                        print("処理時間：\(elapsed)")
+                        //print("配列全て中身：\(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)")
+                        //load_anchor2()
+//                        print("load")
+                        delete_mesh()
+                        let node = self.calculate.build2(image: new_uiimage)
+                        sceneView.scene?.rootNode.addChildNode(node)
+                        ActivityView.stopAnimating()
+                    }
+                }
+            }
+            
         }
+        
     }
     
     @IBAction func tap_newmakeTexture(_ sender: UIButton) {
         //ActivityView.isHidden = false
 //        ActivityView.startAnimating()
 //        make_texture(num: 1)
-        make_texture9000(num: 2)
+        //make_texture9000(num: 2)
+        
+        imageView.image = new_uiimage
+        let node = self.calculate.build2(image: new_uiimage)
+        sceneView.scene?.rootNode.addChildNode(node)
     }
     
     @IBAction func tap_makeTexture3(_ sender: UIButton) {
@@ -1156,19 +1209,19 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         let yoko: Float = 17.0//4.0
         let tate: Float = ceil(Float(count)/yoko)
         
-        //RGB画像
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.5)
-        
-        //内部パラメータ保存用
-        let realm = try! Realm()
-        try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
-        }
+//        //RGB画像
+//        let uiImage = new_uiimage
+//        let imageData = uiImage!.jpegData(compressionQuality: 0.5)
+//
+//        //内部パラメータ保存用
+//        let realm = try! Realm()
+//        try! realm.write {
+//            results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
+//        }
         
         let start = Date()
         for i in 0..<count {
-            let depth_array = try? decoder.decode([PointCloudVertex].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[i].depth_data!)
+            let depth_array = try? decoder.decode([depthPosition].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[i].depth_data!)
             let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
             let cameraVector = SCNVector3(json_data!.cameraVector.x,
                                           json_data!.cameraVector.y,
@@ -1190,6 +1243,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         save_model(num: num)
         delete_mesh()
         load_anchor2()
+        
+        //print(new_texcoords2)
     }
     
     func make_texture(num: Int) {
@@ -1216,7 +1271,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             }
             
             for i in 0..<count {
-                let depth_array = try? decoder.decode([PointCloudVertex].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[i].depth_data!)
+                let depth_array = try? decoder.decode([depthPosition].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[i].depth_data!)
                 let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
                 let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                                 json_data!.cameraPosition.y,
@@ -1383,7 +1438,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                 }
                 
                 for pi in 0..<count {
-                    let depthArray = try? decoder.decode([PointCloudVertex].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[pi].depth_data!)
+                    let depthArray = try? decoder.decode([depthPosition].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[pi].depth_data!)
                     let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[pi].json_data!)
                     let cameraVector = SCNVector3(json_data!.cameraVector.x,
                                                   json_data!.cameraVector.y,
@@ -1437,7 +1492,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         print("calculate完了")
     }
     
-    func calcTextureCoordinates2000(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3, depthArray: [PointCloudVertex], matrix: simd_float4x4){
+    func calcTextureCoordinates2000(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
         for (i, mesh_anchor) in anchors.enumerated() {
             var points: [SCNVector3] = []
             var points_index: [Int] = []
@@ -1515,7 +1570,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         print("calculate\(num)完了")
     }
     
-    func calcTextureCoordinates1000(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3, depthArray: [PointCloudVertex], matrix: simd_float4x4){
+    func calcTextureCoordinates1000(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
         for (i, mesh_anchor) in anchors.enumerated() {
             var points: [SCNVector3] = []
             var points_index: [Int] = []
@@ -1827,14 +1882,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         
         imageView.image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[tap_count].pic_data!)
         
-        let depth_array = try? decoder.decode([PointCloudVertex].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[tap_count].depth_data! as Data)
-        var depth: [PointCloudVertex] = []
-        for i in 0..<depth_array!.count {
-            //if i < 257 {
-                depth.append(depth_array![i])
-            //}
-        }
-        
         let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[tap_count].json_data!)
         let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                         json_data!.cameraPosition.y,
@@ -1847,9 +1894,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
         cameraNode.runAction(SCNAction.group([move, rotation]),
                              completionHandler: {
-            let node = self.build_pointsNode(points: depth)
-            node.name = "depth"
-            self.scene.rootNode.addChildNode(node)
         })
         
     }

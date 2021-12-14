@@ -10,6 +10,10 @@ import MetalKit
 import ARKit
 import SwiftUI
 
+struct depthPosition:Codable {
+    var x: Float, y: Float, z: Float
+}
+
 final class depth_Renderer {
     var maxPoints: Int32 = 128*96//256*192
     var numPoints: Int = 128*96//256*192
@@ -296,10 +300,11 @@ final class depth_Renderer {
         print(particlesDepthBuffer.count)
         print(particlesDepthBuffer[100])
         print(particlesDepthBuffer[100].confidence)
-        var depth_array: [PointCloudVertex] = []
+        var depth_array: [depthPosition] = []
         for i in 0..<currentPointCount {
             let point = particlesDepthBuffer[i]
-            depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
+            //depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
+            depth_array.append(depthPosition(x: point.position.x, y: point.position.y, z: point.position.z))
         }
 
         let depthData = try! JSONEncoder().encode(depth_array)
@@ -310,7 +315,6 @@ final class depth_Renderer {
 //            depth_array.append(SCNVector3(x: point.position.x, y: point.position.y, z: point.position.z))
 //        }
 //        let depthData = Data(bytes: depth_array, count: MemoryLayout<SCNVector3>.size * depth_array.count)
-        
         
         return depthData
     }
