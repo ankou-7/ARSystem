@@ -106,23 +106,6 @@
 		CFD96D3E2748222C00083E90 /* CheckARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD96D3D2748222C00083E90 /* CheckARViewController.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		26AAA2042563C804008FE5EB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 26AAA1E52563C802008FE5EB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 26AAA1EC2563C802008FE5EB;
-			remoteInfo = ARMeshNavigation;
-		};
-		26AAA20F2563C804008FE5EB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 26AAA1E52563C802008FE5EB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 26AAA1EC2563C802008FE5EB;
-			remoteInfo = ARMeshNavigation;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		CF98DE8227484EF90023A1E4 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -157,8 +140,6 @@
 		26AAA1F92563C804008FE5EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		26AAA1FC2563C804008FE5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		26AAA1FE2563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		26AAA2032563C804008FE5EB /* ARMeshTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARMeshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARMeshUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeNavigationCheckController.swift; sourceTree = "<group>"; };
 		26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDataChoiceController.swift; sourceTree = "<group>"; };
 		26AAA22F2563C996008FE5EB /* PopOverController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopOverController.swift; sourceTree = "<group>"; };
@@ -172,11 +153,8 @@
 		26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceDataAllCheckController.swift; sourceTree = "<group>"; };
 		26AAA26B2563CAC9008FE5EB /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		26C878EE274F554000B8BE4E /* HandTracker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HandTracker.framework; sourceTree = "<group>"; };
-		5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.release.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.release.xcconfig"; sourceTree = "<group>"; };
-		9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.debug.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B42952184C4A0DBFFBB3FA58 /* Pods_ARMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.release.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.release.xcconfig"; sourceTree = "<group>"; };
-		C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMeshTests.release.xcconfig"; path = "Target Support Files/Pods-ARMeshTests/Pods-ARMeshTests.release.xcconfig"; sourceTree = "<group>"; };
 		CF0250D926380953003790E8 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceModelData.storyboard; sourceTree = "<group>"; };
 		CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelDataController.swift; sourceTree = "<group>"; };
@@ -247,7 +225,6 @@
 		CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud.storyboard; sourceTree = "<group>"; };
 		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
 		CFD96D3D2748222C00083E90 /* CheckARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckARViewController.swift; sourceTree = "<group>"; };
-		EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh-ARMeshUITests.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -259,20 +236,6 @@
 				CF98DE8027484EF90023A1E4 /* HandTracker.framework in Frameworks */,
 				CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */,
 				B2DF922BDC2D499F302B3C30 /* Pods_ARMesh.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		26AAA2002563C804008FE5EB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		26AAA20B2563C804008FE5EB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,8 +256,6 @@
 			isa = PBXGroup;
 			children = (
 				26AAA1ED2563C802008FE5EB /* ARMesh.app */,
-				26AAA2032563C804008FE5EB /* ARMeshTests.xctest */,
-				26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -593,10 +554,6 @@
 			children = (
 				0AD42D09CD503898E7E25FE8 /* Pods-ARMesh.debug.xcconfig */,
 				C5D6278944BB28F7824DD4BC /* Pods-ARMesh.release.xcconfig */,
-				EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */,
-				5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */,
-				9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */,
-				C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -635,45 +592,6 @@
 			productReference = 26AAA1ED2563C802008FE5EB /* ARMesh.app */;
 			productType = "com.apple.product-type.application";
 		};
-		26AAA2022563C804008FE5EB /* ARMeshTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 26AAA21A2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshTests" */;
-			buildPhases = (
-				B3A969CADE33DD3A57E95769 /* [CP] Check Pods Manifest.lock */,
-				26AAA1FF2563C804008FE5EB /* Sources */,
-				26AAA2002563C804008FE5EB /* Frameworks */,
-				26AAA2012563C804008FE5EB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				26AAA2052563C804008FE5EB /* PBXTargetDependency */,
-			);
-			name = ARMeshTests;
-			productName = ARMeshNavigationTests;
-			productReference = 26AAA2032563C804008FE5EB /* ARMeshTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		26AAA20D2563C804008FE5EB /* ARMeshUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 26AAA21D2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshUITests" */;
-			buildPhases = (
-				6048FE2F67486181EEA469B1 /* [CP] Check Pods Manifest.lock */,
-				26AAA20A2563C804008FE5EB /* Sources */,
-				26AAA20B2563C804008FE5EB /* Frameworks */,
-				26AAA20C2563C804008FE5EB /* Resources */,
-				261ED44B6FEC44D93D653331 /* [CP] Embed Pods Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				26AAA2102563C804008FE5EB /* PBXTargetDependency */,
-			);
-			name = ARMeshUITests;
-			productName = ARMeshNavigationUITests;
-			productReference = 26AAA20E2563C804008FE5EB /* ARMeshUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -685,14 +603,6 @@
 				TargetAttributes = {
 					26AAA1EC2563C802008FE5EB = {
 						CreatedOnToolsVersion = 12.2;
-					};
-					26AAA2022563C804008FE5EB = {
-						CreatedOnToolsVersion = 12.2;
-						TestTargetID = 26AAA1EC2563C802008FE5EB;
-					};
-					26AAA20D2563C804008FE5EB = {
-						CreatedOnToolsVersion = 12.2;
-						TestTargetID = 26AAA1EC2563C802008FE5EB;
 					};
 				};
 			};
@@ -710,8 +620,6 @@
 			projectRoot = "";
 			targets = (
 				26AAA1EC2563C802008FE5EB /* ARMesh */,
-				26AAA2022563C804008FE5EB /* ARMeshTests */,
-				26AAA20D2563C804008FE5EB /* ARMeshUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -749,40 +657,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		26AAA2012563C804008FE5EB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		26AAA20C2563C804008FE5EB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		261ED44B6FEC44D93D653331 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ARMesh-ARMeshUITests/Pods-ARMesh-ARMeshUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		28EA23814CA3413A9E61678E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -799,50 +676,6 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-ARMesh-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6048FE2F67486181EEA469B1 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ARMesh-ARMeshUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B3A969CADE33DD3A57E95769 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ARMeshTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -943,34 +776,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		26AAA1FF2563C804008FE5EB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		26AAA20A2563C804008FE5EB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		26AAA2052563C804008FE5EB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 26AAA1EC2563C802008FE5EB /* ARMesh */;
-			targetProxy = 26AAA2042563C804008FE5EB /* PBXContainerItemProxy */;
-		};
-		26AAA2102563C804008FE5EB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 26AAA1EC2563C802008FE5EB /* ARMesh */;
-			targetProxy = 26AAA20F2563C804008FE5EB /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		26AAA1F62563C802008FE5EB /* Main.storyboard */ = {
@@ -1122,13 +928,14 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ARMeshNavigation/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1149,104 +956,17 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ARMeshNavigation/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		26AAA21B2563C804008FE5EB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9429CE50B64EB9F64406BF37 /* Pods-ARMeshTests.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 424LNK92VG;
-				INFOPLIST_FILE = ARMeshNavigationTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ARMesh.app/ARMesh";
-			};
-			name = Debug;
-		};
-		26AAA21C2563C804008FE5EB /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C908000DCDC6BD1821C80905 /* Pods-ARMeshTests.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 424LNK92VG;
-				INFOPLIST_FILE = ARMeshNavigationTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ARMesh.app/ARMesh";
-			};
-			name = Release;
-		};
-		26AAA21E2563C804008FE5EB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EC536DAD10A87E11CCEB1504 /* Pods-ARMesh-ARMeshUITests.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 424LNK92VG;
-				INFOPLIST_FILE = ARMeshNavigationUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = ARMeshNavigation;
-			};
-			name = Debug;
-		};
-		26AAA21F2563C804008FE5EB /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5104967AA8266A143FAFDF0F /* Pods-ARMesh-ARMeshUITests.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 424LNK92VG;
-				INFOPLIST_FILE = ARMeshNavigationUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ARMeshNavigationUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = ARMeshNavigation;
 			};
 			name = Release;
 		};
@@ -1267,24 +987,6 @@
 			buildConfigurations = (
 				26AAA2182563C804008FE5EB /* Debug */,
 				26AAA2192563C804008FE5EB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		26AAA21A2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				26AAA21B2563C804008FE5EB /* Debug */,
-				26AAA21C2563C804008FE5EB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		26AAA21D2563C804008FE5EB /* Build configuration list for PBXNativeTarget "ARMeshUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				26AAA21E2563C804008FE5EB /* Debug */,
-				26AAA21F2563C804008FE5EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -360,7 +360,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         }
         //16384以下にする必要あり
         new_uiimage = ComposeUIImage(UIImageArray: uiimage_array, width: (2880 / num) * CGFloat(yoko), height: (3840 / num) * CGFloat(tate), yoko: yoko, num: num)
-        print(new_uiimage.size)
+        //print(new_uiimage.size)
         //imageView.image = new_uiimage
         let uiImage = new_uiimage
         let imageData = uiImage!.jpegData(compressionQuality: 0.5)

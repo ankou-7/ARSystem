@@ -77,8 +77,19 @@ struct anchorUniforms {
 };
 
 struct MeshUniforms {
-    simd_float3 vertexs;
-    simd_float3 normals;
+    simd_float3 vertex1;
+    //simd_float3 vertex2;
+    //simd_float3 vertex3;
+    vector_float4 color;
+    int index;
+    int originIndex;
+    simd_int3 faceIndex;
 };
 
+struct realAnchorUniforms {
+    matrix_float4x4 transform;
+    matrix_float4x4 viewProjectionMatrix;
+    int maxCount;
+    int currentIndex;
+};
 #endif /* ShaderTypes_h */

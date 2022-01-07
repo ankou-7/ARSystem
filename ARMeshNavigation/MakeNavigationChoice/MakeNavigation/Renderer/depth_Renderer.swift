@@ -32,10 +32,14 @@ final class depth_Renderer {
     private let relaxedStencilState: MTLDepthStencilState
     private let depthStencilState: MTLDepthStencilState
     private let commandQueue: MTLCommandQueue
+    private let commandQueue2: MTLCommandQueue
     private lazy var unprojectPipelineState = makeUnprojectionPipelineState()!
     private lazy var particlePipelineState = makeParticlePipelineState()!
     
     private lazy var depthPipelineState = makeDepthPipelineState()!
+    private lazy var meshPipelineState = makeMeshPipelineState()!
+    private lazy var meshPipelineState2 = makeMeshPipelineState2()!
+    private var meshPipeline: MTLComputePipelineState!
 
     private lazy var textureCache = makeTextureCache()
     private var capturedImageTextureY: CVMetalTexture?
@@ -67,6 +71,14 @@ final class depth_Renderer {
     private var currentPointCount = 0
     
     private var particlesDepthBuffer: MetalBuffer<DepthUniforms>
+    
+    private var MeshBuffer: MetalBuffer<MeshUniforms>
+    private var currentMeshPointIndex = 0
+    private var currentMeshPointCount = 0
+    private lazy var RealAnchorUniforms = realAnchorUniforms()
+    private var AnchorUniformasBuffers = [MetalBuffer<realAnchorUniforms>]()
+    private var currentAnchorUniformsBufferIndex = 0
+    private var anchorUniformsBuffer: MetalBuffer<realAnchorUniforms>
 
     // Camera data
     private var sampleFrame: ARFrame { session.currentFrame! }
@@ -99,16 +111,22 @@ final class depth_Renderer {
         self.sceneView = sceneView
 
         library = device.makeDefaultLibrary()!
-        //commandQueue = device.makeCommandQueue()!
-        commandQueue = sceneView.commandQueue!
+        commandQueue2 = device.makeCommandQueue()! //computeCommand用
+        commandQueue = sceneView.commandQueue! //sceneView用
 
         // initialize our buffers
         for _ in 0 ..< maxInFlightBuffers {
 //            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
             PointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
+            AnchorUniformasBuffers.append(.init(device: device, count: 1, index: 6))
         }
         particlesBuffer = .init(device: device, count: Int(maxPoints), index: kParticleUniforms.rawValue)
         particlesDepthBuffer = .init(device: device, count: Int(maxPoints), index: kParticleUniforms.rawValue)
+        MeshBuffer = .init(device: device, count: 999_999, index: 5)
+        
+        anchorUniformsBuffer = .init(device: device, count: 1, index: 10)
+        let function = library.makeFunction(name: "meshCalculate")!
+        meshPipeline = try! device.makeComputePipelineState(function: function)
 
         // rbg does not need to read/write depth
         let relaxedStateDescriptor = MTLDepthStencilDescriptor()
@@ -297,9 +315,13 @@ final class depth_Renderer {
     
     //depthデータ取得用
     func depthData() -> Data {
-        print(particlesDepthBuffer.count)
-        print(particlesDepthBuffer[100])
-        print(particlesDepthBuffer[100].confidence)
+//        print(particlesDepthBuffer.count)
+        //print(particlesDepthBuffer[100])
+//        print(particlesDepthBuffer[100].confidence)
+        for i in 0...30 {
+            print(MeshBuffer[i])
+        }
+        
         var depth_array: [depthPosition] = []
         for i in 0..<currentPointCount {
             let point = particlesDepthBuffer[i]
@@ -327,7 +349,308 @@ final class depth_Renderer {
         }
         return depth_array
     }
+    
+    //mesh処理用
+    func drawMesh2() {
+        guard let currentFrame = session.currentFrame,
+              let commandBuffer = commandQueue.makeCommandBuffer(),
+            let renderEncoder = sceneView.currentRenderCommandEncoder else {
+                return
+        }
 
+        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+            if let self = self {
+                self.inFlightSemaphore.signal()
+            }
+        }
+        
+        updateAnchorUniforms(frame: currentFrame)
+        
+        currentAnchorUniformsBufferIndex = (currentAnchorUniformsBufferIndex + 1) % 3
+        AnchorUniformasBuffers[currentAnchorUniformsBufferIndex][0] = RealAnchorUniforms
+        
+        //計算
+        accumulateMeshPoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
+        
+        renderEncoder.setDepthStencilState(depthStencilState)
+        renderEncoder.setRenderPipelineState(meshPipelineState)
+        renderEncoder.setVertexBuffer(MeshBuffer) //5
+        renderEncoder.setVertexBuffer(AnchorUniformasBuffers[currentAnchorUniformsBufferIndex]) //6
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: currentMeshPointCount / 3)
+        
+        commandBuffer.commit()
+    }
+    
+    private func updateAnchorUniforms(frame: ARFrame) {
+        // frame dependent info
+        let camera = frame.camera
+        //let cameraIntrinsicsInversed = camera.intrinsics.inverse
+        let viewMatrix = camera.viewMatrix(for: orientation)
+        //let viewMatrixInversed = viewMatrix.inverse
+        let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: viewportSize, zNear: 0.001, zFar: 0)
+        
+        RealAnchorUniforms.viewProjectionMatrix = projectionMatrix * viewMatrix
+    }
+    
+    var AnchorsID: UUID!
+    
+    func accumulateMeshPoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
+        
+        //print("-------------------------------------------------------------------------------------------")
+        let anchors = frame.anchors.compactMap { $0 as? ARMeshAnchor }
+        //print(anchors.count)
+        for anchor in anchors {
+            //let anchor = anchors[0]
+            if anchor.identifier == AnchorsID {
+                let face_count = anchor.geometry.faces.count
+                //print("face_count = \(face_count)")
+                
+                RealAnchorUniforms.maxCount = 999_999//Int32(face_count)
+                RealAnchorUniforms.transform = anchor.transform
+                //RealAnchorUniforms.currentIndex = Int32(currentMeshPointIndex)
+                
+                renderEncoder.setDepthStencilState(relaxedStencilState)
+                renderEncoder.setRenderPipelineState(meshPipelineState2)
+                renderEncoder.setVertexBuffer(anchor.geometry.vertices.buffer, offset: 0, index: 0)
+                renderEncoder.setVertexBuffer(anchor.geometry.faces.buffer, offset: 0, index: 1)
+                renderEncoder.setVertexBuffer(MeshBuffer) //5
+                renderEncoder.setVertexBuffer(AnchorUniformasBuffers[currentAnchorUniformsBufferIndex]) //6
+                renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: face_count * 3) //実行回数
+                
+                //currentMeshPointIndex = (currentMeshPointIndex + face_count * 3) % 999_999
+                if face_count * 3 < 999_999 {
+                    currentMeshPointCount = max(face_count * 3, currentMeshPointCount)
+                } else {
+                    currentMeshPointCount = 999_999
+                }
+                //currentMeshPointCount = min(face_count * 3, 999_999) //min(currentMeshPointCount + face_count * 3, 999_999)
+                //print("currentMeshPointCount = \(currentMeshPointCount)")
+                
+//                var face_array: [Int32] = []
+//                for j in 0..<anchor.geometry.faces.count {
+//                    let indicesPerFace = anchor.geometry.faces.indexCountPerPrimitive
+//                    for offset in 0..<indicesPerFace {
+//                        let vertexIndexAddress = anchor.geometry.faces.buffer.contents().advanced(by: (j * indicesPerFace + offset) * MemoryLayout<UInt32>.size)
+//                        let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+//                        face_array.append(per_face)
+//                    }
+//                }
+//                print(face_array)
+            }
+        }
+        
+        
+        //print("face_array.count = \(face_array.count)")
+
+//        let new_verticesBuffer = device.makeBuffer(length: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, options: [])
+//        let new_facesBuffer = device.makeBuffer(length: MemoryLayout<Int32>.stride * face_count * 3, options: [])
+//        renderEncoder.setVertexBuffer(new_verticesBuffer, offset: 0, index: 2)
+//        renderEncoder.setVertexBuffer(new_facesBuffer, offset: 0, index: 3)
+//
+//        let tryBuffer = device.makeBuffer(length: MemoryLayout<Int32>.stride * face_count, options: [])
+//        renderEncoder.setVertexBuffer(tryBuffer, offset: 0, index: 11)
+//
+//        let vertexData = Data(bytesNoCopy: new_verticesBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, deallocator: .none)
+//        var vertexs = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
+//        vertexs = vertexData.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
+//        }
+//        let facesData = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<Int32>.stride * face_count * 3, deallocator: .none)
+//        var faces = [Int32](repeating: Int32(0), count: face_count * 3)
+//        faces = facesData.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))
+//        }
+//
+//        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<Int32>.stride * face_count, deallocator: .none)
+//        var trys = [Int32](repeating: Int32(0), count: face_count)
+//        trys = tryData.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<Int32>(start: $0, count: tryData.count/MemoryLayout<Int32>.size))
+//        }
+        
+//        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count, deallocator: .none)
+//        var trys = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count)
+//        trys = tryData.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: tryData.count/MemoryLayout<SIMD3<Float>>.size))
+//        }
+//        print(trys)
+        //print(faces)
+        //print("faces.count = \(faces.count)")
+    }
+    
+    var knownAnchors = Dictionary<UUID, SCNNode>()
+    
+    func drawMesh() { //(MTLBuffer?, MTLBuffer?) {
+        let currentFrame = session.currentFrame!
+        let commandBuffer = commandQueue2.makeCommandBuffer()!
+        let encoder = commandBuffer.makeComputeCommandEncoder()!
+        encoder.setComputePipelineState(meshPipeline)
+        
+        let anchors = currentFrame.anchors.compactMap { $0 as? ARMeshAnchor }
+        print(anchors.count)
+        
+        let anchor = anchors[0]
+        
+        print("-------------------------------------------------------------------------------------------")
+        print(knownAnchors)
+        
+        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+            if let self = self {
+                self.inFlightSemaphore.signal()
+            }
+        }
+        
+//        var face_array: [Int32] = []
+//        for j in 0..<anchor.geometry.faces.count {
+//            let indicesPerFace = anchor.geometry.faces.indexCountPerPrimitive
+//            for offset in 0..<indicesPerFace {
+//                let vertexIndexAddress = anchor.geometry.faces.buffer.contents().advanced(by: (j * indicesPerFace + offset) * MemoryLayout<UInt32>.size)
+//                let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+//                face_array.append(per_face)
+//            }
+//        }
+//        print(face_array)
+//        print("face_array.count = \(face_array.count)")
+        
+        encoder.setBuffer(anchor.geometry.vertices.buffer, offset: 0, index: 0)
+        encoder.setBuffer(anchor.geometry.faces.buffer, offset: 0, index: 1)
+        
+        let face_count = anchor.geometry.faces.count
+        print("face_count = \(face_count)")
+        anchorUniformsBuffer[0].maxCount = Int32(face_count)
+        encoder.setBuffer(anchorUniformsBuffer)
+        
+        let new_verticesBuffer = device.makeBuffer(length: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, options: [])
+        let new_facesBuffer = device.makeBuffer(length: MemoryLayout<Int32>.stride * face_count * 3, options: [])
+        //let texcoordsBuffer = device.makeBuffer(length: MemoryLayout<SIMD2<Float>>.stride * face_count * 3, options: [])
+        encoder.setBuffer(new_verticesBuffer, offset: 0, index: 2)
+        encoder.setBuffer(new_facesBuffer, offset: 0, index: 3)
+        //encoder.setBuffer(texcoordsBuffer, offset: 0, index: 4)
+        
+        let width = 1//32
+        let threadsPerGroup = MTLSize(width: width, height: 1, depth: 1)
+        let numThreadgroups = MTLSize(width: (anchor.geometry.faces.count + width - 1) / width, height: 1, depth: 1)
+        encoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerGroup)
+        
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        
+        let vertexData = Data(bytesNoCopy: new_verticesBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, deallocator: .none)
+        var vertexs = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
+        vertexs = vertexData.withUnsafeBytes {
+            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
+        }
+        let facesData = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<Int32>.stride * face_count * 3, deallocator: .none)
+        var faces = [Int32](repeating: Int32(0), count: face_count * 3)
+        faces = facesData.withUnsafeBytes {
+            Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))
+        }
+//
+//        let texcoordsData = Data(bytesNoCopy: texcoordsBuffer!.contents(), count: MemoryLayout<SIMD2<Float>>.stride * face_count * 3, deallocator: .none)
+//        var texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count * 3)
+//        texcoords = texcoordsData.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
+//        }
+//        print(faces)
+        
+        let vertexSource = SCNGeometrySource(
+            data: vertexData as Data,
+            semantic: SCNGeometrySource.Semantic.vertex,
+            vectorCount: face_count * 3,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: 0,
+            dataStride: MemoryLayout<SIMD3<Float>>.size
+        )
+        let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
+
+//        //geometry作成
+//        let vertexSource = SCNGeometrySource(buffer: new_verticesBuffer!, vertexFormat: .float3, semantic: .vertex, vertexCount: face_count*3, dataOffset: 0, dataStride: MemoryLayout<SIMD3<Float>>.stride)
+//        let faceData = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<Int32>.stride * face_count * 3, deallocator: .none)
+//        let faceSource = SCNGeometryElement(data: faceData, primitiveType: .triangles, primitiveCount: face_count, bytesPerIndex: MemoryLayout<Int32>.size)
+        let geometry = SCNGeometry(sources: [vertexSource], elements: [faceSource])
+        let defaultMaterial = SCNMaterial()
+        defaultMaterial.fillMode = .lines
+        defaultMaterial.diffuse.contents = UIColor.blue //UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
+        geometry.materials = [defaultMaterial]
+        
+        let node = knownAnchors[anchor.identifier]
+        node!.geometry = geometry
+        node!.simdTransform = anchor.transform
+
+//        //return tex
+//        return geometry
+//        //return (new_verticesBuffer, new_facesBuffer)
+    }
+    
+    
+    
+    
+//    private func updateMesh(frame: ARFrame, anchor: ARMeshAnchor) {
+//        // frame dependent info
+//        let camera = frame.camera
+//        //let cameraIntrinsicsInversed = camera.intrinsics.inverse
+//        let viewMatrix = camera.viewMatrix(for: orientation)
+//        //let viewMatrixInversed = viewMatrix.inverse
+//        let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: viewportSize, zNear: 0.001, zFar: 0)
+//
+//        anchorUniformsBuffer[0].viewProjectionMatrix = projectionMatrix * viewMatrix
+//        anchorUniformsBuffer[0].transform = anchor.transform
+//    }
+//
+//    func drawMesh() {
+//        guard let currentFrame = session.currentFrame else {
+//            print("currentError")
+//            return
+//        }
+//        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+//            print("commandError")
+//            return
+//        }
+//        guard let renderEncoder = sceneView.currentRenderCommandEncoder else {
+//            print(sceneView.currentRenderCommandEncoder)
+//            print("renderError")
+//            return
+//        }
+//        let anchors = currentFrame.anchors.compactMap { $0 as? ARMeshAnchor }
+//        print("実行")
+//
+//        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+//        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+//            if let self = self {
+//                self.inFlightSemaphore.signal()
+//            }
+//        }
+//
+//
+//
+//        updateMesh(frame: currentFrame, anchor: anchor)
+//
+//        //取得した特徴点（色付き）
+//        renderEncoder.setDepthStencilState(depthStencilState)
+//        renderEncoder.setRenderPipelineState(meshPipelineState)
+//        renderEncoder.setVertexBuffer(anchor.geometry.vertices.buffer, offset: 0, index: 0)
+//        renderEncoder.setVertexBuffer(anchor.geometry.faces.buffer, offset: 0, index: 1)
+//        renderEncoder.setVertexBuffer(anchorUniformsBuffer)
+//
+//        let tryBuffer = device.makeBuffer(length: MemoryLayout<SIMD3<Float>>.stride * anchor.geometry.vertices.count, options: [])
+//        renderEncoder.setVertexBuffer(tryBuffer, offset: 0, index: 3)
+//
+//
+//        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: anchor.geometry.vertices.count)
+//
+//        commandBuffer.commit()
+//
+//        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * anchor.geometry.vertices.count, deallocator: .none)
+//        var trys = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: anchor.geometry.vertices.count)
+//        trys = tryData.withUnsafeBytes {
+//            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: tryData.count/MemoryLayout<SIMD3<Float>>.size))
+//        }
+//        print(trys[0...30])
+//    }
 }
 
 //// MARK: - Metal Helpers
@@ -361,6 +684,43 @@ private extension depth_Renderer {
         //descriptor.colorAttachments[0].pixelFormat = renderDestination.colorPixelFormat
         descriptor.depthAttachmentPixelFormat = sceneView.depthPixelFormat
         descriptor.colorAttachments[0].pixelFormat = sceneView.colorPixelFormat
+
+        return try? device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
+    func makeMeshPipelineState2() -> MTLRenderPipelineState? {
+        guard let vertexFunction = library.makeFunction(name: "meshCalculate2") else {
+                return nil
+        }
+
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = vertexFunction
+        descriptor.isRasterizationEnabled = false
+        //descriptor.depthAttachmentPixelFormat = renderDestination.depthStencilPixelFormat
+        //descriptor.colorAttachments[0].pixelFormat = renderDestination.colorPixelFormat
+        descriptor.depthAttachmentPixelFormat = sceneView.depthPixelFormat
+        descriptor.colorAttachments[0].pixelFormat = sceneView.colorPixelFormat
+
+        return try? device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
+    func makeMeshPipelineState() -> MTLRenderPipelineState? {
+        guard let vertexFunction = library.makeFunction(name: "meshVertex"),
+            let fragmentFunction = library.makeFunction(name: "meshFragment") else {
+                return nil
+        }
+
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
+        //descriptor.depthAttachmentPixelFormat = renderDestination.depthStencilPixelFormat
+        //descriptor.colorAttachments[0].pixelFormat = renderDestination.colorPixelFormat
+        descriptor.depthAttachmentPixelFormat = sceneView.depthPixelFormat
+        descriptor.colorAttachments[0].pixelFormat = sceneView.colorPixelFormat
+        descriptor.colorAttachments[0].isBlendingEnabled = true
+        descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
 
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }

@@ -579,3 +579,152 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+kernel void meshCalculate(constant float *vertices [[ buffer(0) ]],
+                          constant int *faces [[ buffer(1) ]],
+                          device float3 *new_vertices [[ buffer(2) ]],
+                          device int *new_faces [[ buffer(3)]],
+                          device float2 *texcoords [[buffer(4)]],
+                          constant realAnchorUniforms &anchorUnifoms [[ buffer(10) ]],
+                          //device float3 *trys [[ buffer(11) ]],
+                          uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    new_faces[id*3] = int(id*3);
+    new_faces[id*3 + 1] = int(id*3 + 1);
+    new_faces[id*3 + 2] = int(id*3 + 2);
+    
+    new_vertices[id*3] = float3(vertices[faces[int(id*3)]*3],
+                                vertices[faces[int(id*3)]*3 + 1],
+                                vertices[faces[int(id*3)]*3 + 2]);
+    new_vertices[id*3 + 1] = float3(vertices[faces[int(id*3 + 1)]*3],
+                                    vertices[faces[int(id*3 + 1)]*3 + 1],
+                                    vertices[faces[int(id*3 + 1)]*3 + 2]);
+    new_vertices[id*3 + 2] = float3(vertices[faces[int(id*3 + 2)]*3],
+                                    vertices[faces[int(id*3 + 2)]*3 + 1],
+                                    vertices[faces[int(id*3 + 2)]*3 + 2]);
+    
+//    texcoords[id*3] = float2(0, 0);
+//    texcoords[id*3 + 1] = float2(0, 0);
+//    texcoords[id*3 + 2] = float2(0, 0);
+}
+
+//vertex void depth(uint id [[vertex_id]],
+//                  constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
+//                  device DepthUniforms *depthUniforms [[buffer(kParticleUniforms)]],
+//                  constant float2 *gridPoints [[buffer(kGridPoints)]],
+//                  texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]],
+//                  texture2d<unsigned int, access::sample> confidenceTexture [[texture(kTextureConfidence)]]) {
+//
+//    const auto gridPoint = gridPoints[id];
+//    const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + id) % uniforms.maxPoints;
+//    const auto texCoord = gridPoint / uniforms.cameraResolution;
+//    const auto depth = depthTexture.sample(colorSampler, texCoord).r;
+//    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
+//    float4 projectedPosition = position;//uniforms.viewProjectionMatrix *
+//    projectedPosition /= projectedPosition.w;
+//
+//    const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
+//
+//    depthUniforms[currentPointIndex].position = projectedPosition.xyz;
+//    depthUniforms[currentPointIndex].confidence = confidence;
+//}
+
+vertex void meshCalculate2(uint id [[ vertex_id ]],
+                           constant float *vertices [[ buffer(0) ]],
+                           constant int *faces [[ buffer(1) ]],
+                           device MeshUniforms *meshUniforms [[ buffer(5) ]],
+                           constant realAnchorUniforms &anchorUnifoms [[ buffer(6) ]])
+{
+//    if (int(id) > anchorUnifoms.maxCount) {
+//        return;
+//    }
+    
+    const auto currentIndex = int(id / 3); //(anchorUnifoms.currentIndex + id) % anchorUnifoms.maxCount;
+    meshUniforms[currentIndex].index = currentIndex;
+    meshUniforms[currentIndex].originIndex = faces[id];
+    meshUniforms[currentIndex].faceIndex = int3(faces[int(id)]*3 + 0, faces[int(id)]*3 + 1, faces[int(id)]*3 + 2);
+    
+//    meshUniforms[currentIndex].faces = int(id*3);
+//    meshUniforms[currentIndex + 1].faces = int(id*3 + 1);
+//    meshUniforms[currentIndex + 2].faces = int(id*3 + 2);
+    
+    meshUniforms[currentIndex].vertex1 = mul(float3(vertices[faces[int(id)]*3 + 0],
+                                                    vertices[faces[int(id)]*3 + 1],
+                                                    vertices[faces[int(id)]*3 + 2]),
+                                             anchorUnifoms.transform);
+//    meshUniforms[currentIndex].vertex2 = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
+//                                                    vertices[faces[int(id*3 + 1)]*3 + 1],
+//                                                    vertices[faces[int(id*3 + 1)]*3 + 2]),
+//                                             anchorUnifoms.transform);
+//    meshUniforms[currentIndex].vertex3 = mul(float3(vertices[faces[int(id*3 + 2)]*3 + 0],
+//                                                    vertices[faces[int(id*3 + 2)]*3 + 1],
+//                                                    vertices[faces[int(id*3 + 2)]*3 + 2]),
+//                                             anchorUnifoms.transform);
+    
+    meshUniforms[currentIndex].color = float4(0,0,1.0,0.5);
+    
+//    new_faces[id*3] = int(id*3);
+//    new_faces[id*3 + 1] = int(id*3 + 1);
+//    new_faces[id*3 + 2] = int(id*3 + 2);
+//
+//    new_vertices[id*3] = float3(vertices[faces[int(id*3)]*3],
+//                                vertices[faces[int(id*3)]*3 + 1],
+//                                vertices[faces[int(id*3)]*3 + 2]);
+//    new_vertices[id*3 + 1] = float3(vertices[faces[int(id*3 + 1)]*3],
+//                                    vertices[faces[int(id*3 + 1)]*3 + 1],
+//                                    vertices[faces[int(id*3 + 1)]*3 + 2]);
+//    new_vertices[id*3 + 2] = float3(vertices[faces[int(id*3 + 2)]*3],
+//                                    vertices[faces[int(id*3 + 2)]*3 + 1],
+//                                    vertices[faces[int(id*3 + 2)]*3 + 2]);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct MeshVertexOut {
+    float4 position [[position]]; //特徴点の３次元座標
+    float pointSize [[point_size]];
+    float4 color; //特徴点の色情報
+};
+struct MeshFragmentOut {
+    float depth [[depth(any)]]; //深度情報
+    float4 color; //色情報
+};
+
+vertex MeshVertexOut meshVertex(uint id [[vertex_id]],
+                                constant MeshUniforms *meshUniforms [[ buffer(5) ]],
+                                constant realAnchorUniforms &anchorUnifoms [[ buffer(6) ]]) {
+    
+    const auto position = meshUniforms[id].vertex1;
+    float4 projectedPosition = anchorUnifoms.viewProjectionMatrix * float4(position, 1.0);
+    projectedPosition /= projectedPosition.w;
+    
+    // prepare for output
+    MeshVertexOut out;
+    out.position = projectedPosition;
+    out.pointSize = 10.0;
+    out.color = float4(0, 0, 1.0, 1.0);
+    
+    return out;
+}
+
+fragment MeshFragmentOut meshFragment(MeshVertexOut in [[stage_in]],
+                                 const float2 coords [[point_coord]]) {
+    // we draw within a circle
+    //特徴点の形を四角形から円形にしている
+//    const float distSquared = length_squared(coords - float2(0.5));
+//    if (in.color.a == 0 || distSquared > 0.25) {
+//        discard_fragment(); //当該のピクセルを放棄
+//    }
+
+    MeshFragmentOut out;
+
+    // scale depth values to a range compatible
+    // with depth buffer rendered by SceneKit
+    out.depth = 1.0 + in.position.z;
+    out.color = in.color;
+
+    return out;
+}

@@ -9,13 +9,4 @@ target 'ARMesh' do
 
   # Pods for ARMeshNavigation
 
-  target 'ARMeshTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'ARMeshUITests' do
-    # Pods for testing
-  end
-
 end
