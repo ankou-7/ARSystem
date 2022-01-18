@@ -163,14 +163,6 @@
                                     <action selector="tapped:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="rUP-sh-63r"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5cP-zu-Fh7">
-                                <rect key="frame" x="258" y="1071" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="kari_make_model:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="Anb-iW-WIc"/>
-                                </connections>
-                            </button>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="1" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ncI-bY-CXq">
                                 <rect key="frame" x="692" y="250" width="124" height="31"/>
                                 <constraints>
@@ -226,7 +218,7 @@
                         <outlet property="make_out_modelButton" destination="hZE-Ra-n7c" id="r7Q-lT-t4D"/>
                         <outlet property="numGridPoints_label" destination="i6n-Fu-Eel" id="XR4-Uk-emd"/>
                         <outlet property="numGridPoints_slider" destination="ncI-bY-CXq" id="xbd-lJ-MXe"/>
-                        <outlet property="sceneView" destination="B50-O0-fH0" id="S2h-vS-9jv"/>
+                        <outlet property="sceneView" destination="B50-O0-fH0" id="rXR-6U-xt3"/>
                         <outlet property="status_label" destination="MXO-kC-S0P" id="D9I-gg-jBp"/>
                     </connections>
                 </viewController>

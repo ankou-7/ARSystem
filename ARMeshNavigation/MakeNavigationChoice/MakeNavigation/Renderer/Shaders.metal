@@ -85,37 +85,37 @@ vertex void depth(uint id [[vertex_id]],
 }
 
 
-//// Camera's RGB vertex shader outputs
-//struct RGBVertexOut {
-//    float4 position [[position]];
-//    float2 texCoord;
-//};
+// Camera's RGB vertex shader outputs
+struct RGBVertexOut {
+    float4 position [[position]];
+    float2 texCoord;
+};
 
 //カメラから取得した画像情報用
-//vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],
-//                              constant RGBUniforms &uniforms [[buffer(0)]]) {
-//    const float3 texCoord = float3(viewTexCoords[vertexID], 1) * uniforms.viewToCamera;
-//
-//    RGBVertexOut out;
-//    out.position = float4(viewVertices[vertexID], 0, 1);
-//    out.texCoord = texCoord.xy;
-//
-//    return out;
-//}
-//
-//fragment float4 rgbFragment(RGBVertexOut in [[stage_in]],
-//                            constant RGBUniforms &uniforms [[buffer(0)]],
-//                            texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
-//                            texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]]) {
-//
-//    const float2 offset = (in.texCoord - 0.5) * float2(1, 1 / uniforms.viewRatio) * 2;
-//    const float visibility = saturate(uniforms.radius * uniforms.radius - length_squared(offset));
-//    const float4 ycbcr = float4(capturedImageTextureY.sample(colorSampler, in.texCoord.xy).r, capturedImageTextureCbCr.sample(colorSampler, in.texCoord.xy).rg, 1);
-//
-//    // convert and save the color back to the buffer
-//    const float3 sampledColor = (yCbCrToRGB * ycbcr).rgb;
-//    return float4(sampledColor, 1) * visibility;
-//}
+vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],
+                              constant RGBUniforms &uniforms [[buffer(0)]]) {
+    const float3 texCoord = float3(viewTexCoords[vertexID], 1) * uniforms.viewToCamera;
+
+    RGBVertexOut out;
+    out.position = float4(viewVertices[vertexID], 0, 1);
+    out.texCoord = texCoord.xy;
+
+    return out;
+}
+
+fragment float4 rgbFragment(RGBVertexOut in [[stage_in]],
+                            constant RGBUniforms &uniforms [[buffer(0)]],
+                            texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
+                            texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]]) {
+
+    const float2 offset = (in.texCoord - 0.5) * float2(1, 1 / uniforms.viewRatio) * 2;
+    const float visibility = saturate(uniforms.radius * uniforms.radius - length_squared(offset));
+    const float4 ycbcr = float4(capturedImageTextureY.sample(colorSampler, in.texCoord.xy).r, capturedImageTextureCbCr.sample(colorSampler, in.texCoord.xy).rg, 1);
+
+    // convert and save the color back to the buffer
+    const float3 sampledColor = (yCbCrToRGB * ycbcr).rgb;
+    return float4(sampledColor, 1) * visibility;
+}
 
 
 // Particle vertex shader outputs and fragment shader inputs
@@ -580,6 +580,52 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
     }
 }
 
+kernel void Judge (constant float *vertices [[ buffer(0) ]],
+                   constant int *faces [[ buffer(1) ]],
+                   device float3 *judges [[ buffer(2) ]],
+                   constant float4x4 &uniforms [[ buffer(3) ]],
+                   device realAnchorUniforms &anchorUnifoms [[ buffer(10) ]],
+                   uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+        int count = 0;
+        for (int j = 0; j < 3; j++) {
+            float3 point = mul(float3(vertices[faces[int(id*3 + j)]*3 + 0],
+                                      vertices[faces[int(id*3 + j)]*3 + 1],
+                                      vertices[faces[int(id*3 + j)]*3 + 2]),
+                               anchorUnifoms.transform);
+            
+            const auto normalizedDeviceCoordinate = clipPoint(point, matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                        (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+                count += 1;
+            }
+        }
+        
+        if (count == 1 || count == 2) {
+            judges[anchorUnifoms.currentIndex*3] = mul(float3(vertices[faces[int(id*3 + 0)]*3 + 0],
+                                                              vertices[faces[int(id*3 + 0)]*3 + 1],
+                                                              vertices[faces[int(id*3 + 0)]*3 + 2]),
+                                                       anchorUnifoms.transform);
+            judges[anchorUnifoms.currentIndex*3 + 1] = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
+                                                                  vertices[faces[int(id*3 + 1)]*3 + 1],
+                                                                  vertices[faces[int(id*3 + 1)]*3 + 2]),
+                                                           anchorUnifoms.transform);
+            judges[anchorUnifoms.currentIndex*3 + 2] = mul(float3(vertices[faces[int(id*3 + 2)]*3 + 0],
+                                                                  vertices[faces[int(id*3 + 2)]*3 + 1],
+                                                                  vertices[faces[int(id*3 + 2)]*3 + 2]),
+                                                           anchorUnifoms.transform);
+            anchorUnifoms.currentIndex += 1;
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 kernel void meshCalculate(constant float *vertices [[ buffer(0) ]],
                           constant int *faces [[ buffer(1) ]],
@@ -613,49 +659,28 @@ kernel void meshCalculate(constant float *vertices [[ buffer(0) ]],
 //    texcoords[id*3 + 2] = float2(0, 0);
 }
 
-//vertex void depth(uint id [[vertex_id]],
-//                  constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
-//                  device DepthUniforms *depthUniforms [[buffer(kParticleUniforms)]],
-//                  constant float2 *gridPoints [[buffer(kGridPoints)]],
-//                  texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]],
-//                  texture2d<unsigned int, access::sample> confidenceTexture [[texture(kTextureConfidence)]]) {
-//
-//    const auto gridPoint = gridPoints[id];
-//    const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + id) % uniforms.maxPoints;
-//    const auto texCoord = gridPoint / uniforms.cameraResolution;
-//    const auto depth = depthTexture.sample(colorSampler, texCoord).r;
-//    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
-//    float4 projectedPosition = position;//uniforms.viewProjectionMatrix *
-//    projectedPosition /= projectedPosition.w;
-//
-//    const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
-//
-//    depthUniforms[currentPointIndex].position = projectedPosition.xyz;
-//    depthUniforms[currentPointIndex].confidence = confidence;
-//}
-
 vertex void meshCalculate2(uint id [[ vertex_id ]],
                            constant float *vertices [[ buffer(0) ]],
                            constant int *faces [[ buffer(1) ]],
-                           device MeshUniforms *meshUniforms [[ buffer(5) ]],
+                           device MeshUniforms *meshUniforms [[ buffer(7) ]],
                            constant realAnchorUniforms &anchorUnifoms [[ buffer(6) ]])
 {
 //    if (int(id) > anchorUnifoms.maxCount) {
 //        return;
 //    }
     
-    const auto currentIndex = int(id / 3); //(anchorUnifoms.currentIndex + id) % anchorUnifoms.maxCount;
+    const auto currentIndex = id; //int(id / 3); //(anchorUnifoms.currentIndex + id) % anchorUnifoms.maxCount;
     meshUniforms[currentIndex].index = currentIndex;
     meshUniforms[currentIndex].originIndex = faces[id];
-    meshUniforms[currentIndex].faceIndex = int3(faces[int(id)]*3 + 0, faces[int(id)]*3 + 1, faces[int(id)]*3 + 2);
+    meshUniforms[currentIndex].faceIndex = int3(faces[int(id)], faces[int(id+1)], faces[int(id+2)]);
     
 //    meshUniforms[currentIndex].faces = int(id*3);
 //    meshUniforms[currentIndex + 1].faces = int(id*3 + 1);
 //    meshUniforms[currentIndex + 2].faces = int(id*3 + 2);
     
-    meshUniforms[currentIndex].vertex1 = mul(float3(vertices[faces[int(id)]*3 + 0],
-                                                    vertices[faces[int(id)]*3 + 1],
-                                                    vertices[faces[int(id)]*3 + 2]),
+    meshUniforms[currentIndex].vertex1 = mul(float3(vertices[faces[id]*3 + 0],
+                                                    vertices[faces[id]*3 + 1],
+                                                    vertices[faces[id]*3 + 2]),
                                              anchorUnifoms.transform);
 //    meshUniforms[currentIndex].vertex2 = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
 //                                                    vertices[faces[int(id*3 + 1)]*3 + 1],
@@ -666,7 +691,7 @@ vertex void meshCalculate2(uint id [[ vertex_id ]],
 //                                                    vertices[faces[int(id*3 + 2)]*3 + 2]),
 //                                             anchorUnifoms.transform);
     
-    meshUniforms[currentIndex].color = float4(0,0,1.0,0.5);
+    meshUniforms[currentIndex].color = float4(0,0,1.0,0.3);
     
 //    new_faces[id*3] = int(id*3);
 //    new_faces[id*3 + 1] = int(id*3 + 1);
@@ -694,7 +719,7 @@ struct MeshFragmentOut {
 };
 
 vertex MeshVertexOut meshVertex(uint id [[vertex_id]],
-                                constant MeshUniforms *meshUniforms [[ buffer(5) ]],
+                                constant MeshUniforms *meshUniforms [[ buffer(7) ]],
                                 constant realAnchorUniforms &anchorUnifoms [[ buffer(6) ]]) {
     
     const auto position = meshUniforms[id].vertex1;
@@ -705,7 +730,7 @@ vertex MeshVertexOut meshVertex(uint id [[vertex_id]],
     MeshVertexOut out;
     out.position = projectedPosition;
     out.pointSize = 10.0;
-    out.color = float4(0, 0, 1.0, 1.0);
+    out.color = meshUniforms[id].color; //float4(0, 0, 1.0, 1.0);
     
     return out;
 }
