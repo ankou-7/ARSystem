@@ -92,13 +92,6 @@ struct realAnchorUniforms {
     int maxCount;
     int currentIndex;
     int calcuCount;
-    
-    float3 minX;
-    float3 maxX;
-    float3 minY;
-    float3 maxY;
-    float3 minZ;
-    float3 maxZ;
 };
 
 struct judgeUniforms {

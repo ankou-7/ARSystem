@@ -933,7 +933,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
@@ -961,7 +961,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";

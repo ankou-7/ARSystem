@@ -705,9 +705,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     //
                     calcuMatrix.append(projectionMatrix * viewMatrix)
                     
-                    save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                    DispatchQueue.global().async { [self] in
+                        save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                        //calcu_flag = true
+                    }
                     
-                    calcu_flag = true
                 }
                         
 //                        let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
@@ -946,67 +948,68 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if parameta_flag == true {
+            self.depth_pointCloudRenderer.draw100()
             
-            //DispatchQueue.main.async { [self] in
-            DispatchQueue.global().async { [self] in
-                //                if self.s_flag == true {
-                //                    //self.depth_pointCloudRenderer.draw100()
-                //                    //self.depth_pointCloudRenderer.drawMesh2()
-                
-                if self.calcu_flag == true {
-                    //                        print("calcu")
-                    //                        let (geometry, bool) = depth_pointCloudRenderer.drawMesh()
-                    //                        print(geometry)
-                    //                        print(bool)
-                    //
-                    //                        if bool == true {
-                    //                            update_flag = true
-                    let anchors = sceneView.session.currentFrame!.anchors.compactMap { $0 as? ARMeshAnchor }
-                    for anchor in anchors {
-                        if anchor.identifier == ID {
-                            
-//                            depth_pointCloudRenderer.calcuTexture(anchor: anchor, calcuMatrix: calcuMatrix)
-//                            let points = depth_pointCloudRenderer.judge_point()
-//                            let node = buildNode(points: points)
-//                            sceneView.scene.rootNode.addChildNode(node)
-                            
-                            //                                    //let node = knownAnchors[anchor.identifier]!
-                            //                                    let node = SCNNode(geometry: SCNSphere(radius: 0.1))
-                            //                                    node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-                            //                                    node.opacity = 0.5
-                            //                                    node.simdTransform = anchor.transform
-                            //                                    sceneView.scene.rootNode.addChildNode(node)
-                            ////                                    DispatchQueue.global().async {
-                            ////                                        print("geometry代入")
-                            ////                                        node.geometry = geometry
-                            ////                                    }
-                            ////                                    do {
-                            ////                                        node.geometry = geometry
-                            ////                                    } catch {
-                            ////                                        print("例外発生")
-                            ////                                    }
-                            //                                    //node.simdTransform = anchor.transform
-                            //                                }
-                        }
-                    }
-                    //
-                    calcu_flag = false
-                    s_flag = false
-                }
-            }
+//            //DispatchQueue.main.async { [self] in
+//            DispatchQueue.global().async { [self] in
+//                //                if self.s_flag == true {
+//                //                    //self.depth_pointCloudRenderer.draw100()
+//                //                    //self.depth_pointCloudRenderer.drawMesh2()
+//
+//                if self.calcu_flag == true {
+//                    //                        print("calcu")
+//                    //                        let (geometry, bool) = depth_pointCloudRenderer.drawMesh()
+//                    //                        print(geometry)
+//                    //                        print(bool)
+//                    //
+//                    //                        if bool == true {
+//                    //                            update_flag = true
+//                    let anchors = sceneView.session.currentFrame!.anchors.compactMap { $0 as? ARMeshAnchor }
+//                    for anchor in anchors {
+//                        if anchor.identifier == ID {
+//
+////                            depth_pointCloudRenderer.calcuTexture(anchor: anchor, calcuMatrix: calcuMatrix)
+////                            let points = depth_pointCloudRenderer.judge_point()
+////                            let node = buildNode(points: points)
+////                            sceneView.scene.rootNode.addChildNode(node)
+//
+//                            //                                    //let node = knownAnchors[anchor.identifier]!
+//                            //                                    let node = SCNNode(geometry: SCNSphere(radius: 0.1))
+//                            //                                    node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+//                            //                                    node.opacity = 0.5
+//                            //                                    node.simdTransform = anchor.transform
+//                            //                                    sceneView.scene.rootNode.addChildNode(node)
+//                            ////                                    DispatchQueue.global().async {
+//                            ////                                        print("geometry代入")
+//                            ////                                        node.geometry = geometry
+//                            ////                                    }
+//                            ////                                    do {
+//                            ////                                        node.geometry = geometry
+//                            ////                                    } catch {
+//                            ////                                        print("例外発生")
+//                            ////                                    }
+//                            //                                    //node.simdTransform = anchor.transform
+//                            //                                }
+//                        }
+//                    }
+//                    //
+//                    calcu_flag = false
+//                    s_flag = false
+//                }
+//            }
 //            }
 
-            
+
             if pointCloud_flag == true {
                 //pointCloudRenderer.draw()
             }
         }
-        
-    }
-    
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
 
     }
+//
+//    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+//
+//    }
     
     var s_flag = false
     var calcu_flag = false
@@ -1025,9 +1028,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     let meshGeo = SCNGeometry.fromAnchor(meshAnchor:meshAnchor)
                     sceneNode = SCNNode(geometry: meshGeo)
                     //if knownAnchors.count == 0 {
-                    depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
-                    ID = meshAnchor.identifier
-                    depth_pointCloudRenderer.MeshBuffersDictionary[anchor.identifier] = .init(device: sceneView.device!, count: 999_999, index: 7)
+//                    depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
+//                    ID = meshAnchor.identifier
+//                    depth_pointCloudRenderer.MeshBuffersDictionary[anchor.identifier] = .init(device: sceneView.device!, count: 999_999, index: 7)
                     //                        depth_pointCloudRenderer.id = knownAnchors.count
                     //                        depth_pointCloudRenderer.MeshBuffers.append(.init(device: sceneView.device!, count: 999_999, index: 7))
                     //}
@@ -1036,7 +1039,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 if let node = sceneNode {
                     node.simdTransform = anchor.transform
                     knownAnchors[anchor.identifier] = node
-                    depth_pointCloudRenderer.knownAnchors[anchor.identifier] = node
+                    //depth_pointCloudRenderer.knownAnchors[anchor.identifier] = node
                     node.name = "mesh"
                     meshAnchors_array.append(node.name!)
                     sceneView.scene.rootNode.addChildNode(node)
@@ -1051,15 +1054,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 if let node = knownAnchors[anchor.identifier] {
                     if let meshAnchor = anchor as? ARMeshAnchor {
 
-                        depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
-                        s_flag = true
+//                        depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
+//                        s_flag = true
                         
                         //計算
-                        DispatchQueue.global().async { [self] in
-                            depth_pointCloudRenderer.calcuTexture(anchor: meshAnchor, calcuMatrix: calcuMatrix)
-                            let points = depth_pointCloudRenderer.judge_point()
-                            sceneView.scene.rootNode.addChildNode(buildNode(points: points))
-                        }
+//                        DispatchQueue.global().async { [self] in
+//                            depth_pointCloudRenderer.calcuTexture(anchor: meshAnchor, calcuMatrix: calcuMatrix)
+//                            let points = depth_pointCloudRenderer.judge_point()
+//                            sceneView.scene.rootNode.addChildNode(buildNode(points: points))
+//                        }
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }
