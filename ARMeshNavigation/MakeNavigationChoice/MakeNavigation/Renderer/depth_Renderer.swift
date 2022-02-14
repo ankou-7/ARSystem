@@ -34,7 +34,6 @@ final class depth_Renderer {
     private let commandQueue: MTLCommandQueue
     private let commandQueue2: MTLCommandQueue
     private lazy var unprojectPipelineState = makeUnprojectionPipelineState()!
-    private lazy var particlePipelineState = makeParticlePipelineState()!
     
     private lazy var depthPipelineState = makeDepthPipelineState()!
     private lazy var meshPipelineState = makeMeshPipelineState()!
@@ -56,6 +55,16 @@ final class depth_Renderer {
     private lazy var gridPointsBuffer = MetalBuffer<Float2>(device: device,
                                                             array: makeGridPoints(),
                                                             index: kGridPoints.rawValue, options: [])
+    
+    // RGB buffer
+    private lazy var rgbUniforms: RGBUniforms = {
+        var uniforms = RGBUniforms()
+        uniforms.radius = 1.0
+        uniforms.viewToCamera.copy(from: viewToCamera)
+        uniforms.viewRatio = Float(viewportSize.width / viewportSize.height)
+        return uniforms
+    }()
+    private var rgbUniformsBuffers = [MetalBuffer<RGBUniforms>]()
 
     private lazy var pointCloudUniforms: PointCloudUniforms = {
         var uniforms = PointCloudUniforms()
@@ -95,17 +104,31 @@ final class depth_Renderer {
     var confidenceThreshold = 2
 
 //    //追加
-    private var isSavingFile = false
-    var vertexData: [Vertex] = []
-    var vertexBuffer: MTLBuffer!
-    var colorData: [Color] = []
-    var colorBuffer: MTLBuffer!
-    var count = 0
-
-    var vertice_count = 0
-    var vertice_data: [PointCloudVertex] = []
-
-    var send_vertice_data: [PointCloudVertex] = []
+//    private var isSavingFile = false
+//    var vertexData: [Vertex] = []
+//    var vertexBuffer: MTLBuffer!
+//    var colorData: [Color] = []
+//    var colorBuffer: MTLBuffer!
+//    var count = 0
+//
+//    var vertice_count = 0
+//    var vertice_data: [PointCloudVertex] = []
+//
+//    var send_vertice_data: [PointCloudVertex] = []
+    
+    //マッピング支援機構用
+    var vertextBuffer: MTLBuffer!
+    let vertexData: [Float] = [
+        -1, -1, 0, 1,
+         1, -1, 0, 1,
+        -1,  1, 0, 1,
+         1,  1, 0, 1,
+    ]
+    private lazy var meshPipelineState10 = makeMeshPipelineState10()!
+    private lazy var meshPipelineState100 = makeMeshPipelineState100()!
+    var viewProjectionMatrix: float4x4!
+    var anchorUniforms: AnchorUniforms!
+    //var anchorUniformsBuffer: MTLBuffer!
 
     //init(session: ARSession, metalDevice device: MTLDevice, renderDestination: RenderDestinationProvider) {
     init(session: ARSession, metalDevice device: MTLDevice, sceneView: ARSCNView) {
@@ -159,13 +182,12 @@ final class depth_Renderer {
 
     private func updateCapturedImageTextures(frame: ARFrame) {
         // Create two textures (Y and CbCr) from the provided frame's captured image
-        let pixelBuffer = frame.capturedImage
-        guard CVPixelBufferGetPlaneCount(pixelBuffer) >= 2 else {
+        guard CVPixelBufferGetPlaneCount(frame.capturedImage) >= 2 else {
             return
         }
 
-        capturedImageTextureY = makeTexture(fromPixelBuffer: pixelBuffer, pixelFormat: .r8Unorm, planeIndex: 0)
-        capturedImageTextureCbCr = makeTexture(fromPixelBuffer: pixelBuffer, pixelFormat: .rg8Unorm, planeIndex: 1)
+        capturedImageTextureY = makeTexture(fromPixelBuffer: frame.capturedImage, pixelFormat: .r8Unorm, planeIndex: 0)
+        capturedImageTextureCbCr = makeTexture(fromPixelBuffer: frame.capturedImage, pixelFormat: .rg8Unorm, planeIndex: 1)
     }
 
     private func updateDepthTextures(frame: ARFrame) -> Bool {
@@ -196,79 +218,6 @@ final class depth_Renderer {
         pointCloudUniforms.localToWorld = viewMatrixInversed * rotateToARCamera
         pointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
     }
-
-    func draw() {
-        guard let currentFrame = session.currentFrame,
-              let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = sceneView.currentRenderCommandEncoder else {
-                return
-        }
-        
-
-        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
-            if let self = self {
-                self.inFlightSemaphore.signal()
-            }
-        }
-
-        // update frame data
-        update(frame: currentFrame)
-        updateCapturedImageTextures(frame: currentFrame)
-
-        // handle buffer rotating
-        currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
-        PointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
-
-        if shouldAccumulate(frame: currentFrame), updateDepthTextures(frame: currentFrame) {
-            accumulatePoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
-        }
-
-        //取得した特徴点（色付き）
-        renderEncoder.setDepthStencilState(depthStencilState)
-        renderEncoder.setRenderPipelineState(particlePipelineState)
-        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
-        renderEncoder.setVertexBuffer(particlesBuffer)
-        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
-
-        commandBuffer.commit()
-    }
-
-    private func shouldAccumulate(frame: ARFrame) -> Bool {
-        //return true
-        let cameraTransform = frame.camera.transform
-        let shouldAccum = currentPointCount == 0
-          || dot(cameraTransform.columns.2, lastCameraTransform.columns.2) <= cameraRotationThreshold
-          || distance_squared(cameraTransform.columns.3, lastCameraTransform.columns.3) >= cameraTranslationThreshold
-
-        return shouldAccum
-    }
-
-    private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
-
-        pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
-
-        var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
-        commandBuffer.addCompletedHandler { buffer in
-            retainingTextures.removeAll()
-        }
-
-        renderEncoder.setDepthStencilState(relaxedStencilState)
-        renderEncoder.setRenderPipelineState(unprojectPipelineState)
-        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
-        renderEncoder.setVertexBuffer(particlesBuffer)
-        renderEncoder.setVertexBuffer(gridPointsBuffer)
-        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
-        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
-        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
-        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
-        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
-
-        currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % Int(maxPoints)
-        currentPointCount = min(currentPointCount + gridPointsBuffer.count, Int(maxPoints))
-
-        lastCameraTransform = frame.camera.transform
-    }
     
     //MARK: -計算
     func draw100() {
@@ -287,7 +236,7 @@ final class depth_Renderer {
 
         // update frame data
         update(frame: currentFrame)
-        updateCapturedImageTextures(frame: currentFrame)
+        //updateCapturedImageTextures(frame: currentFrame)
 
         // handle buffer rotating
         currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
@@ -441,43 +390,6 @@ final class depth_Renderer {
                     currentMeshPointCount = 999_999
                 }
             }
-            
-//            if anchor.identifier == AnchorsID {
-//                let face_count = anchor.geometry.faces.count
-//                //print("face_count = \(face_count)")
-//
-//                RealAnchorUniforms.maxCount = 999_999//Int32(face_count)
-//                RealAnchorUniforms.transform = anchor.transform
-//                //RealAnchorUniforms.currentIndex = Int32(currentMeshPointIndex)
-//
-//                renderEncoder.setDepthStencilState(relaxedStencilState)
-//                renderEncoder.setRenderPipelineState(meshPipelineState2)
-//                renderEncoder.setVertexBuffer(anchor.geometry.vertices.buffer, offset: 0, index: 0)
-//                renderEncoder.setVertexBuffer(anchor.geometry.faces.buffer, offset: 0, index: 1)
-//                renderEncoder.setVertexBuffer(MeshBuffer) //5
-//                renderEncoder.setVertexBuffer(AnchorUniformasBuffers[currentAnchorUniformsBufferIndex]) //6
-//                renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: face_count * 3) //実行回数
-//
-//                //currentMeshPointIndex = (currentMeshPointIndex + face_count * 3) % 999_999
-//                if face_count * 3 < 999_999 {
-//                    currentMeshPointCount = max(face_count * 3, currentMeshPointCount)
-//                } else {
-//                    currentMeshPointCount = 999_999
-//                }
-//                //currentMeshPointCount = min(face_count * 3, 999_999) //min(currentMeshPointCount + face_count * 3, 999_999)
-//                //print("currentMeshPointCount = \(currentMeshPointCount)")
-//
-////                var face_array: [Int32] = []
-////                for j in 0..<anchor.geometry.faces.count {
-////                    let indicesPerFace = anchor.geometry.faces.indexCountPerPrimitive
-////                    for offset in 0..<indicesPerFace {
-////                        let vertexIndexAddress = anchor.geometry.faces.buffer.contents().advanced(by: (j * indicesPerFace + offset) * MemoryLayout<UInt32>.size)
-////                        let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
-////                        face_array.append(per_face)
-////                    }
-////                }
-////                print(face_array)
-//            }
         }
     }
     
@@ -516,10 +428,6 @@ final class depth_Renderer {
         commandBuffer.waitUntilCompleted()
         
         print("JudgeBuffer.currentIndex = \(anchorUniformsBuffer[0].currentIndex)")
-        
-//        let points = judge_point()
-//        print("judge_point.count = \(points.count)")
-        //print(points[0])
     }
     
     func judge_point() -> [PointCloudVertex] {
@@ -585,36 +493,6 @@ final class depth_Renderer {
                 encoder.endEncoding()
                 commandBuffer.commit()
                 commandBuffer.waitUntilCompleted()
-                
-        //        let vertexData = Data(bytesNoCopy: new_verticesBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count * 3, deallocator: .none)
-        //        var vertexs = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count * 3)
-        //        vertexs = vertexData.withUnsafeBytes {
-        //            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
-        //        }
-        //        let facesData = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<Int32>.stride * face_count * 3, deallocator: .none)
-        //        var faces = [Int32](repeating: Int32(0), count: face_count * 3)
-        //        faces = facesData.withUnsafeBytes {
-        //            Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))
-        //        }
-        //
-        //        let texcoordsData = Data(bytesNoCopy: texcoordsBuffer!.contents(), count: MemoryLayout<SIMD2<Float>>.stride * face_count * 3, deallocator: .none)
-        //        var texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count * 3)
-        //        texcoords = texcoordsData.withUnsafeBytes {
-        //            Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
-        //        }
-                //print(faces)
-                
-        //        let vertexSource = SCNGeometrySource(
-        //            data: vertexData as Data,
-        //            semantic: SCNGeometrySource.Semantic.vertex,
-        //            vectorCount: face_count * 3,
-        //            usesFloatComponents: true,
-        //            componentsPerVector: 3,
-        //            bytesPerComponent: MemoryLayout<Float>.size,
-        //            dataOffset: 0,
-        //            dataStride: MemoryLayout<SIMD3<Float>>.size
-        //        )
-        //        let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
 
         //        //geometry作成
                 let vertexSource = SCNGeometrySource(buffer: new_verticesBuffer!, vertexFormat: .float3, semantic: .vertex, vertexCount: face_count*3, dataOffset: 0, dataStride: MemoryLayout<SIMD3<Float>>.stride)
@@ -641,6 +519,73 @@ final class depth_Renderer {
         }
         return  (geometry, bool)
     }
+    
+    //MARK: - マッピング支援機構部分
+    
+    var meshAnchors = [ARMeshAnchor]()
+    var imgPlaceMatrix = [float4x4]()
+    
+    func mapping100() {
+        guard let currentFrame = session.currentFrame,
+              let commandBuffer = commandQueue.makeCommandBuffer(),
+              let renderEncoder = sceneView.currentRenderCommandEncoder else {
+                  return
+              }
+        
+        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+            if let self = self {
+                self.inFlightSemaphore.signal()
+            }
+        }
+        
+        if meshAnchors.count < 1 {
+            meshAnchors = currentFrame.anchors.compactMap { $0 as? ARMeshAnchor }
+        }
+        
+        let viewMatrix = currentFrame.camera.viewMatrix(for: orientation)
+        let projectionMatrix = currentFrame.camera.projectionMatrix(for: orientation, viewportSize: viewportSize, zNear: 0.001, zFar: 0)
+        viewProjectionMatrix = projectionMatrix * viewMatrix
+        
+        //let meshAnchors = currentFrame.anchors.compactMap { $0 as? ARMeshAnchor }
+        print("Rendering : \(meshAnchors.count)")
+        
+        print("imgPlaceMatrix : \(imgPlaceMatrix.count)")
+        if imgPlaceMatrix.count > 0 {
+            let calcuUniformsBuffer = device.makeBuffer(bytes: imgPlaceMatrix, length: MemoryLayout<float4x4>.stride * imgPlaceMatrix.count, options: [])
+            renderEncoder.setVertexBuffer(calcuUniformsBuffer, offset: 0, index: 4)
+        }
+        
+        for mesh in meshAnchors {
+        
+            renderEncoder.setDepthStencilState(depthStencilState)
+            renderEncoder.setRenderPipelineState(meshPipelineState100)
+            
+            renderEncoder.setVertexBuffer(mesh.geometry.vertices.buffer, offset: 0, index: 1)
+            renderEncoder.setVertexBuffer(mesh.geometry.faces.buffer, offset: 0, index: 2)
+            
+            let AnchorUniformsBuffer = device.makeBuffer(bytes: [AnchorUniforms(transform: mesh.transform,
+                                                                                viewProjectionMatrix: viewProjectionMatrix,
+                                                                                calcuCount: Int32(imgPlaceMatrix.count))],
+                                                         length: MemoryLayout<AnchorUniforms>.size, options: [])
+            renderEncoder.setVertexBuffer(AnchorUniformsBuffer, offset: 0, index: 3)
+            
+            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.geometry.faces.count * 3)
+            
+        }
+        
+        
+        renderEncoder.setDepthStencilState(depthStencilState)
+        renderEncoder.setRenderPipelineState(meshPipelineState10)
+        let size = vertexData.count * MemoryLayout<Float>.size
+        vertextBuffer = device.makeBuffer(bytes: vertexData, length: size)
+        renderEncoder.setVertexBuffer(vertextBuffer, offset: 0, index: 0)
+        renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+        
+        commandBuffer.commit()
+        
+    }
+    
 }
 
 //// MARK: - Metal Helpers
@@ -714,10 +659,10 @@ private extension depth_Renderer {
 
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }
-
-    func makeParticlePipelineState() -> MTLRenderPipelineState? {
-        guard let vertexFunction = library.makeFunction(name: "particleVertex"),
-            let fragmentFunction = library.makeFunction(name: "particleFragment") else {
+    
+    func makeMeshPipelineState10() -> MTLRenderPipelineState? {
+        guard let vertexFunction = library.makeFunction(name: "meshVertex10"),
+            let fragmentFunction = library.makeFunction(name: "meshFragment10") else {
                 return nil
         }
 
@@ -732,6 +677,21 @@ private extension depth_Renderer {
         descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+
+        return try? device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
+    func makeMeshPipelineState100() -> MTLRenderPipelineState? {
+        guard let vertexFunction = library.makeFunction(name: "meshVertex100"),
+            let fragmentFunction = library.makeFunction(name: "meshFragment100") else {
+                return nil
+        }
+        
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
+        descriptor.depthAttachmentPixelFormat = sceneView.depthPixelFormat
+        descriptor.colorAttachments[0].pixelFormat = sceneView.colorPixelFormat
 
         return try? device.makeRenderPipelineState(descriptor: descriptor)
     }
@@ -771,6 +731,28 @@ private extension depth_Renderer {
         var texture: CVMetalTexture? = nil
         let status = CVMetalTextureCacheCreateTextureFromImage(nil, textureCache, pixelBuffer, nil, pixelFormat, width, height, planeIndex, &texture)
 
+        if status != kCVReturnSuccess {
+            texture = nil
+        }
+
+        return texture
+    }
+    
+    func makeTexture2(fromPixelBuffer pixelBuffer: CVPixelBuffer, pixelFormat: MTLPixelFormat, planeIndex: Int) -> CVMetalTexture? {
+        let width = CVPixelBufferGetWidthOfPlane(pixelBuffer, planeIndex)
+        let height = CVPixelBufferGetHeightOfPlane(pixelBuffer, planeIndex)
+        
+        var texture: CVMetalTexture? = nil
+        let status = CVMetalTextureCacheCreateTextureFromImage(nil,
+                                                               textureCache,
+                                                               pixelBuffer,
+                                                               nil,
+                                                               pixelFormat,
+                                                               height,
+                                                               width,
+                                                               planeIndex,
+                                                               &texture)
+        
         if status != kCVReturnSuccess {
             texture = nil
         }

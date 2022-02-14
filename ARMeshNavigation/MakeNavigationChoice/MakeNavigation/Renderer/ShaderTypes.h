@@ -97,4 +97,11 @@ struct realAnchorUniforms {
 struct judgeUniforms {
     simd_float3 position;
 };
+
+struct AnchorUniforms {
+    matrix_float4x4 transform;
+    matrix_float4x4 viewProjectionMatrix;
+    int calcuCount;
+};
+
 #endif /* ShaderTypes_h */

@@ -686,7 +686,15 @@ private extension Renderer {
         let height = CVPixelBufferGetHeightOfPlane(pixelBuffer, planeIndex)
         
         var texture: CVMetalTexture? = nil
-        let status = CVMetalTextureCacheCreateTextureFromImage(nil, textureCache, pixelBuffer, nil, pixelFormat, width, height, planeIndex, &texture)
+        let status = CVMetalTextureCacheCreateTextureFromImage(nil,
+                                                               textureCache,
+                                                               pixelBuffer,
+                                                               nil,
+                                                               pixelFormat,
+                                                               width,
+                                                               height,
+                                                               planeIndex,
+                                                               &texture)
         
         if status != kCVReturnSuccess {
             texture = nil

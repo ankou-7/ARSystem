@@ -51,7 +51,6 @@
 		CF0F166F272C835900E6F9ED /* SCNGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166E272C835900E6F9ED /* SCNGeometry.swift */; };
 		CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF13205727223CD400277339 /* ObjectOrigin.swift */; };
 		CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */; };
-		CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A975269EC0CB00F62D3A /* Extensions.swift */; };
 		CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */; };
 		CF30EF29262BA8A800C13B66 /* ARColabNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */; };
 		CF30EF34262BAA1F00C13B66 /* VRColabNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */; };
@@ -78,8 +77,6 @@
 		CF3D80CC262B9CCF007904E6 /* SaveDataNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */; };
 		CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */; };
 		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
-		CF3E9288275597430029C166 /* CAlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E9287275597430029C166 /* CAlayer.swift */; };
-		CF3E928A2766611A0029C166 /* Calcu_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E9289276661190029C166 /* Calcu_Renderer.swift */; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
@@ -172,7 +169,6 @@
 		CF0F166E272C835900E6F9ED /* SCNGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNGeometry.swift; sourceTree = "<group>"; };
 		CF13205727223CD400277339 /* ObjectOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOrigin.swift; sourceTree = "<group>"; };
 		CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Utils.swift"; sourceTree = "<group>"; };
-		CF27A975269EC0CB00F62D3A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeModePopOver.swift; sourceTree = "<group>"; };
 		CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ARColabNavigation.storyboard; sourceTree = "<group>"; };
 		CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VRColabNavigation.storyboard; sourceTree = "<group>"; };
@@ -199,8 +195,6 @@
 		CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SaveDataNavigation.storyboard; sourceTree = "<group>"; };
 		CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDataChoiceController.swift; sourceTree = "<group>"; };
 		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
-		CF3E9287275597430029C166 /* CAlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CAlayer.swift; sourceTree = "<group>"; };
-		CF3E9289276661190029C166 /* Calcu_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calcu_Renderer.swift; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
@@ -408,8 +402,6 @@
 			children = (
 				CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */,
 				26AAA2352563C997008FE5EB /* MakeNavigationController.swift */,
-				CF3E9287275597430029C166 /* CAlayer.swift */,
-				CF27A975269EC0CB00F62D3A /* Extensions.swift */,
 				CF6BC314262AE43700E9B083 /* AddDataCellChoice */,
 				CF3D8092262B8D64007904E6 /* AddDataCheckCell */,
 				CF3D808E262B8C64007904E6 /* Renderer */,
@@ -422,7 +414,6 @@
 			children = (
 				2682062E25C3F7BC00519E42 /* Renderer.swift */,
 				CF3E928327532A670029C166 /* depth_Renderer.swift */,
-				CF3E9289276661190029C166 /* Calcu_Renderer.swift */,
 				2632F45325F04193006B7366 /* Shaders.metal */,
 				2632F45925F0420A006B7366 /* MetalBuffer.swift */,
 				2632F45825F041DF006B7366 /* ShaderTypes.h */,
@@ -728,10 +719,8 @@
 				262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */,
 				CF3D806B262B5364007904E6 /* MakeNavigationChoiceController.swift in Sources */,
 				CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */,
-				CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */,
 				CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */,
 				CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */,
-				CF3E9288275597430029C166 /* CAlayer.swift in Sources */,
 				CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */,
 				26474EEC256AEA02000C1456 /* ColabNavigationEditModel.swift in Sources */,
 				CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */,
@@ -765,7 +754,6 @@
 				CF98DE9327485DDF0023A1E4 /* CVPixelBuffer+.swift in Sources */,
 				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
 				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
-				CF3E928A2766611A0029C166 /* Calcu_Renderer.swift in Sources */,
 				CF30EF3C262BAA7C00C13B66 /* ColabDataChoiceController.swift in Sources */,
 				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,
 				26AAA1F52563C802008FE5EB /* Experience.rcproject in Sources */,

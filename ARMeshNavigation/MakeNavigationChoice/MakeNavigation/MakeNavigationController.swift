@@ -25,16 +25,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     let scene = SCNScene()
     @IBOutlet weak var status_label: UILabel!
     
-//    let calayer = LayerView()
-//    var canvasLayer: CALayer {
-//            return sceneView.layer
-//    }
-    var rootLayer: CALayer! = nil
-    var detectLayer: CALayer! = nil
-    
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
-    private var calculateRenderer: Calcu_Renderer!
+    //private var calculateRenderer: Calcu_Renderer!
     var pointCloud_flag = false
     var numGridPoints = 1000
     @IBOutlet weak var numGridPoints_label: UILabel!
@@ -74,7 +67,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var knownAnchors = Dictionary<UUID, SCNNode>()
     var meshAnchors_array: [String] = []
     var texcoords2: [[SIMD2<Float>]] = []
-    var calcuMatrix: [float4x4] = []
     
     var jpeg_count = 0
     var parameta_flag = false
@@ -92,18 +84,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //rootLayer = sceneView.layer
-//        detectLayer = CALayer()
-//        detectLayer.frame = CGRect(x: 0.0,
-//                                    y: 0.0,
-//                                    width: 500,
-//                                    height: 1000)
-//        print(view.bounds)
-//        detectLayer.backgroundColor = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [0.2, 1.0, 1.0, 0.2])
-//        sceneView.layer.insertSublayer(detectLayer, at: 0)
-//        view.layer.addSublayer(detectLayer)
-
 
 //        sceneView = ARSCNView()
 //        sceneView.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
@@ -137,58 +117,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         numGridPoints_label.text = "\(numGridPoints)個/frame"
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
-        
-//        let wallNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
-//        wallNode.geometry?.firstMaterial?.diffuse.contents = UIColor.init(red: 0, green: 0, blue: 255, alpha:0.3)
-//        wallNode.position = SCNVector3(0,0,-0.3)
-//        sceneView.scene.rootNode.addChildNode(wallNode)
-        
-        // グラデーションレイヤーの生成
-//        let gradLayer = CAGradientLayer()
-//        gradLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 500)
-//        gradLayer.colors =
-//        gradLayer.colors = [
-//            UIColor.blue.cgColor,
-//            UIColor.red.cgColor,
-//        ]
-        
-//        canvasLayer.backgroundColor = CGColor.init(red: 255, green: 0, blue: 255, alpha: 0.5)
-//        canvasLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 300)
-//
-//        let newLayer = CALayer()
-//        newLayer.backgroundColor = CGColor.init(red: 0, green: 0, blue: 255, alpha: 0.3)
-//        newLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 1150)
-//
-//        let upLayer = CALayer()
-//        upLayer.backgroundColor = CGColor.init(red: 255, green: 0, blue: 0, alpha: 0.3)
-//        upLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 1150)
-//
-//        newLayer.addSublayer(upLayer)
-//
-////        let line = UIBezierPath();
-//////        line.move(to: CGPoint(x: 0, y: 0));
-//////        line.addLine(to: CGPoint(x: 0, y: 1150));
-//////        line.addLine(to: CGPoint(x: 834, y: 1150));
-//////        line.addLine(to: CGPoint(x: 834, y: 0));
-////        line.move(to: CGPoint(x: 30, y: 80));
-////        line.addLine(to: CGPoint(x: 200, y: 450));
-////        line.addLine(to: CGPoint(x: 300, y: 280));
-////        line.close()
-////
-////        let ovalShapeLayer = CAShapeLayer()
-////        ovalShapeLayer.path = line.cgPath
-//
-//        // マスクを設定
-//        //upLayer.mask = ovalShapeLayer
-//
-//        //描写
-//        canvasLayer.addSublayer(newLayer)
-        
-//        let wall = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
-//        wall.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-//        wall.opacity = 0.5
-//        wall.position = SCNVector3(x: 0, y: 0, z: -1.5)
-//        sceneView.scene.rootNode.addChildNode(wall)
         
     }
     
@@ -702,12 +630,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     
                     let depthData = depth_pointCloudRenderer.depthData()
                     
-                    //
-                    calcuMatrix.append(projectionMatrix * viewMatrix)
+                    depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
                     
                     DispatchQueue.global().async { [self] in
                         save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
-                        //calcu_flag = true
                     }
                     
                 }
@@ -948,101 +874,31 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if parameta_flag == true {
-            self.depth_pointCloudRenderer.draw100()
+            self.depth_pointCloudRenderer.draw100() //深度情報
             
-//            //DispatchQueue.main.async { [self] in
-//            DispatchQueue.global().async { [self] in
-//                //                if self.s_flag == true {
-//                //                    //self.depth_pointCloudRenderer.draw100()
-//                //                    //self.depth_pointCloudRenderer.drawMesh2()
-//
-//                if self.calcu_flag == true {
-//                    //                        print("calcu")
-//                    //                        let (geometry, bool) = depth_pointCloudRenderer.drawMesh()
-//                    //                        print(geometry)
-//                    //                        print(bool)
-//                    //
-//                    //                        if bool == true {
-//                    //                            update_flag = true
-//                    let anchors = sceneView.session.currentFrame!.anchors.compactMap { $0 as? ARMeshAnchor }
-//                    for anchor in anchors {
-//                        if anchor.identifier == ID {
-//
-////                            depth_pointCloudRenderer.calcuTexture(anchor: anchor, calcuMatrix: calcuMatrix)
-////                            let points = depth_pointCloudRenderer.judge_point()
-////                            let node = buildNode(points: points)
-////                            sceneView.scene.rootNode.addChildNode(node)
-//
-//                            //                                    //let node = knownAnchors[anchor.identifier]!
-//                            //                                    let node = SCNNode(geometry: SCNSphere(radius: 0.1))
-//                            //                                    node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-//                            //                                    node.opacity = 0.5
-//                            //                                    node.simdTransform = anchor.transform
-//                            //                                    sceneView.scene.rootNode.addChildNode(node)
-//                            ////                                    DispatchQueue.global().async {
-//                            ////                                        print("geometry代入")
-//                            ////                                        node.geometry = geometry
-//                            ////                                    }
-//                            ////                                    do {
-//                            ////                                        node.geometry = geometry
-//                            ////                                    } catch {
-//                            ////                                        print("例外発生")
-//                            ////                                    }
-//                            //                                    //node.simdTransform = anchor.transform
-//                            //                                }
-//                        }
-//                    }
-//                    //
-//                    calcu_flag = false
-//                    s_flag = false
-//                }
-//            }
-//            }
-
+            self.depth_pointCloudRenderer.mapping100() //マッピング支援
 
             if pointCloud_flag == true {
-                //pointCloudRenderer.draw()
+                //pointCloudRenderer.draw() //点群
             }
         }
 
     }
-//
-//    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-//
-//    }
-    
-    var s_flag = false
-    var calcu_flag = false
-    
-    var ID: UUID!
-    
-    //knownAnchors = Dictionary<UUID, SCNNode>()
     
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         if mesh_flag == true {
             for anchor in anchors {
                 var sceneNode : SCNNode?
-                
                 if let meshAnchor = anchor as? ARMeshAnchor {
-                    
                     let meshGeo = SCNGeometry.fromAnchor(meshAnchor:meshAnchor)
                     sceneNode = SCNNode(geometry: meshGeo)
-                    //if knownAnchors.count == 0 {
-//                    depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
-//                    ID = meshAnchor.identifier
-//                    depth_pointCloudRenderer.MeshBuffersDictionary[anchor.identifier] = .init(device: sceneView.device!, count: 999_999, index: 7)
-                    //                        depth_pointCloudRenderer.id = knownAnchors.count
-                    //                        depth_pointCloudRenderer.MeshBuffers.append(.init(device: sceneView.device!, count: 999_999, index: 7))
-                    //}
-                    
                 }
                 if let node = sceneNode {
                     node.simdTransform = anchor.transform
                     knownAnchors[anchor.identifier] = node
-                    //depth_pointCloudRenderer.knownAnchors[anchor.identifier] = node
                     node.name = "mesh"
                     meshAnchors_array.append(node.name!)
-                    sceneView.scene.rootNode.addChildNode(node)
+                    //sceneView.scene.rootNode.addChildNode(node)
                 }
             }
         }
@@ -1050,25 +906,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         if mesh_flag == true {
+            var meshAnchors = [ARMeshAnchor]()
             for anchor in anchors {
                 if let node = knownAnchors[anchor.identifier] {
                     if let meshAnchor = anchor as? ARMeshAnchor {
 
-//                        depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
-//                        s_flag = true
-                        
-                        //計算
-//                        DispatchQueue.global().async { [self] in
-//                            depth_pointCloudRenderer.calcuTexture(anchor: meshAnchor, calcuMatrix: calcuMatrix)
-//                            let points = depth_pointCloudRenderer.judge_point()
-//                            sceneView.scene.rootNode.addChildNode(buildNode(points: points))
-//                        }
+                        meshAnchors.append(meshAnchor) //updateされたメッシュ情報を格納
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }
                     node.simdTransform = anchor.transform
                 }
             }
+            depth_pointCloudRenderer.meshAnchors = meshAnchors
         }
     }
     

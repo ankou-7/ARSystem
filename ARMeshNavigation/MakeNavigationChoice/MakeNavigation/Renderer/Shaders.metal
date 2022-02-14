@@ -365,29 +365,6 @@ kernel void calcu(const device float *inputData [[ buffer(0) ]],
 }
 
 
-//kernel void calcu2(const device float3 *vertices [[ buffer(0) ]],
-//                   const device float3 *normals [[ buffer(1) ]],
-//                   const device int3 *faces [[ buffer(2) ]],
-//                   constant CalcuUniforms &uniforms [[ buffer(3) ]],
-//                   device float2 *texcoords [[buffer(4)]],
-//                         uint id [[ thread_position_in_grid ]])
-//{
-//    const auto faceID = faces[id];
-//    const auto x = faceID.x;
-//    const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[id],1);
-//    const auto clipSpacePosition = uniforms.matrix * vertexPoint4;
-//    const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
-//    const auto pt = simd_float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
-//                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
-//                                (1 - (-normalizedDeviceCoordinate.z + 1)));
-//    if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
-//        const auto u = pt.x / (834 * uniforms.yoko)  + (0 % uniforms.yoko) / uniforms.yoko;
-//        const auto v = pt.y / (1150 * uniforms.tate) + (0 / uniforms.yoko) / uniforms.tate;
-//        texcoords[id] = float2(u, v);
-//    }
-//    
-//}
-
 static simd_float4 clipPoint(simd_float3 vertexPoint, matrix_float4x4 matrix) {
     const auto clipSpacePosition = matrix * simd_float4(vertexPoint, 1.0);
     
@@ -752,4 +729,82 @@ fragment MeshFragmentOut meshFragment(MeshVertexOut in [[stage_in]],
     out.color = in.color;
 
     return out;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct ColorInOut {
+    float4 position [[position]]; //特徴点の３次元座標
+    float2 texCoord;
+    int visible;
+};
+
+vertex ColorInOut meshVertex10(const device float4 *positions [[ buffer(0)]],
+                                uint id [[ vertex_id ]]) {
+    
+    ColorInOut out;
+    out.position = positions[id];
+    return out;
+}
+
+fragment float4 meshFragment10(ColorInOut in [[ stage_in ]]) {
+    return float4(1,0,0,0.5);
+}
+
+vertex ColorInOut meshVertex100(constant float *vertices [[ buffer(1) ]],
+                                constant int *faces [[ buffer(2) ]],
+                                constant AnchorUniforms &anchorUnifoms [[ buffer(3) ]],
+                                constant float4x4 *uniforms [[ buffer(4) ]],
+                                uint id [[ vertex_id ]]) {
+    
+    //メッシュの頂点をワールド座標系に変換
+    const auto position = mul(float3(vertices[faces[id]*3 + 0],
+                                     vertices[faces[id]*3 + 1],
+                                     vertices[faces[id]*3 + 2]),
+                              anchorUnifoms.transform);;
+    
+    ColorInOut out;
+    
+    if (anchorUnifoms.calcuCount > 0) {
+        float4 projectedPosition = anchorUnifoms.viewProjectionMatrix * float4(position, 1.0);
+        projectedPosition /= projectedPosition.w; //必要
+        
+    //    const auto pt = float3((projectedPosition.x + 1) * (834 / 2),
+    //                           (-projectedPosition.y + 1) * (1150 / 2),
+    //                           (1 - (-projectedPosition.z + 1)));
+        
+        if (abs(projectedPosition.x) >= 5.0 || abs(projectedPosition.y >= 5.0 || projectedPosition.z > 1.0)) {
+            out.visible = 1;
+        } else {
+            out.visible = 2;
+            out.position = projectedPosition;
+        //const auto new_tex = float2(pt.y/1194, 1 - pt.x/834);
+        //out.texCoord = float2(pt.x/834, pt.y/1150);
+        }
+        
+        //変換した頂点が画面上に位置するかを判定
+        if (out.visible == 2) {
+            for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+                const auto normalizedDeviceCoordinate = clipPoint(position, uniforms[i]);
+                const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                                       (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                       (1 - (-normalizedDeviceCoordinate.z + 1)));
+                
+                if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+                    out.visible = 0;
+                }
+            }
+        }
+    }
+    
+    
+    return out;
+}
+
+fragment float4 meshFragment100(ColorInOut in [[ stage_in ]]) {
+    if (in.visible != 0) {
+        discard_fragment();
+    }
+    
+    return float4(0,0,0,0);
 }
