@@ -102,224 +102,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        DispatchQueue.main.async {
-            
-        }
-    }
-    
-    func triming(pointA: CGPoint, pointB: CGPoint) -> [CGPoint] {
-        let Ax = Int(pointA.x)
-        let Ay = Int(pointA.y)
-        let Bx = Int(pointB.x)
-        let By = Int(pointB.y)
-        let n = abs(Bx - Ax) //横
-        let m = abs(By - Ay) //縦
-        
-        var index: [CGPoint] = []
-        var r_x = 1
-        var r_y = -1
-        if Bx - Ax < 0 {
-            r_x = -1
-        }
-        if By - Ay > 0 {
-            r_y = 1
-        }
-        
-        if n == 0 {
-            let nx = Ax
-            var ny = Ay
-            index.append(CGPoint(x: nx, y: ny))
-            for _ in 1...m {
-                ny += r_y
-                index.append(CGPoint(x: nx, y: ny))
-            }
-        } else if m == 0 {
-            var nx = Ax
-            let ny = Ay
-            index.append(CGPoint(x: nx, y: ny))
-            for _ in 1...n {
-                nx += r_x
-                index.append(CGPoint(x: nx, y: ny))
-            }
-        } else {
-            if m >= n {
-                if (m % n) == 0 {
-                    let p = m / n
-                    var nx = Ax
-                    var ny = Ay
-                    index.append(CGPoint(x: nx, y: ny))
-                    for _ in 1...n {
-                        nx += r_x
-                        for _ in 0..<p {
-                            ny += r_y
-                            index.append(CGPoint(x: nx, y: ny))
-                        }
-                    }
-                }
-                if (m % n) != 0 {
-                    let p = Int(floor(Double(m / n)))//m / n
-                    let q = m % n
-                    //let r = Int(floor(Double(n / q)))
-                    var nx = Ax
-                    var ny = Ay
-                    index.append(CGPoint(x: nx, y: ny))
-                    for i in 1...n {
-                        nx += r_x
-                        for _ in 0..<p {
-                            ny += r_y
-                            index.append(CGPoint(x: nx, y: ny))
-                        }
-                        if i == n {
-                            for _ in 0..<q {
-                                ny += r_y
-                                index.append(CGPoint(x: nx, y: ny))
-                            }
-                        }
-                    }
-                }
-            } else if m < n {
-                if (n % m) == 0 {
-                    let p = m / n
-                    var nx = Ax
-                    var ny = Ay
-                    index.append(CGPoint(x: nx, y: ny))
-                    for _ in 1...m {
-                        ny += r_y
-                        for _ in 0..<p {
-                            nx += r_x
-                            index.append(CGPoint(x: nx, y: ny))
-                        }
-                    }
-                }
-                if (n % m) != 0 {
-                    let p = Int(floor(Double(n / m)))//m / n
-                    let q = m % n
-                    var nx = Ax
-                    var ny = Ay
-                    index.append(CGPoint(x: nx, y: ny))
-                    for i in 1...m {
-                        ny += r_y
-                        for _ in 0..<p {
-                            nx += r_x
-                            index.append(CGPoint(x: nx, y: ny))
-                        }
-                        if i == m {
-                            for _ in 0..<q {
-                                nx += r_x
-                                index.append(CGPoint(x: nx, y: ny))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        return index
-    }
-    
-    func makeX(y: Int, pointA: CGPoint, pointB: CGPoint) -> Int {
-        let a = Float(pointB.y - pointA.y) / Float(pointB.x - pointA.x)
-        let x = (CGFloat(y) - pointA.y) / CGFloat(a) + pointA.x
-        //print(x)
-        return Int(round(x))
-    }
-    
-    func get_pixelData(pixelData: [UInt8], pointA: CGPoint, pointB: CGPoint, pointC: CGPoint) {
-        //let XArray = [Int(pointA.x), Int(pointB.x), Int(pointC.x)]
-        let YArray = [Int(pointA.y), Int(pointB.y), Int(pointC.y)]
-        let points = [pointA, pointB, pointC]
-        //let sortedXArray = XArray.enumerated().sorted{ $0.element < $1.element }.map{ $0.offset }
-        let sortedYArray = YArray.enumerated().sorted{ $0.element < $1.element }.map{ $0.offset }
-        //print(sortedYArray)
-        
-//        XArray.sort()
-//        YArray.sort()
-//        print(XArray)
-//        print(YArray)
-        
-        for y in YArray[sortedYArray[0]]...YArray[sortedYArray[1]] {
-            if (points[sortedYArray[1]].x < points[sortedYArray[2]].x) {
-                let left = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[1]])
-                let right = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[2]])
-                //print("i, left, right = \(y), \(left), \(right)")
-                if left < right {
-                    for i in left...right {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                } else {
-                    for i in right...left {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                }
-            } else if (points[sortedYArray[1]].x > points[sortedYArray[2]].x) {
-                let left = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[2]])
-                let right = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[1]])
-                //print("i, left, right = \(y), \(left), \(right)")
-                if left < right {
-                    for i in left...right {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                } else {
-                    for i in right...left {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                }
-            }
-        }
-        for y in YArray[sortedYArray[1]]...YArray[sortedYArray[2]] {
-            if (points[sortedYArray[0]].x < points[sortedYArray[1]].x) {
-                let left = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[0]])
-                let right = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[1]])
-                //print("i, left, right = \(y), \(left), \(right)")
-                if left < right {
-                    for i in left...right {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                } else {
-                    for i in right...left {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                }
-            } else if (points[sortedYArray[0]].x > points[sortedYArray[1]].x) {
-                let left = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[1]])
-                let right = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[0]])
-                //print("i, left, right = \(y), \(left), \(right)")
-                if left < right {
-                    for i in left...right {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                } else {
-                    for i in right...left {
-                        new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
-                        new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
-                        new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
-                        new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
-                    }
-                }
-            }
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -394,12 +176,17 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
 //            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 0
 //        }
         
+        print(results[section_num].cells[cell_num].models[current_model_num].texture_bool)
+        
         if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
             load_anchor(tex_bool: true)
         } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 0 {
             load_anchor(tex_bool: false)
         } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 2 {
             load_anchor2()
+        } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 3 {
+            let node =   build2(image: new_uiimage)
+            sceneView.scene?.rootNode.addChildNode(node)
         }
     }
     
@@ -413,6 +200,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             load_anchor(tex_bool: true)
         } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 2 {
             load_anchor2()
+        } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 3 {
+            //delete_mesh()
+            let node =   build2(image: new_uiimage)
+            sceneView.scene?.rootNode.addChildNode(node)
         }
     }
     
@@ -917,6 +708,56 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         print("load完了")
     }
     
+    func build2(image: UIImage) -> SCNNode {
+        let tex_node = SCNNode()
+        tex_node.name = "tex_node"
+        for i in 0..<anchors.count {
+            let vertexData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices!
+            let normalData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals!
+            let count = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count
+            
+            let faces = (try? decoder.decode([Int32].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces))!
+            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords))!
+            
+            let verticeSource = SCNGeometrySource(
+                data: vertexData,
+                semantic: SCNGeometrySource.Semantic.vertex,
+                vectorCount: count,
+                usesFloatComponents: true,
+                componentsPerVector: 3,
+                bytesPerComponent: MemoryLayout<Float>.size,
+                dataOffset: 0,
+                dataStride: MemoryLayout<SIMD3<Float>>.size
+            )
+            let normalSource = SCNGeometrySource(
+                data: normalData,
+                semantic: SCNGeometrySource.Semantic.normal,
+                vectorCount: count,
+                usesFloatComponents: true,
+                componentsPerVector: 3,
+                bytesPerComponent: MemoryLayout<Float>.size,
+                dataOffset: MemoryLayout<Float>.size * 3,
+                dataStride: MemoryLayout<SIMD3<Float>>.size
+            )
+            let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
+            let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
+            
+            let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
+            nodeGeometry.firstMaterial?.diffuse.contents = image
+            
+//            let defaultMaterial = SCNMaterial()
+//            defaultMaterial.fillMode = .lines
+//            defaultMaterial.diffuse.contents = UIColor.blue
+//            nodeGeometry.materials = [defaultMaterial]
+            
+            let node = SCNNode(geometry: nodeGeometry)
+            knownAnchors[anchors[i].identifier] = node
+            node.name = "child_tex_node"
+            tex_node.addChildNode(node)
+        }
+        return tex_node
+    }
+    
     func save_model(num: Int) {
         for (i, _) in anchors.enumerated() {
             var texcoords_data = Data()
@@ -1017,6 +858,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         return (calcuMatrix, depth)
     }
     
+    //Metalを用いたテクスチャ割り当て
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         //ActivityView.isHidden = false
 //        ActivityView.startAnimating()
@@ -1029,7 +871,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         //self.calculate.matrix = calcuMatrix
         
         var flag = 0
-        
         
         DispatchQueue.global().sync {
             
@@ -1055,11 +896,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
                         let elapsed = Date().timeIntervalSince(start)
                         print("処理時間：\(elapsed)")
                         //print("配列全て中身：\(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)")
-                        //load_anchor2()
 //                        print("load")
                         delete_mesh()
-                        let node = self.calculate.build2(image: new_uiimage)
+                        let node =   build2(image: new_uiimage)
                         sceneView.scene?.rootNode.addChildNode(node)
+                        //load_anchor2()
                         ActivityView.stopAnimating()
                     }
                 }
@@ -1070,20 +911,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
     }
     
     @IBAction func tap_newmakeTexture(_ sender: UIButton) {
-        //ActivityView.isHidden = false
-//        ActivityView.startAnimating()
-//        make_texture(num: 1)
-        //make_texture9000(num: 2)
         
-        imageView.image = new_uiimage
-        let node = self.calculate.build2(image: new_uiimage)
-        sceneView.scene?.rootNode.addChildNode(node)
     }
     
+    //CPUでのテクスチャ割り当て
     @IBAction func tap_makeTexture3(_ sender: UIButton) {
 //        DispatchQueue.global().sync {
 //            self.ActivityView.startAnimating()
-            //make_texture(num: 2)
             make_texture1000(num: 2)
 //            self.ActivityView.stopAnimating()
 //        }
@@ -1245,89 +1079,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         load_anchor2()
         
         //print(new_texcoords2)
-    }
-    
-    func make_texture(num: Int) {
-        let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
-        let yoko: Float = 17.0//4.0
-        let tate: Float = ceil(Float(count)/yoko)
-        
-        //RGB画像
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.5)
-        
-        //内部パラメータ保存用
-        let realm = try! Realm()
-        try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
-        }
-        DispatchQueue.global().sync {
-            let start = Date()
-            if num != 2 {
-                Make_meshInfo_Array()
-            }
-            if num == 1 {
-                remake_mesh()
-            }
-            
-            for i in 0..<count {
-                let depth_array = try? decoder.decode([depthPosition].self, from: results[section_num].cells[cell_num].models[current_model_num].depth[i].depth_data!)
-                let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[i].json_data!)
-                let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
-                                                json_data!.cameraPosition.y,
-                                                json_data!.cameraPosition.z)
-                let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
-                                                   json_data!.cameraEulerAngles.y,
-                                                   json_data!.cameraEulerAngles.z)
-                let cameraVector = SCNVector3(json_data!.cameraVector.x,
-                                              json_data!.cameraVector.y,
-                                              json_data!.cameraVector.z)
-                
-                let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
-                                               json_data!.viewMatrix.y,
-                                               json_data!.viewMatrix.z,
-                                               json_data!.viewMatrix.w)
-                let projectionMatrix = simd_float4x4(json_data!.projectionMatrix.x,
-                                                     json_data!.projectionMatrix.y,
-                                                     json_data!.projectionMatrix.z,
-                                                     json_data!.projectionMatrix.w)
-                let matrix = projectionMatrix * viewMatrix
-                
-                let move = SCNAction.move(to: cameraPosition, duration: 0)
-                let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
-                cameraNode.runAction(SCNAction.group([move, rotation]),
-                                     completionHandler: { [self] in
-                    if num == 0 {
-                        calcTextureCoordinates(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
-                    } else if num == 1 {
-                        calcTextureCoordinates5(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector)
-                    } else if num == 2 {
-                        calcTextureCoordinates1000(num: i, yoko: yoko, tate: tate, cameraVector: cameraVector, depthArray: depth_array!, matrix: matrix)
-                    }
-                    
-                    if i+1 == count {
-                        DispatchQueue.main.sync {
-                            let elapsed = Date().timeIntervalSince(start)
-                            print("処理時間：\(elapsed)")
-                            //Alert()
-                            save_model(num: num)
-                            delete_mesh()
-                            if num == 0 {
-                                //ActivityView.isHidden = true
-                                ActivityView.stopAnimating()
-                                load_anchor(tex_bool: true)
-                            } else {
-                                //ActivityView.isHidden = true
-                                ActivityView.stopAnimating()
-                                load_anchor2()
-//                                let image = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[0].pic_data!)
-//                                imageView2.image = image?.cgImage!.makeImage(pixelData: new_pixelData)
-                            }
-                        }
-                    }
-                })
-            }
-        }
     }
     
     @objc func Alert() {
@@ -1693,186 +1444,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
         print("calculate\(num)完了")
     }
     
-    func calcTextureCoordinates100(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
-        for (i, faces) in face_array.enumerated() {
-            var points: [SCNVector3] = []
-            var points_index: [Int] = []
-            var all_points: [[SCNVector3]] = []
-            var all_points_index: [[Int]] = []
-            var face_count = new_face_array[i].count - 1 //-1
-            var now_face_count = -1
-            
-            for (j, index) in faces.enumerated() {
-                let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
-                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-                    let world_vector3 = vertex_array[i][Int(index)]
-                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
-                    
-                    if hitResults.count > 1 {
-                        for (k, _) in hitResults.enumerated() {
-                            if hitResults[k].node.name! == "child_tex_node" {
-                                let hitPoints = hitResults[k].worldCoordinates
-                                if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
-                                    points.append(pt)
-                                    points_index.append(Int(index))
-                                }
-                                break
-                            }
-                        }
-                    } else if hitResults.count == 1 {
-                        if hitResults[0].node.name! == "child_tex_node" {
-                            points.append(pt)
-                            points_index.append(Int(index))
-                        }
-                    } else if hitResults.count == 0 {
-                        points.append(pt)
-                        points_index.append(Int(index))
-                    }
-//                    points.append(pt)
-//                    points_index.append(Int(index))
-                }
-                
-                //面ごとの処理
-                if j % 3 == 2 {
-                    now_face_count += 1
-                    if points_index.count == 3 {
-                        all_points_index.append(points_index)
-                        all_points.append(points)
-                    }
-                    points = []
-                    points_index = []
-                }
-            }
-            
-            for l in 0..<all_points_index.count {
-            //if face_bool[i][now_face_count] == -1 {
-                face_bool[i][now_face_count] = i
-                for (k, p) in all_points[l].enumerated() {
-                    face_count += 1
-                    let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-                    let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                    new_texcoords2[i].append(SIMD2<Float>(u, v))
-                    new_face_array[i].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
-                    new_vertex_array[i].append(vertex_array[i][all_points_index[l][k]])
-                    new_normal_array[i].append(normal_array[i][all_points_index[l][k]])
-                }
-            }
-            all_points_index = []
-            all_points = []
-        }
-        print("calculate完了")
-//                        if num == 0 {
-//                            get_pixelData(pixelData: pixelData,
-//                                          pointA: CGPoint(x: CGFloat(points[0].x)/834 * 2880,
-//                                                          y: CGFloat(points[0].y)/1150 * 3840),
-//                                          pointB: CGPoint(x: CGFloat(points[1].x)/834 * 2880,
-//                                                          y: CGFloat(points[1].y)/1150 * 3840),
-//                                          pointC: CGPoint(x: CGFloat(points[2].x)/834 * 2880,
-//                                                          y: CGFloat(points[2].y)/1150 * 3840))
-//                        }
-                        
-////                        if face_bool[i][now_face_count] == -1 {
-//                            face_bool[i][now_face_count] = i
-//                            for (k, p) in points.enumerated() {
-//                                face_count += 1
-//                                let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-//                                let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-//                                new_texcoords2[i].append(SIMD2<Float>(u, v))
-//                                //texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
-//
-//                                new_face_array[i].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
-//                                new_vertex_array[i].append(vertex_array[i][points_index[k]])
-//                                new_normal_array[i].append(normal_array[i][points_index[k]])
-                                
-//                                let verticles = anchors[i].geometry.vertices
-//                                let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * k))
-//                                let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
-//                                let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
-//                                let world_vertex4 = simd_mul(anchors[i].transform, vertex4)
-//                                let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
-//                                new_vertex_array[i].append(world_vector3)
-//
-//                                let normals = anchors[i].geometry.normals
-//                                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * k))
-//                                let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
-//                                new_normal_array[i].append(normal)
-                                
-//                            }
-//                        }
-//                    }
-//                    points = []
-//                    points_index = []
-//                }
-//            }
-//        }
-//        print("calculate完了")
-    }
-        
-    func calcTextureCoordinates5(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3){
-        for (i, faces) in new_face_array.enumerated() {
-            var points: [SCNVector3] = []
-            var points_index: [Int] = []
-            for (j, index) in faces.enumerated() {
-                let pt = sceneView.projectPoint(vertex_array[i][Int(index)])
-                //let inner = normal_array[i][Int(index)].x * cameraVector.x + normal_array[i][Int(index)].y * cameraVector.y + normal_array[i][Int(index)].z * cameraVector.z
-                //let thita = acos(inner) * 180.0 / .pi
-                
-                if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-                    let world_vector3 = vertex_array[i][Int(index)]
-                    let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [SCNHitTestOption.searchMode: 1])
-                    if hitResults.count > 1 {
-                        for (k, _) in hitResults.enumerated() {
-                            if hitResults[k].node.name! == "child_tex_node" {
-                                let hitPoints = hitResults[k].worldCoordinates
-                                if sqrt((world_vector3.x - hitPoints.x)*(world_vector3.x - hitPoints.x) + (world_vector3.y - hitPoints.y)*(world_vector3.y - hitPoints.y) + (world_vector3.z - hitPoints.z)*(world_vector3.z - hitPoints.z)) < 0.001 {
-                                    points.append(pt)
-                                    points_index.append(Int(index))
-                                }
-                                break
-                            }
-                        }
-                    } else if hitResults.count == 1 {
-                        if hitResults[0].node.name! == "child_tex_node" {
-                            points.append(pt)
-                            points_index.append(Int(index))
-                        }
-                    } else if hitResults.count == 0 {
-                        points.append(pt)
-                        points_index.append(Int(index))
-                    }
-                }
-                if j % 3 == 2 {
-                    if points_index.count == 3 {
-                        for (k, p) in points.enumerated() {
-                            let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
-                            let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
-                            texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
-                            
-//                            if texcoords2[i][points_index[k]] != SIMD2<Float>(0, 0) {
-//                                if tex_bool[i][points_index[k]] == false {
-//                                    if thita <= 135 {
-//                                        texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
-//                                        tex_bool[i][points_index[k]] = true
-//                                    }
-//                                }
-//                            }
-//                            else {
-//                                texcoords2[i][points_index[k]] = SIMD2<Float>(u, v)
-//                                if thita <= 135 {
-//                                    tex_bool[i][points_index[k]] = true
-//                                }
-//                            }
-                        }
-                    }
-                    
-                    points = []
-                    points_index = []
-                }
-            }
-        }
-        print("calculate完了")
-    }
-    
     //MARK: - 確認用
     var tap_count = -1
     @IBAction func tap_moveCamera(_ sender: UIButton) {
@@ -1903,6 +1474,220 @@ class EditDataController: UIViewController, ARSCNViewDelegate,  UIGestureRecogni
             tap_count += 1
         }
         
+        
+//        func triming(pointA: CGPoint, pointB: CGPoint) -> [CGPoint] {
+//            let Ax = Int(pointA.x)
+//            let Ay = Int(pointA.y)
+//            let Bx = Int(pointB.x)
+//            let By = Int(pointB.y)
+//            let n = abs(Bx - Ax) //横
+//            let m = abs(By - Ay) //縦
+//
+//            var index: [CGPoint] = []
+//            var r_x = 1
+//            var r_y = -1
+//            if Bx - Ax < 0 {
+//                r_x = -1
+//            }
+//            if By - Ay > 0 {
+//                r_y = 1
+//            }
+//
+//            if n == 0 {
+//                let nx = Ax
+//                var ny = Ay
+//                index.append(CGPoint(x: nx, y: ny))
+//                for _ in 1...m {
+//                    ny += r_y
+//                    index.append(CGPoint(x: nx, y: ny))
+//                }
+//            } else if m == 0 {
+//                var nx = Ax
+//                let ny = Ay
+//                index.append(CGPoint(x: nx, y: ny))
+//                for _ in 1...n {
+//                    nx += r_x
+//                    index.append(CGPoint(x: nx, y: ny))
+//                }
+//            } else {
+//                if m >= n {
+//                    if (m % n) == 0 {
+//                        let p = m / n
+//                        var nx = Ax
+//                        var ny = Ay
+//                        index.append(CGPoint(x: nx, y: ny))
+//                        for _ in 1...n {
+//                            nx += r_x
+//                            for _ in 0..<p {
+//                                ny += r_y
+//                                index.append(CGPoint(x: nx, y: ny))
+//                            }
+//                        }
+//                    }
+//                    if (m % n) != 0 {
+//                        let p = Int(floor(Double(m / n)))//m / n
+//                        let q = m % n
+//                        //let r = Int(floor(Double(n / q)))
+//                        var nx = Ax
+//                        var ny = Ay
+//                        index.append(CGPoint(x: nx, y: ny))
+//                        for i in 1...n {
+//                            nx += r_x
+//                            for _ in 0..<p {
+//                                ny += r_y
+//                                index.append(CGPoint(x: nx, y: ny))
+//                            }
+//                            if i == n {
+//                                for _ in 0..<q {
+//                                    ny += r_y
+//                                    index.append(CGPoint(x: nx, y: ny))
+//                                }
+//                            }
+//                        }
+//                    }
+//                } else if m < n {
+//                    if (n % m) == 0 {
+//                        let p = m / n
+//                        var nx = Ax
+//                        var ny = Ay
+//                        index.append(CGPoint(x: nx, y: ny))
+//                        for _ in 1...m {
+//                            ny += r_y
+//                            for _ in 0..<p {
+//                                nx += r_x
+//                                index.append(CGPoint(x: nx, y: ny))
+//                            }
+//                        }
+//                    }
+//                    if (n % m) != 0 {
+//                        let p = Int(floor(Double(n / m)))//m / n
+//                        let q = m % n
+//                        var nx = Ax
+//                        var ny = Ay
+//                        index.append(CGPoint(x: nx, y: ny))
+//                        for i in 1...m {
+//                            ny += r_y
+//                            for _ in 0..<p {
+//                                nx += r_x
+//                                index.append(CGPoint(x: nx, y: ny))
+//                            }
+//                            if i == m {
+//                                for _ in 0..<q {
+//                                    nx += r_x
+//                                    index.append(CGPoint(x: nx, y: ny))
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            return index
+//        }
+//
+//        func makeX(y: Int, pointA: CGPoint, pointB: CGPoint) -> Int {
+//            let a = Float(pointB.y - pointA.y) / Float(pointB.x - pointA.x)
+//            let x = (CGFloat(y) - pointA.y) / CGFloat(a) + pointA.x
+//            //print(x)
+//            return Int(round(x))
+//        }
+//
+//        func get_pixelData(pixelData: [UInt8], pointA: CGPoint, pointB: CGPoint, pointC: CGPoint) {
+//            //let XArray = [Int(pointA.x), Int(pointB.x), Int(pointC.x)]
+//            let YArray = [Int(pointA.y), Int(pointB.y), Int(pointC.y)]
+//            let points = [pointA, pointB, pointC]
+//            //let sortedXArray = XArray.enumerated().sorted{ $0.element < $1.element }.map{ $0.offset }
+//            let sortedYArray = YArray.enumerated().sorted{ $0.element < $1.element }.map{ $0.offset }
+//            //print(sortedYArray)
+//
+//    //        XArray.sort()
+//    //        YArray.sort()
+//    //        print(XArray)
+//    //        print(YArray)
+//
+//            for y in YArray[sortedYArray[0]]...YArray[sortedYArray[1]] {
+//                if (points[sortedYArray[1]].x < points[sortedYArray[2]].x) {
+//                    let left = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[1]])
+//                    let right = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[2]])
+//                    //print("i, left, right = \(y), \(left), \(right)")
+//                    if left < right {
+//                        for i in left...right {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    } else {
+//                        for i in right...left {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    }
+//                } else if (points[sortedYArray[1]].x > points[sortedYArray[2]].x) {
+//                    let left = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[2]])
+//                    let right = makeX(y: y, pointA: points[sortedYArray[0]], pointB: points[sortedYArray[1]])
+//                    //print("i, left, right = \(y), \(left), \(right)")
+//                    if left < right {
+//                        for i in left...right {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    } else {
+//                        for i in right...left {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    }
+//                }
+//            }
+//            for y in YArray[sortedYArray[1]]...YArray[sortedYArray[2]] {
+//                if (points[sortedYArray[0]].x < points[sortedYArray[1]].x) {
+//                    let left = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[0]])
+//                    let right = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[1]])
+//                    //print("i, left, right = \(y), \(left), \(right)")
+//                    if left < right {
+//                        for i in left...right {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    } else {
+//                        for i in right...left {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    }
+//                } else if (points[sortedYArray[0]].x > points[sortedYArray[1]].x) {
+//                    let left = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[1]])
+//                    let right = makeX(y: y, pointA: points[sortedYArray[2]], pointB: points[sortedYArray[0]])
+//                    //print("i, left, right = \(y), \(left), \(right)")
+//                    if left < right {
+//                        for i in left...right {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    } else {
+//                        for i in right...left {
+//                            new_pixelData[4*2880*y+i*4] = pixelData[4*2880*y+i*4]
+//                            new_pixelData[4*2880*y+i*4+1] = pixelData[4*2880*y+i*4+1]
+//                            new_pixelData[4*2880*y+i*4+2] = pixelData[4*2880*y+i*4+2]
+//                            new_pixelData[4*2880*y+i*4+3] = pixelData[4*2880*y+i*4+3]
+//                        }
+//                    }
+//                }
+//            }
+//        }
         
 //        let json_data = try? decoder.decode(MakeMap_parameta.self, from:results[section_num].cells[cell_num].models[current_model_num].json[tap_count].json_data!)
 //        let intrinsics = simd_float3x3(json_data!.Intrinsics.x,

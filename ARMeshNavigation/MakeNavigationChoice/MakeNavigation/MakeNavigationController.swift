@@ -118,6 +118,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
         
+//        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.update2), userInfo: nil, repeats: true)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -374,12 +376,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.present(alertController, animated: true, completion: nil)
     }
     
-    @IBAction func tapped(_ sender: UIButton) {
-        //depth_flag = true
-        //calcu_flag = true
-        //makeNode()
-    }
-    
     func makeNode() {
         let node = SCNNode(geometry: SCNSphere(radius: 0.1))
         node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
@@ -533,6 +529,31 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //        }
     }
     
+    func snapshot() {
+        //コンテキスト開始
+        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+        //viewを書き出す
+        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
+        // imageにコンテキストの内容を書き出す
+        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        //コンテキストを閉じる
+        UIGraphicsEndImageContext()
+        // imageをカメラロールに保存
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
+    
+//    var snap_flag = false
+//    var snap_count = 0
+//    @objc func update2() {
+//        if snap_flag == true {
+//            snapshot()
+//            snap_count += 1
+//        }
+//        if snap_count == 15 {
+//            print("finish")
+//        }
+//    }
+    
     @objc func update() {
         //if depth_flag == true {
         
@@ -631,6 +652,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     let depthData = depth_pointCloudRenderer.depthData()
                     
                     depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
+//                    if depth_pointCloudRenderer.imgPlaceMatrix.count >= 1 {
+//                        snapshot()
+//                        snap_flag = true
+//                    }
                     
                     DispatchQueue.global().async { [self] in
                         save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)

@@ -155,14 +155,6 @@
                                     <action selector="Menu_PopOver_tapped:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="Nah-cx-rsL"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tKX-aJ-Dbi">
-                                <rect key="frame" x="527" y="1071" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="tapped:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="rUP-sh-63r"/>
-                                </connections>
-                            </button>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="1" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ncI-bY-CXq">
                                 <rect key="frame" x="692" y="250" width="124" height="31"/>
                                 <constraints>

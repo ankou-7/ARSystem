@@ -56,15 +56,15 @@ final class depth_Renderer {
                                                             array: makeGridPoints(),
                                                             index: kGridPoints.rawValue, options: [])
     
-    // RGB buffer
-    private lazy var rgbUniforms: RGBUniforms = {
-        var uniforms = RGBUniforms()
-        uniforms.radius = 1.0
-        uniforms.viewToCamera.copy(from: viewToCamera)
-        uniforms.viewRatio = Float(viewportSize.width / viewportSize.height)
-        return uniforms
-    }()
-    private var rgbUniformsBuffers = [MetalBuffer<RGBUniforms>]()
+//    // RGB buffer
+//    private lazy var rgbUniforms: RGBUniforms = {
+//        var uniforms = RGBUniforms()
+//        uniforms.radius = 1.0
+//        uniforms.viewToCamera.copy(from: viewToCamera)
+//        uniforms.viewRatio = Float(viewportSize.width / viewportSize.height)
+//        return uniforms
+//    }()
+//    private var rgbUniformsBuffers = [MetalBuffer<RGBUniforms>]()
 
     private lazy var pointCloudUniforms: PointCloudUniforms = {
         var uniforms = PointCloudUniforms()
@@ -102,19 +102,6 @@ final class depth_Renderer {
     private lazy var lastCameraTransform = sampleFrame.camera.transform
 
     var confidenceThreshold = 2
-
-//    //追加
-//    private var isSavingFile = false
-//    var vertexData: [Vertex] = []
-//    var vertexBuffer: MTLBuffer!
-//    var colorData: [Color] = []
-//    var colorBuffer: MTLBuffer!
-//    var count = 0
-//
-//    var vertice_count = 0
-//    var vertice_data: [PointCloudVertex] = []
-//
-//    var send_vertice_data: [PointCloudVertex] = []
     
     //マッピング支援機構用
     var vertextBuffer: MTLBuffer!
@@ -128,9 +115,7 @@ final class depth_Renderer {
     private lazy var meshPipelineState100 = makeMeshPipelineState100()!
     var viewProjectionMatrix: float4x4!
     var anchorUniforms: AnchorUniforms!
-    //var anchorUniformsBuffer: MTLBuffer!
 
-    //init(session: ARSession, metalDevice device: MTLDevice, renderDestination: RenderDestinationProvider) {
     init(session: ARSession, metalDevice device: MTLDevice, sceneView: ARSCNView) {
         print("point cloud Renderer initializing")
 
@@ -554,23 +539,25 @@ final class depth_Renderer {
         if imgPlaceMatrix.count > 0 {
             let calcuUniformsBuffer = device.makeBuffer(bytes: imgPlaceMatrix, length: MemoryLayout<float4x4>.stride * imgPlaceMatrix.count, options: [])
             renderEncoder.setVertexBuffer(calcuUniformsBuffer, offset: 0, index: 4)
-        }
         
-        for mesh in meshAnchors {
         
-            renderEncoder.setDepthStencilState(depthStencilState)
-            renderEncoder.setRenderPipelineState(meshPipelineState100)
+            for mesh in meshAnchors {
             
-            renderEncoder.setVertexBuffer(mesh.geometry.vertices.buffer, offset: 0, index: 1)
-            renderEncoder.setVertexBuffer(mesh.geometry.faces.buffer, offset: 0, index: 2)
-            
-            let AnchorUniformsBuffer = device.makeBuffer(bytes: [AnchorUniforms(transform: mesh.transform,
-                                                                                viewProjectionMatrix: viewProjectionMatrix,
-                                                                                calcuCount: Int32(imgPlaceMatrix.count))],
-                                                         length: MemoryLayout<AnchorUniforms>.size, options: [])
-            renderEncoder.setVertexBuffer(AnchorUniformsBuffer, offset: 0, index: 3)
-            
-            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.geometry.faces.count * 3)
+                renderEncoder.setDepthStencilState(depthStencilState)
+                renderEncoder.setRenderPipelineState(meshPipelineState100)
+                
+                renderEncoder.setVertexBuffer(mesh.geometry.vertices.buffer, offset: 0, index: 1)
+                renderEncoder.setVertexBuffer(mesh.geometry.faces.buffer, offset: 0, index: 2)
+                
+                let AnchorUniformsBuffer = device.makeBuffer(bytes: [AnchorUniforms(transform: mesh.transform,
+                                                                                    viewProjectionMatrix: viewProjectionMatrix,
+                                                                                    calcuCount: Int32(imgPlaceMatrix.count))],
+                                                             length: MemoryLayout<AnchorUniforms>.size, options: [])
+                renderEncoder.setVertexBuffer(AnchorUniformsBuffer, offset: 0, index: 3)
+                
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.geometry.faces.count * 3)
+                
+            }
             
         }
         
