@@ -32,6 +32,15 @@ class NavigationChoiceController: UIViewController {
         self.present(vc, animated: true, completion: nil)
     }
     
+    @IBAction func to_EditColabViewController(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "EditColabViewController") as! EditColabViewController
+        vc.view.backgroundColor = UIColor.white
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    
     @IBAction func to_NavigationDataCell1_eturan(_ sender: Any) {
         let storyboard = UIStoryboard(name: "CheckAllData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataChoiceController") as! CheckDataChoiceController

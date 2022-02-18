@@ -121,8 +121,18 @@
                                     <action selector="back:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="1p7-qM-EOq"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MxC-9t-naL">
+                                <rect key="frame" x="379.5" y="860" width="75" height="44"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="共有">
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="to_EditColabViewController:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="9cp-YA-MSI"/>
+                                </connections>
+                            </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QnF-0k-LZU">
-                                <rect key="frame" x="353.5" y="860" width="127" height="42"/>
+                                <rect key="frame" x="353.5" y="1004" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="データ閲覧"/>
                                 <connections>
@@ -134,12 +144,14 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="7N4-9T-zgr" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="9Q5-Jr-cKG"/>
+                            <constraint firstItem="MxC-9t-naL" firstAttribute="top" secondItem="7N4-9T-zgr" secondAttribute="bottom" constant="100" id="A7l-34-Jr5"/>
                             <constraint firstItem="7N4-9T-zgr" firstAttribute="top" secondItem="9uf-O0-vE0" secondAttribute="bottom" constant="100" id="GMK-70-VDS"/>
                             <constraint firstItem="EKj-F5-eZL" firstAttribute="leading" secondItem="eXi-2l-wof" secondAttribute="leading" id="MtY-GF-aRo"/>
+                            <constraint firstItem="QnF-0k-LZU" firstAttribute="top" secondItem="MxC-9t-naL" secondAttribute="bottom" constant="100" id="N0a-Tv-Dk7"/>
                             <constraint firstItem="9uf-O0-vE0" firstAttribute="centerY" secondItem="Q9m-2u-PHp" secondAttribute="centerY" id="OYI-3N-TQr"/>
                             <constraint firstItem="QnF-0k-LZU" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="Sae-9O-JCI"/>
                             <constraint firstItem="EKj-F5-eZL" firstAttribute="top" secondItem="eXi-2l-wof" secondAttribute="top" id="b2w-wP-Upi"/>
-                            <constraint firstItem="QnF-0k-LZU" firstAttribute="top" secondItem="7N4-9T-zgr" secondAttribute="bottom" constant="100" id="fop-5i-iy9"/>
+                            <constraint firstItem="MxC-9t-naL" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="oxs-NH-Wru"/>
                             <constraint firstItem="9uf-O0-vE0" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="sPp-b1-4Tw"/>
                         </constraints>
                     </view>

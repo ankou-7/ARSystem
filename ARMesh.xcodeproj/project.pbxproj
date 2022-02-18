@@ -80,6 +80,8 @@
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
+		CF8804A727BECAD500146230 /* EditColabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A627BECAD500146230 /* EditColabViewController.swift */; };
+		CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A827BF0BC700146230 /* EditColabARViewController.swift */; };
 		CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF8D977426830F3700D6002A /* opencv2.framework */; };
 		CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF8D977A2683106000D6002A /* OpenCVManager.mm */; };
 		CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8D977E2683147100D6002A /* FeatureMatching.storyboard */; };
@@ -198,6 +200,8 @@
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
+		CF8804A627BECAD500146230 /* EditColabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColabViewController.swift; sourceTree = "<group>"; };
+		CF8804A827BF0BC700146230 /* EditColabARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColabARViewController.swift; sourceTree = "<group>"; };
 		CF8D977426830F3700D6002A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		CF8D977A2683106000D6002A /* OpenCVManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVManager.mm; sourceTree = "<group>"; };
 		CF8D977D2683130000D6002A /* OpenCVManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVManager.h; sourceTree = "<group>"; };
@@ -441,6 +445,8 @@
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
 				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
 				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
+				CF8804A627BECAD500146230 /* EditColabViewController.swift */,
+				CF8804A827BF0BC700146230 /* EditColabARViewController.swift */,
 				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
 			path = EditData;
@@ -706,6 +712,7 @@
 				CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */,
 				26AAA2552563C998008FE5EB /* Information.swift in Sources */,
 				CF30EF60262C9CC000C13B66 /* MenuDataSource.swift in Sources */,
+				CF8804A727BECAD500146230 /* EditColabViewController.swift in Sources */,
 				CF0DBC312691A286006E2E19 /* Matching_OpenCV.mm in Sources */,
 				CF688B942736844A00F863AF /* StructInfo.swift in Sources */,
 				CF0D73FC271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift in Sources */,
@@ -727,6 +734,7 @@
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				26AAA2592563C998008FE5EB /* NavigationEditModel.swift in Sources */,
 				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,
+				CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
 				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,
@@ -921,7 +929,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue7;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
@@ -949,7 +957,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue7;
+				PRODUCT_BUNDLE_IDENTIFIER = org.toralab.ankou.ARMesh.ankou7.yasue;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "ARMeshNavigation/MakeNavigationChoice/MakeNavigation/Renderer/smTest-Bridging-Header.h";
