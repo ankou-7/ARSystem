@@ -16,7 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6AO-BN-D1d">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6AO-BN-D1d">
                                 <rect key="frame" x="328" y="716" width="178" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="特徴マッチング"/>
@@ -32,7 +32,7 @@
                                     <action selector="to_NavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="8In-iW-2cj"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qxz-67-VmV">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qxz-67-VmV">
                                 <rect key="frame" x="391.5" y="940" width="51" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="開始"/>
@@ -40,13 +40,7 @@
                                     <action selector="to_UseNavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Wx3-Gl-zRA"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ARシステム" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZBZ-09-Jhs">
-                                <rect key="frame" x="256.5" y="190" width="321.5" height="72"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="60"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
                                 <rect key="frame" x="353.5" y="1052" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="マップ拡張"/>
@@ -54,7 +48,7 @@
                                     <action selector="to_MapExpansionChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="d8i-qF-7Nm"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v2n-qN-cKG">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v2n-qN-cKG">
                                 <rect key="frame" x="315.5" y="604" width="203" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -63,7 +57,7 @@
                                     <action selector="to_ChoiceModelDataController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Aot-yd-ZEH"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tX3-2J-JNK">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tX3-2J-JNK">
                                 <rect key="frame" x="353.5" y="492" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -76,14 +70,12 @@
                         <viewLayoutGuide key="safeArea" id="c9j-Hc-jbr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="ZBZ-09-Jhs" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="4be-u5-Uq1"/>
                             <constraint firstItem="tnG-qg-BNN" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="5J4-Az-a35"/>
                             <constraint firstItem="v2n-qN-cKG" firstAttribute="top" secondItem="tX3-2J-JNK" secondAttribute="bottom" constant="70" id="7Oq-tR-huz"/>
                             <constraint firstItem="v2n-qN-cKG" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="Byr-9Q-MN9"/>
                             <constraint firstItem="c9j-Hc-jbr" firstAttribute="bottom" secondItem="tnG-qg-BNN" secondAttribute="bottom" constant="80" id="Er7-Z9-FRG"/>
                             <constraint firstItem="PN0-NZ-TUh" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="G04-Kf-LJv"/>
                             <constraint firstItem="tnG-qg-BNN" firstAttribute="top" secondItem="Qxz-67-VmV" secondAttribute="bottom" constant="70" id="LmV-0R-Thu"/>
-                            <constraint firstItem="ZBZ-09-Jhs" firstAttribute="top" secondItem="c9j-Hc-jbr" secondAttribute="top" constant="166" id="Y9s-Gz-3ou"/>
                             <constraint firstItem="Qxz-67-VmV" firstAttribute="top" secondItem="PN0-NZ-TUh" secondAttribute="bottom" constant="70" id="d0J-tD-rJW"/>
                             <constraint firstItem="6AO-BN-D1d" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="d14-mJ-UeL"/>
                             <constraint firstItem="6AO-BN-D1d" firstAttribute="top" secondItem="v2n-qN-cKG" secondAttribute="bottom" constant="70" id="kgx-fi-I1T"/>
