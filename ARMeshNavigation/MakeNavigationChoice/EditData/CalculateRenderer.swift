@@ -33,6 +33,9 @@ class CalculateRenderer {
     private let tate: Int
     private let yoko: Int
     
+    private let screenWidth: Int
+    private let screenHeight: Int
+    
     var face_count: Int!
     
     let results = try! Realm().objects(Navi_SectionTitle.self)
@@ -41,7 +44,7 @@ class CalculateRenderer {
     private let calcuUniforms: [float4x4]
     private let depth: [depthPosition]
     
-    init(section_num: Int, cell_num: Int, model_num: Int, anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int) {
+    init(section_num: Int, cell_num: Int, model_num: Int, anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int, screenWidth: Int, screenHeight: Int) {
         
         self.section_num = section_num
         self.cell_num = cell_num
@@ -68,6 +71,8 @@ class CalculateRenderer {
         self.depth = depth
         self.tate = tate
         self.yoko = yoko
+        self.screenWidth = screenWidth
+        self.screenHeight = screenHeight
         
         //print(calcuUniforms)
         //calcuUniformsBuffer = .init(device: device, count: calcuUniforms.count, index: 8)
@@ -135,7 +140,10 @@ class CalculateRenderer {
         anchorUniformsBuffer[0].maxCount = Int32(anchors[num].geometry.faces.count)
         anchorUniformsBuffer[0].arrayCount = Int32(anchors[num].geometry.faces.count * 3)
         anchorUniformsBuffer[0].depthCount = Int32(128*96)
+        anchorUniformsBuffer[0].screenWidth = Int32(screenWidth)
+        anchorUniformsBuffer[0].screenHeight = Int32(screenHeight)
         encoder.setBuffer(anchorUniformsBuffer)
+        
         
         //深度情報
         let depthBuffer = device.makeBuffer(bytes: depth, length: MemoryLayout<depthPosition>.stride * 128*96 * calcuUniforms.count, options: [])

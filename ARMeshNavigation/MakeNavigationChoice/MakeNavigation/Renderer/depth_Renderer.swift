@@ -115,6 +115,8 @@ final class depth_Renderer {
     private lazy var meshPipelineState100 = makeMeshPipelineState100()!
     var viewProjectionMatrix: float4x4!
     var anchorUniforms: AnchorUniforms!
+    private let screenWidth: Int
+    private let screenHeight: Int
 
     init(session: ARSession, metalDevice device: MTLDevice, sceneView: ARSCNView) {
         print("point cloud Renderer initializing")
@@ -127,6 +129,9 @@ final class depth_Renderer {
         library = device.makeDefaultLibrary()!
         commandQueue2 = device.makeCommandQueue()! //computeCommand用
         commandQueue = sceneView.commandQueue! //sceneView用
+        
+        self.screenWidth = Int(sceneView.bounds.width)
+        self.screenHeight = Int(sceneView.bounds.height)
 
         // initialize our buffers
         for _ in 0 ..< maxInFlightBuffers {
@@ -551,7 +556,9 @@ final class depth_Renderer {
                 
                 let AnchorUniformsBuffer = device.makeBuffer(bytes: [AnchorUniforms(transform: mesh.transform,
                                                                                     viewProjectionMatrix: viewProjectionMatrix,
-                                                                                    calcuCount: Int32(imgPlaceMatrix.count))],
+                                                                                    calcuCount: Int32(imgPlaceMatrix.count),
+                                                                                    screenWidth: Int32(screenWidth),
+                                                                                    screenHeight: Int32(screenHeight))],
                                                              length: MemoryLayout<AnchorUniforms>.size, options: [])
                 renderEncoder.setVertexBuffer(AnchorUniformsBuffer, offset: 0, index: 3)
                 

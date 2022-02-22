@@ -94,10 +94,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             try? self.session.send(facesData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
             try? self.session.send(texcoordsData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
         }
-        
-//        guard let finishData = try? NSKeyedArchiver.archivedData(withRootObject: "メッシュ送信終了" as NSString, requiringSecureCoding: true)
-//        else { return }
-//        try? self.session.send(finishData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
     }
     
     //ARWorldMapを送る
@@ -124,10 +120,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         try? self.session.send(StringData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
         
         try? self.session.send(info_data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-        
-//        guard let finishData = try? NSKeyedArchiver.archivedData(withRootObject: "オブジェクト情報送信終了" as NSString, requiringSecureCoding: true)
-//        else { return }
-//        try? self.session.send(finishData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
     }
     
     func send_operateObjectData(state: String, name_identify: String, info_data: Data) {
@@ -215,6 +207,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         sceneView.delegate = self
         sceneView.scene = scene
         sceneView.allowsCameraControl = true
+        
+        print(sceneView.bounds)
         
         let sphereCamera:SCNGeometry = SCNSphere(radius: 0.01)
         cameraNode = SCNNode(geometry: sphereCamera)
@@ -1057,7 +1051,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             print("calcu開始")
             //DispatchQueue.main.async { [self] in
             
-            self.calculate = CalculateRenderer(section_num: section_num, cell_num: cell_num, model_num: current_model_num, anchor: anchors, metalDevice: self.sceneView.device!, calcuUniforms: calcuUnifoms, depth: depth, tate: Int(tate), yoko: Int(yoko))
+            self.calculate = CalculateRenderer(section_num: section_num, cell_num: cell_num, model_num: current_model_num, anchor: anchors, metalDevice: self.sceneView.device!, calcuUniforms: calcuUnifoms, depth: depth, tate: Int(tate), yoko: Int(yoko), screenWidth: Int(sceneView.bounds.width), screenHeight: Int(sceneView.bounds.height))
             self.calculate.drawRectResized(size: self.sceneView.bounds.size)
             
             

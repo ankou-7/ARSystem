@@ -516,6 +516,8 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
     
     float yoko = anchorUnifoms.yoko;
     float tate = anchorUnifoms.tate;
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
     
     for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
         int count = 0;
@@ -530,20 +532,20 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
                                            normals[faces[int(id*3 + j)]*3 + 2]);
             
             const auto normalizedDeviceCoordinate = clipPoint(new_vertices[id*3 + j], matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));
-            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
-                                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                        (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
                                         (1 - (-normalizedDeviceCoordinate.z + 1)));
-            if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
-                const auto du = int(round((1 - pt.x / 834) * 95));
-                const auto dv = int(round((pt.y / 1150) * 127));
+            if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
+                const auto du = int(round((1 - pt.x / screenWidth) * 95));
+                const auto dv = int(round((pt.y / screenHeight) * 127));
                 const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
                 const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
                 const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
                 const auto diff = pow(new_vertices[id*3 + j].x - deptPosi_x, 2) + pow(new_vertices[id*3 + j].y - deptPosi_y, 2) + pow(new_vertices[id*3 + j].z - deptPosi_z, 2);
                 if (diff < 0.04) {
                     count += 1;
-                    const auto u = ((pt.x / (834 * yoko))  + (fmod(i,yoko) / yoko));
-                    const auto v = ((pt.y / (1150 * tate)) + (floor(i / yoko) / tate));
+                    const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
                     facecoord[id*3 + j] = float2(u, v);
                 }
             }
@@ -763,6 +765,9 @@ vertex ColorInOut meshVertex100(constant float *vertices [[ buffer(1) ]],
                                      vertices[faces[id]*3 + 2]),
                               anchorUnifoms.transform);;
     
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
+    
     ColorInOut out;
     
     if (anchorUnifoms.calcuCount > 0) {
@@ -786,11 +791,11 @@ vertex ColorInOut meshVertex100(constant float *vertices [[ buffer(1) ]],
         if (out.visible == 2) {
             for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
                 const auto normalizedDeviceCoordinate = clipPoint(position, uniforms[i]);
-                const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
-                                       (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                       (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
                                        (1 - (-normalizedDeviceCoordinate.z + 1)));
                 
-                if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+                if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
                     out.visible = 0;
                 }
             }

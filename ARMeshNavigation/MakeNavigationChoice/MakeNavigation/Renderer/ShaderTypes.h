@@ -74,6 +74,8 @@ struct anchorUniforms {
     int maxCount;
     int arrayCount;
     int depthCount;
+    int screenWidth;
+    int screenHeight;
 };
 
 struct MeshUniforms {
@@ -102,6 +104,8 @@ struct AnchorUniforms {
     matrix_float4x4 transform;
     matrix_float4x4 viewProjectionMatrix;
     int calcuCount;
+    int screenWidth;
+    int screenHeight;
 };
 
 #endif /* ShaderTypes_h */
