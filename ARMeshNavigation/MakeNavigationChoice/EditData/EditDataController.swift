@@ -180,7 +180,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var new_pixelData: [UInt8] = [UInt8](repeating: 0, count: 44236800)
     
     var objectName_array: [String] = []
-    @IBOutlet weak var delete_finish_button: UIButton!
     
     var cameraNode = SCNNode()
     var lastGestureScale: Float = 1.0
@@ -189,7 +188,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBOutlet var right_modelbutton: UIButton!
     @IBOutlet var modelname_label: UILabel!
     
+    let deleteObjectButton = UIButton()
+    var deleteObjectName = ""
+    
     private var calculate: CalculateRenderer!
+    var texString: String = "calcu50"
     
     //multipeer用の変数
     let serviceType = "ar-collab"
@@ -223,7 +226,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         lightNode.light!.type = .ambient //.omni
         scene.rootNode.addChildNode(lightNode)
         
-        delete_finish_button.isHidden = true
         ActivityView.stopAnimating()
         //ActivityView.isHidden = true
         
@@ -240,6 +242,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         )
         pinch.delegate = self
         sceneView.addGestureRecognizer(pinch)
+        
+        
+        // deleteObjectButtonの設定
+        deleteObjectButton.setTitle("削除", for:UIControl.State.normal)
+        deleteObjectButton.setTitleColor(UIColor.white, for: .normal)
+        deleteObjectButton.titleLabel?.font =  UIFont.systemFont(ofSize: 20)
+        deleteObjectButton.backgroundColor = UIColor.init(red:0, green: 0, blue: 0, alpha: 1)
+        deleteObjectButton.addTarget(self,action: #selector(deleteObject),for: .touchUpInside)
+        self.view.addSubview(deleteObjectButton)
+        deleteObjectButton.isHidden = true
         
         self.colabStopButton.isHidden = true
         
@@ -432,29 +444,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         present(contentVC, animated: true, completion: nil)
     }
     
-    var delete_flag = false
-    
-    @IBAction func delete_object(_ sender: UIButton) {
-            let title = "配置オブジェクトの削除"
-            let message = "削除したいオブジェクトをタップして下さい．"
-            
-            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
-                delete_finish_button.isHidden = false
-                delete_flag = true
-                if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
-                    node.removeFromParentNode()
-                }
-            })
-                
-            self.present(alertController, animated: true, completion: nil)
-    }
-    
-    @IBAction func tap_delete_finish_button(_ sender: UIButton) {
-        delete_finish_button.isHidden = true
-        delete_flag = false
-    }
-    
     //MARK: -オブジェクト処理
     
     var touchMove_flag = false
@@ -478,124 +467,144 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         touchMove_flag = true
     }
     
+    @IBAction func long_touches(_ sender: UILongPressGestureRecognizer) {
+        let location = sender.location(in: self.sceneView)
+        let hitResults = sceneView.hitTest(location, options: [:])
+        if hitResults.count > 0 {
+            for name in objectName_array {
+                if (hitResults[0].node.name == name ||
+                    hitResults[0].node.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
+                    
+                    deleteObjectButton.frame = CGRect(x:location.x - 50, y:location.y - 100, width:70, height:40)
+                    deleteObjectName = name
+                    deleteObjectButton.isHidden = false
+                
+                }
+            }
+        }
+    }
+    
+    @objc func deleteObject() {
+        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+            node.removeFromParentNode()
+        }
+        
+        sceneView.scene?.rootNode.childNode(withName: deleteObjectName, recursively: false)!.removeFromParentNode()
+        let index = objectName_array.firstIndex(of: deleteObjectName)
+        let realm = try! Realm()
+        try! realm.write {
+            results[section_num].cells[cell_num].models[current_model_num].obj.remove(at: index!)
+        }
+        objectName_array.remove(at: index!)
+            
+        //削除
+        send_deleteObjectData(state: "削除", name_identify: deleteObjectName)
+        
+        deleteObjectButton.isHidden = true
+    }
+    
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.sceneView)
         endAxisDrag(screenPos: location)
         sceneView.allowsCameraControl = true
         
+        deleteObjectButton.isHidden = true
+        
         if touchMove_flag == false {
             if tap_object_flag == true {
-                if delete_flag == false {
-                    let hitResults = sceneView.hitTest(location, options: [:])
-                    if hitResults.count > 0 {
-                        for (i, name) in objectName_array.enumerated() {
-                            if (hitResults[0].node.name == name ||
-                                hitResults[0].node.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
-                                if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
-                                    node.removeFromParentNode()
-                                }
-                                let axis = ObjectOrigin().makeAxisNode()
-                                let json_data = try? decoder.decode(ObjectInfo_data.self, from:results[section_num].cells[cell_num].models[current_model_num].obj[i].info_data)
-                                let posi = json_data!.Position
-                                //let scale = json_data?.Scale
-                                let euler = json_data?.EulerAngles
-                                
-                                axis.position = SCNVector3(posi.x, posi.y, posi.z)
-                                axis.scale = SCNVector3(2.0, 2.0, 2.0)
-                                axis.eulerAngles = SCNVector3(euler!.x, euler!.y, euler!.z)
-                                sceneView.scene!.rootNode.addChildNode(axis)
-                                choiceNode_name = name
-                            }
-                        }
-                        
-                        if hitResults[0].node.name == "child_tex_node" {
-                            let posi = hitResults[0].worldCoordinates
-                            guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
-                            let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
-                            let node = scene.rootNode.childNode(withName: item.name, recursively: true)
-                            node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                            node?.position = posi
-                            node!.name = item.name + String(results[section_num].cells[cell_num].models[current_model_num].add_obj_count)
-                            sceneView.scene!.rootNode.addChildNode(node!)
-                            
-                            choiceNode_name = node!.name!
-                            objectName_array.append(node!.name!)
-                            
-                            let entity = ObjectInfo_data(Position: Vector3Entity(x: posi.x,
-                                                                                 y: posi.y,
-                                                                                 z: posi.z),
-                                                         Scale: Vector3Entity(x: (node?.scale.x)!,
-                                                                              y: (node?.scale.y)!,
-                                                                              z: (node?.scale.z)!),
-                                                         EulerAngles: Vector3Entity(x: (node?.eulerAngles.x)!,
-                                                                                    y: (node?.eulerAngles.y)!,
-                                                                                    z: (node?.eulerAngles.z)!))
-                            let json_data = try! JSONEncoder().encode(entity)
-                            let realm = try! Realm()
-                            try! realm.write {
-                                results[section_num].cells[cell_num].models[current_model_num].add_obj_count += 1
-                                results[section_num].cells[cell_num].models[current_model_num].obj.append(ObjectInfo(
-                                    value: ["name": item.name,
-                                            "name_identify": node!.name!,
-                                            "type": item.kind,
-                                            "info_data": json_data]))
-                            }
-                            
-                            //配置
-                            send_ObjectData(state: "配置", name: item.name, name_identify: node!.name!, type: item.kind, info_data: json_data)
-                            
+                let hitResults = sceneView.hitTest(location, options: [:])
+                if hitResults.count > 0 {
+                    for (i, name) in objectName_array.enumerated() {
+                        if (hitResults[0].node.name == name ||
+                            hitResults[0].node.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                            hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
                             if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
                                 node.removeFromParentNode()
                             }
                             let axis = ObjectOrigin().makeAxisNode()
-                            axis.position = posi
-                            axis.scale = SCNVector3(2.0, 2.0, 2.0)
-                            sceneView.scene!.rootNode.addChildNode(axis)
+                            let json_data = try? decoder.decode(ObjectInfo_data.self, from:results[section_num].cells[cell_num].models[current_model_num].obj[i].info_data)
+                            let posi = json_data!.Position
+                            //let scale = json_data?.Scale
+                            let euler = json_data?.EulerAngles
                             
-                            //tap_object_flag = false
-                            touchMove_flag = false
-                        }
-                    }
-                }
-                else if delete_flag == true {
-                    let hitResults = sceneView.hitTest(location, options: [:])
-                    if hitResults.count > 0 {
-                        for (i, name) in objectName_array.enumerated() {
-                            if (hitResults[0].node.name == name ||
-                                hitResults[0].node.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
-                                hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
-                                
-                                sceneView.scene?.rootNode.childNode(withName: name, recursively: false)!.removeFromParentNode()
-                                let realm = try! Realm()
-                                try! realm.write {
-                                    results[section_num].cells[cell_num].models[current_model_num].obj.remove(at: i)
-                                }
-                                objectName_array.remove(at: i)
-                                    
-                                //削除
-                                send_deleteObjectData(state: "削除", name_identify: choiceNode_name)
+                            axis.position = SCNVector3(posi.x, posi.y, posi.z)
+                            axis.scale = SCNVector3(2.0, 2.0, 2.0)
+                            axis.eulerAngles = SCNVector3(euler!.x, euler!.y, euler!.z)
+                            sceneView.scene!.rootNode.addChildNode(axis)
+                            choiceNode_name = name
+                        } else {
+                            if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+                                node.removeFromParentNode()
                             }
                         }
                     }
+                    
+                    if hitResults[0].node.name == "child_tex_node" {
+                        let posi = hitResults[0].worldCoordinates
+                        guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
+                        let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
+                        let node = scene.rootNode.childNode(withName: item.name, recursively: true)
+                        node?.scale = SCNVector3(0.01, 0.01, 0.01)
+                        node?.position = posi
+                        node!.name = item.name + String(results[section_num].cells[cell_num].models[current_model_num].add_obj_count)
+                        sceneView.scene!.rootNode.addChildNode(node!)
+                        
+                        choiceNode_name = node!.name!
+                        objectName_array.append(node!.name!)
+                        
+                        let entity = ObjectInfo_data(Position: Vector3Entity(x: posi.x,
+                                                                             y: posi.y,
+                                                                             z: posi.z),
+                                                     Scale: Vector3Entity(x: (node?.scale.x)!,
+                                                                          y: (node?.scale.y)!,
+                                                                          z: (node?.scale.z)!),
+                                                     EulerAngles: Vector3Entity(x: (node?.eulerAngles.x)!,
+                                                                                y: (node?.eulerAngles.y)!,
+                                                                                z: (node?.eulerAngles.z)!))
+                        let json_data = try! JSONEncoder().encode(entity)
+                        let realm = try! Realm()
+                        try! realm.write {
+                            results[section_num].cells[cell_num].models[current_model_num].add_obj_count += 1
+                            results[section_num].cells[cell_num].models[current_model_num].obj.append(ObjectInfo(
+                                value: ["name": item.name,
+                                        "name_identify": node!.name!,
+                                        "type": item.kind,
+                                        "info_data": json_data]))
+                        }
+                        
+                        //配置
+                        send_ObjectData(state: "配置", name: item.name, name_identify: node!.name!, type: item.kind, info_data: json_data)
+                        
+                        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+                            node.removeFromParentNode()
+                        }
+                        let axis = ObjectOrigin().makeAxisNode()
+                        axis.position = posi
+                        axis.scale = SCNVector3(2.0, 2.0, 2.0)
+                        sceneView.scene!.rootNode.addChildNode(axis)
+                        
+                        tap_object_flag = false
+                        touchMove_flag = false
+                    }
                 }
-                
             }
         }
     }
     
+    //MARK: - オブジェクト移動用の軸設定
     var origin_posi = CGPoint(x: 0, y: 0)
     var distance: Float = 0.0
     var pre_screenPos = CGPoint(x: 0, y: 0)
@@ -1031,6 +1040,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         return (calcuMatrix, depth)
     }
     
+    //テクスチャの表示状態を決めるための関数
+    @IBAction func texture_switch(_ sender: UISwitch) {
+        print(sender.isOn)
+        if sender.isOn == true {
+            texString = "calcu50"
+        } else if sender.isOn == false {
+            texString = "calcu5"
+        }
+    }
+    
     //Metalを用いたテクスチャ割り当て
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         //ActivityView.isHidden = false
@@ -1051,7 +1070,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             print("calcu開始")
             //DispatchQueue.main.async { [self] in
             
-            self.calculate = CalculateRenderer(section_num: section_num, cell_num: cell_num, model_num: current_model_num, anchor: anchors, metalDevice: self.sceneView.device!, calcuUniforms: calcuUnifoms, depth: depth, tate: Int(tate), yoko: Int(yoko), screenWidth: Int(sceneView.bounds.width), screenHeight: Int(sceneView.bounds.height))
+            self.calculate = CalculateRenderer(section_num: section_num, cell_num: cell_num, model_num: current_model_num, anchor: anchors, metalDevice: self.sceneView.device!, calcuUniforms: calcuUnifoms, depth: depth, tate: Int(tate), yoko: Int(yoko), screenWidth: Int(sceneView.bounds.width), screenHeight: Int(sceneView.bounds.height), texString: texString)
             self.calculate.drawRectResized(size: self.sceneView.bounds.size)
             print("calcuCount(スクリーン座標変換用の行列数):\(calcuUnifoms.count)")
             
@@ -1091,10 +1110,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             make_texture1000(num: 2)
 //            self.ActivityView.stopAnimating()
 //        }
-    }
-    
-    @IBAction func tap_saveButton(_ sender: UIButton) {
-        //save_model()
     }
     
     func Make_meshInfo_Array() {

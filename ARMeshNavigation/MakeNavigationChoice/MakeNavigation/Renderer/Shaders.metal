@@ -622,35 +622,30 @@ kernel void calcu50(constant float *vertices [[ buffer(0) ]],
                     count += 1;
                     const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
                     const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
-                    //facecoord[id*3 + j] = float2(u, v);
                     kari_texcoords[j] = float2(u, v);
                 }
             }
         }
         
         if (count == 3) {
-//            texcoords[id*3] = facecoord[id*3];
-//            texcoords[id*3 + 1] = facecoord[id*3 + 1];
-//            texcoords[id*3 + 2] = facecoord[id*3 + 2];
+            texcoords[id*3 + 0] = kari_texcoords[0];
+            texcoords[id*3 + 1] = kari_texcoords[1];
+            texcoords[id*3 + 2] = kari_texcoords[2];
             
-            texcoords[trys[0] + 0] = kari_texcoords[0];
-            texcoords[trys[0] + 1] = kari_texcoords[1];
-            texcoords[trys[0] + 2] = kari_texcoords[2];
+            new_vertices[id*3 + 0] = kari_vertices[0];
+            new_vertices[id*3 + 1] = kari_vertices[1];
+            new_vertices[id*3 + 2] = kari_vertices[2];
             
-            new_vertices[trys[0] + 0] = kari_vertices[0];
-            new_vertices[trys[0] + 1] = kari_vertices[1];
-            new_vertices[trys[0] + 2] = kari_vertices[2];
+            new_normals[id*3 + 0] = kari_normals[0];
+            new_normals[id*3 + 1] = kari_normals[1];
+            new_normals[id*3 + 2] = kari_normals[2];
             
-            new_normals[trys[0] + 0] = kari_normals[0];
-            new_normals[trys[0] + 1] = kari_normals[1];
-            new_normals[trys[0] + 2] = kari_normals[2];
-            
-            new_faces[trys[0] + 0] = trys[0] + 0;
-            new_faces[trys[0] + 1] = trys[0] + 1;
-            new_faces[trys[0] + 2] = trys[0] + 2;
+            new_faces[id*3 + 0] = id*3 + 0;
+            new_faces[id*3 + 1] = id*3 + 1;
+            new_faces[id*3 + 2] = id*3 + 2;
             
             trys[0] += 3;
-            //break;
+            break;
         }
     }
 }

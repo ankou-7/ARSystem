@@ -22,8 +22,6 @@ class CalculateRenderer {
     private let cell_num: Int
     private let current_model_num: Int
     
-    //private let inFlightSemaphore: DispatchSemaphore
-    
     private let anchors: [ARMeshAnchor]
 //    private let vertices: MTLBuffer
 //    private let normals: MTLBuffer
@@ -44,7 +42,7 @@ class CalculateRenderer {
     private let calcuUniforms: [float4x4]
     private let depth: [depthPosition]
     
-    init(section_num: Int, cell_num: Int, model_num: Int, anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int, screenWidth: Int, screenHeight: Int) {
+    init(section_num: Int, cell_num: Int, model_num: Int, anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int, screenWidth: Int, screenHeight: Int, texString: String) {
         
         self.section_num = section_num
         self.cell_num = cell_num
@@ -55,7 +53,7 @@ class CalculateRenderer {
         library = device.makeDefaultLibrary()!
         commandQueue = device.makeCommandQueue()!
         
-        let function = library.makeFunction(name: "calcu5")!
+        let function = library.makeFunction(name: texString)!
         pipeline = try! device.makeComputePipelineState(function: function)
         
         self.anchors = anchor
@@ -76,8 +74,6 @@ class CalculateRenderer {
         
         //print(calcuUniforms)
         //calcuUniformsBuffer = .init(device: device, count: calcuUniforms.count, index: 8)
-        
-        //inFlightSemaphore = DispatchSemaphore(value: 3)
     }
     
     func drawRectResized(size: CGSize) {
@@ -143,7 +139,6 @@ class CalculateRenderer {
         anchorUniformsBuffer[0].screenHeight = Int32(screenHeight)
         encoder.setBuffer(anchorUniformsBuffer)
         
-        
         //深度情報
         let depthBuffer = device.makeBuffer(bytes: depth, length: MemoryLayout<depthPosition>.stride * 128*96 * calcuUniforms.count, options: [])
         encoder.setBuffer(depthBuffer, offset: 0, index: 10)
@@ -192,7 +187,6 @@ class CalculateRenderer {
         }
         print("描画頂点数：\(trys[0])")
         
-        //print("----------------------------------------------------------------------------------------------------")
         save_model(num: num, vertexs: vertexs, normals: normals, faces: faces, texcoords: texcoords, count: face_count * 3)
     
         return 1

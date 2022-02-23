@@ -316,7 +316,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 }
                 let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
                 let cgImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                self.current_imageData = cgImage.jpegData(compressionQuality: 0.5)
+                self.current_imageData = cgImage.jpegData(compressionQuality: 0.1)
                 
                 self.mesh_flag = true
                 self.parameta_flag = true
