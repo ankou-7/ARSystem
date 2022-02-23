@@ -22,8 +22,6 @@ class CalculateRenderer {
     private let cell_num: Int
     private let current_model_num: Int
     
-    //private let inFlightSemaphore: DispatchSemaphore
-    
     private let anchors: [ARMeshAnchor]
 //    private let vertices: MTLBuffer
 //    private let normals: MTLBuffer
@@ -33,6 +31,9 @@ class CalculateRenderer {
     private let tate: Int
     private let yoko: Int
     
+    private let screenWidth: Int
+    private let screenHeight: Int
+    
     var face_count: Int!
     
     let results = try! Realm().objects(Navi_SectionTitle.self)
@@ -41,7 +42,7 @@ class CalculateRenderer {
     private let calcuUniforms: [float4x4]
     private let depth: [depthPosition]
     
-    init(section_num: Int, cell_num: Int, model_num: Int, anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int) {
+    init(section_num: Int, cell_num: Int, model_num: Int, anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int, screenWidth: Int, screenHeight: Int, texString: String) {
         
         self.section_num = section_num
         self.cell_num = cell_num
@@ -52,7 +53,7 @@ class CalculateRenderer {
         library = device.makeDefaultLibrary()!
         commandQueue = device.makeCommandQueue()!
         
-        let function = library.makeFunction(name: "calcu5")!
+        let function = library.makeFunction(name: texString)!
         pipeline = try! device.makeComputePipelineState(function: function)
         
         self.anchors = anchor
@@ -68,11 +69,11 @@ class CalculateRenderer {
         self.depth = depth
         self.tate = tate
         self.yoko = yoko
+        self.screenWidth = screenWidth
+        self.screenHeight = screenHeight
         
         //print(calcuUniforms)
         //calcuUniformsBuffer = .init(device: device, count: calcuUniforms.count, index: 8)
-        
-        //inFlightSemaphore = DispatchSemaphore(value: 3)
     }
     
     func drawRectResized(size: CGSize) {
@@ -99,8 +100,8 @@ class CalculateRenderer {
         encoder.setComputePipelineState(pipeline)
         
         face_count = anchors[num].geometry.faces.count
-        print("頂点数:\(anchors[num].geometry.faces.count * 3)")
-        print("id数：\(anchors[num].geometry.faces.count)")
+        print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
+        print("id数(面の数)：\(anchors[num].geometry.faces.count)")
         
         //main処理
         encoder.setBuffer(anchors[num].geometry.vertices.buffer, offset: 0, index: 0)
@@ -129,19 +130,21 @@ class CalculateRenderer {
         //計算に必要なその他
         anchorUniformsBuffer[0].transform = anchors[num].transform
         anchorUniformsBuffer[0].calcuCount = Int32(calcuUniforms.count)
-        print("calcuCount(スクリーン座標変換用の行列数):\(Int32(calcuUniforms.count))")
         anchorUniformsBuffer[0].tate = Int32(tate)
         anchorUniformsBuffer[0].yoko = Int32(yoko)
         anchorUniformsBuffer[0].maxCount = Int32(anchors[num].geometry.faces.count)
         anchorUniformsBuffer[0].arrayCount = Int32(anchors[num].geometry.faces.count * 3)
         anchorUniformsBuffer[0].depthCount = Int32(128*96)
+        anchorUniformsBuffer[0].screenWidth = Int32(screenWidth)
+        anchorUniformsBuffer[0].screenHeight = Int32(screenHeight)
         encoder.setBuffer(anchorUniformsBuffer)
         
         //深度情報
         let depthBuffer = device.makeBuffer(bytes: depth, length: MemoryLayout<depthPosition>.stride * 128*96 * calcuUniforms.count, options: [])
         encoder.setBuffer(depthBuffer, offset: 0, index: 10)
         
-        let tryBuffer = device.makeBuffer(length: MemoryLayout<SIMD3<Float>>.stride * 128*96, options: [])
+        let tryBuffer = device.makeBuffer(bytes: [0], length: MemoryLayout<Int>.stride, options: [])
+        //device.makeBuffer(length: MemoryLayout<Int32>.stride * 128*96, options: [])
         encoder.setBuffer(tryBuffer, offset: 0, index: 11)
         
         let width = 1//32
@@ -177,66 +180,16 @@ class CalculateRenderer {
             Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
         }
         
-//        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count! * 3, deallocator: .none)
-//        var trys = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
-//        trys = tryData.withUnsafeBytes {
-//            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: tryData.count/MemoryLayout<SIMD3<Float>>.size))
-//        }
+        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<Int>.stride, deallocator: .none)
+        var trys = [Int](repeating: 0, count: 1)
+        trys = tryData.withUnsafeBytes {
+            Array(UnsafeBufferPointer<Int>(start: $0, count: tryData.count/MemoryLayout<Int>.size))
+        }
+        print("描画頂点数：\(trys[0])")
         
-        print("----------------------------------------------------------------------------------------------------")
         save_model(num: num, vertexs: vertexs, normals: normals, faces: faces, texcoords: texcoords, count: face_count * 3)
     
         return 1
-    }
-    
-    //func build2(vertexData: Data, normalsData: Data, faces: [Int32], texcoords: [SIMD2<Float>], count: Int) -> SCNNode {
-    func build2(image: UIImage) -> SCNNode {
-        let tex_node = SCNNode()
-        tex_node.name = "tex_node"
-        for i in 0..<anchors.count {
-            let vertexData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices!
-            let normalData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals!
-            let count = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count
-            
-            let faces = (try? decoder.decode([Int32].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces))!
-            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords))!
-            
-            let verticeSource = SCNGeometrySource(
-                data: vertexData,
-                semantic: SCNGeometrySource.Semantic.vertex,
-                vectorCount: count,
-                usesFloatComponents: true,
-                componentsPerVector: 3,
-                bytesPerComponent: MemoryLayout<Float>.size,
-                dataOffset: 0,
-                dataStride: MemoryLayout<SIMD3<Float>>.size
-            )
-            let normalSource = SCNGeometrySource(
-                data: normalData,
-                semantic: SCNGeometrySource.Semantic.normal,
-                vectorCount: count,
-                usesFloatComponents: true,
-                componentsPerVector: 3,
-                bytesPerComponent: MemoryLayout<Float>.size,
-                dataOffset: MemoryLayout<Float>.size * 3,
-                dataStride: MemoryLayout<SIMD3<Float>>.size
-            )
-            let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
-            let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
-            
-            let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
-            nodeGeometry.firstMaterial?.diffuse.contents = image //UIImage(data: results[section_num].cells[cell_num].models[current_model_num].texture_pic)
-            
-//            let defaultMaterial = SCNMaterial()
-//            defaultMaterial.fillMode = .lines
-//            defaultMaterial.diffuse.contents = UIColor.blue
-//            nodeGeometry.materials = [defaultMaterial]
-            
-            let node = SCNNode(geometry: nodeGeometry)
-            node.name = "child_tex_node"
-            tex_node.addChildNode(node)
-        }
-        return tex_node
     }
     
     func save_model(num: Int, vertexs: [SIMD3<Float>], normals: [SIMD3<Float>], faces: [Int32], texcoords: [SIMD2<Float>], count: Int) {
@@ -255,7 +208,7 @@ class CalculateRenderer {
             results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[num].vertice_count =  count
             results[section_num].cells[cell_num].models[current_model_num].texture_bool = 3
         }
-        print("save完了")
+        //print("save完了")
     }
     
     //MARK: - その他

@@ -21,7 +21,6 @@
 		26AAA1F82563C802008FE5EB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1F62563C802008FE5EB /* Main.storyboard */; };
 		26AAA1FA2563C804008FE5EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1F92563C804008FE5EB /* Assets.xcassets */; };
 		26AAA1FD2563C804008FE5EB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA1FB2563C804008FE5EB /* LaunchScreen.storyboard */; };
-		26AAA2482563C998008FE5EB /* MakeNavigationCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */; };
 		26AAA2492563C998008FE5EB /* EditDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */; };
 		26AAA2502563C998008FE5EB /* PopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA22F2563C996008FE5EB /* PopOverController.swift */; };
 		26AAA2522563C998008FE5EB /* TitleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA2312563C996008FE5EB /* TitleViewController.swift */; };
@@ -51,7 +50,6 @@
 		CF0F166F272C835900E6F9ED /* SCNGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166E272C835900E6F9ED /* SCNGeometry.swift */; };
 		CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF13205727223CD400277339 /* ObjectOrigin.swift */; };
 		CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */; };
-		CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A975269EC0CB00F62D3A /* Extensions.swift */; };
 		CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */; };
 		CF30EF29262BA8A800C13B66 /* ARColabNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */; };
 		CF30EF34262BAA1F00C13B66 /* VRColabNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */; };
@@ -70,7 +68,6 @@
 		CF3D806B262B5364007904E6 /* MakeNavigationChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D806A262B5364007904E6 /* MakeNavigationChoiceController.swift */; };
 		CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D806F262B53B5007904E6 /* DataSource.swift */; };
 		CF3D8081262B8803007904E6 /* MakeNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */; };
-		CF3D8094262B8DD3007904E6 /* CheckDataCell.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8093262B8DD3007904E6 /* CheckDataCell.storyboard */; };
 		CF3D80A3262B90F2007904E6 /* EditData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80A2262B90F2007904E6 /* EditData.storyboard */; };
 		CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */; };
 		CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */; };
@@ -78,11 +75,11 @@
 		CF3D80CC262B9CCF007904E6 /* SaveDataNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */; };
 		CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */; };
 		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
-		CF3E9288275597430029C166 /* CAlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E9287275597430029C166 /* CAlayer.swift */; };
-		CF3E928A2766611A0029C166 /* Calcu_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E9289276661190029C166 /* Calcu_Renderer.swift */; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
+		CF8804A727BECAD500146230 /* EditColabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A627BECAD500146230 /* EditColabViewController.swift */; };
+		CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A827BF0BC700146230 /* EditColabARViewController.swift */; };
 		CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF8D977426830F3700D6002A /* opencv2.framework */; };
 		CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF8D977A2683106000D6002A /* OpenCVManager.mm */; };
 		CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8D977E2683147100D6002A /* FeatureMatching.storyboard */; };
@@ -140,7 +137,6 @@
 		26AAA1F92563C804008FE5EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		26AAA1FC2563C804008FE5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		26AAA1FE2563C804008FE5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeNavigationCheckController.swift; sourceTree = "<group>"; };
 		26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDataChoiceController.swift; sourceTree = "<group>"; };
 		26AAA22F2563C996008FE5EB /* PopOverController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopOverController.swift; sourceTree = "<group>"; };
 		26AAA2312563C996008FE5EB /* TitleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleViewController.swift; sourceTree = "<group>"; };
@@ -172,7 +168,6 @@
 		CF0F166E272C835900E6F9ED /* SCNGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNGeometry.swift; sourceTree = "<group>"; };
 		CF13205727223CD400277339 /* ObjectOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOrigin.swift; sourceTree = "<group>"; };
 		CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Utils.swift"; sourceTree = "<group>"; };
-		CF27A975269EC0CB00F62D3A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeModePopOver.swift; sourceTree = "<group>"; };
 		CF30EF28262BA8A800C13B66 /* ARColabNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ARColabNavigation.storyboard; sourceTree = "<group>"; };
 		CF30EF33262BAA1F00C13B66 /* VRColabNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VRColabNavigation.storyboard; sourceTree = "<group>"; };
@@ -191,7 +186,6 @@
 		CF3D806A262B5364007904E6 /* MakeNavigationChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeNavigationChoiceController.swift; sourceTree = "<group>"; };
 		CF3D806F262B53B5007904E6 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
 		CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MakeNavigation.storyboard; sourceTree = "<group>"; };
-		CF3D8093262B8DD3007904E6 /* CheckDataCell.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckDataCell.storyboard; sourceTree = "<group>"; };
 		CF3D80A2262B90F2007904E6 /* EditData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EditData.storyboard; sourceTree = "<group>"; };
 		CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckAllData.storyboard; sourceTree = "<group>"; };
 		CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataChoiceController.swift; sourceTree = "<group>"; };
@@ -199,11 +193,11 @@
 		CF3D80CB262B9CCF007904E6 /* SaveDataNavigation.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SaveDataNavigation.storyboard; sourceTree = "<group>"; };
 		CF3D80D0262B9CEB007904E6 /* SaveDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDataChoiceController.swift; sourceTree = "<group>"; };
 		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
-		CF3E9287275597430029C166 /* CAlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CAlayer.swift; sourceTree = "<group>"; };
-		CF3E9289276661190029C166 /* Calcu_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calcu_Renderer.swift; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
+		CF8804A627BECAD500146230 /* EditColabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColabViewController.swift; sourceTree = "<group>"; };
+		CF8804A827BF0BC700146230 /* EditColabARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColabARViewController.swift; sourceTree = "<group>"; };
 		CF8D977426830F3700D6002A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		CF8D977A2683106000D6002A /* OpenCVManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVManager.mm; sourceTree = "<group>"; };
 		CF8D977D2683130000D6002A /* OpenCVManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVManager.h; sourceTree = "<group>"; };
@@ -408,10 +402,7 @@
 			children = (
 				CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */,
 				26AAA2352563C997008FE5EB /* MakeNavigationController.swift */,
-				CF3E9287275597430029C166 /* CAlayer.swift */,
-				CF27A975269EC0CB00F62D3A /* Extensions.swift */,
 				CF6BC314262AE43700E9B083 /* AddDataCellChoice */,
-				CF3D8092262B8D64007904E6 /* AddDataCheckCell */,
 				CF3D808E262B8C64007904E6 /* Renderer */,
 			);
 			path = MakeNavigation;
@@ -422,7 +413,6 @@
 			children = (
 				2682062E25C3F7BC00519E42 /* Renderer.swift */,
 				CF3E928327532A670029C166 /* depth_Renderer.swift */,
-				CF3E9289276661190029C166 /* Calcu_Renderer.swift */,
 				2632F45325F04193006B7366 /* Shaders.metal */,
 				2632F45925F0420A006B7366 /* MetalBuffer.swift */,
 				2632F45825F041DF006B7366 /* ShaderTypes.h */,
@@ -432,24 +422,17 @@
 			path = Renderer;
 			sourceTree = "<group>";
 		};
-		CF3D8092262B8D64007904E6 /* AddDataCheckCell */ = {
-			isa = PBXGroup;
-			children = (
-				CF3D8093262B8DD3007904E6 /* CheckDataCell.storyboard */,
-				26AAA2272563C995008FE5EB /* MakeNavigationCheckController.swift */,
-			);
-			path = AddDataCheckCell;
-			sourceTree = "<group>";
-		};
 		CF3D809E262B907D007904E6 /* EditData */ = {
 			isa = PBXGroup;
 			children = (
 				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
-				26AAA2382563C997008FE5EB /* NavigationEditModel.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
 				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
 				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
+				CF8804A627BECAD500146230 /* EditColabViewController.swift */,
+				CF8804A827BF0BC700146230 /* EditColabARViewController.swift */,
+				26AAA2382563C997008FE5EB /* NavigationEditModel.swift */,
 				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
 			path = EditData;
@@ -651,7 +634,6 @@
 				CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */,
 				CF3D8061262B518F007904E6 /* MakeNavigationChoice.storyboard in Resources */,
 				CF3D80CC262B9CCF007904E6 /* SaveDataNavigation.storyboard in Resources */,
-				CF3D8094262B8DD3007904E6 /* CheckDataCell.storyboard in Resources */,
 				CF0D73FA271CAB8100A2BB75 /* Diff_PointCloud2.storyboard in Resources */,
 				CF3D80C3262B9C03007904E6 /* UseNavigationChoice.storyboard in Resources */,
 			);
@@ -715,6 +697,7 @@
 				CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */,
 				26AAA2552563C998008FE5EB /* Information.swift in Sources */,
 				CF30EF60262C9CC000C13B66 /* MenuDataSource.swift in Sources */,
+				CF8804A727BECAD500146230 /* EditColabViewController.swift in Sources */,
 				CF0DBC312691A286006E2E19 /* Matching_OpenCV.mm in Sources */,
 				CF688B942736844A00F863AF /* StructInfo.swift in Sources */,
 				CF0D73FC271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift in Sources */,
@@ -728,16 +711,15 @@
 				262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */,
 				CF3D806B262B5364007904E6 /* MakeNavigationChoiceController.swift in Sources */,
 				CF3D8070262B53B5007904E6 /* DataSource.swift in Sources */,
-				CF27A976269EC0CB00F62D3A /* Extensions.swift in Sources */,
 				CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */,
 				CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */,
-				CF3E9288275597430029C166 /* CAlayer.swift in Sources */,
 				CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */,
 				26474EEC256AEA02000C1456 /* ColabNavigationEditModel.swift in Sources */,
 				CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */,
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				26AAA2592563C998008FE5EB /* NavigationEditModel.swift in Sources */,
 				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,
+				CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
 				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,
@@ -758,14 +740,12 @@
 				2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */,
 				CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */,
 				CF0D73FE271CD8CC00A2BB75 /* SetParametorPopOver.swift in Sources */,
-				26AAA2482563C998008FE5EB /* MakeNavigationCheckController.swift in Sources */,
 				26AAA2502563C998008FE5EB /* PopOverController.swift in Sources */,
 				26AAA25F2563C998008FE5EB /* NavigationChoiceController.swift in Sources */,
 				CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */,
 				CF98DE9327485DDF0023A1E4 /* CVPixelBuffer+.swift in Sources */,
 				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
 				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
-				CF3E928A2766611A0029C166 /* Calcu_Renderer.swift in Sources */,
 				CF30EF3C262BAA7C00C13B66 /* ColabDataChoiceController.swift in Sources */,
 				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,
 				26AAA1F52563C802008FE5EB /* Experience.rcproject in Sources */,
@@ -928,7 +908,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ARMeshNavigation/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -956,7 +936,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ARMeshNavigation/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

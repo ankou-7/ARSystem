@@ -21,17 +21,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //    var cell_num = Int()
     
     @IBOutlet weak var sceneView: ARSCNView!
+    //var sceneView: ARSCNView!
     let scene = SCNScene()
     @IBOutlet weak var status_label: UILabel!
     
-    let calayer = LayerView()
-    var canvasLayer: CALayer {
-            return sceneView.layer
-    }
-    
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
-    private var calculateRenderer: Calcu_Renderer!
+    //private var calculateRenderer: Calcu_Renderer!
     var pointCloud_flag = false
     var numGridPoints = 1000
     @IBOutlet weak var numGridPoints_label: UILabel!
@@ -88,10 +84,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+//        sceneView = ARSCNView()
+//        sceneView.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
+//        sceneView.backgroundColor = UIColor.red
+//        view.addSubview(sceneView)
+        
+//        let image = UIImage(named: "toy_drummer")
+//        depthImage.image = image
         
         sceneView.delegate = self //delegateのセット
         sceneView.session.delegate = self
-        //sceneView.scene = scene
+        sceneView.scene = scene
         
         sceneView.debugOptions = .showWorldOrigin
         
@@ -114,51 +118,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
         
-//        let wallNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
-//        wallNode.geometry?.firstMaterial?.diffuse.contents = UIColor.init(red: 0, green: 0, blue: 255, alpha:0.3)
-//        wallNode.position = SCNVector3(0,0,-0.3)
-//        sceneView.scene.rootNode.addChildNode(wallNode)
-        
-        // グラデーションレイヤーの生成
-//        let gradLayer = CAGradientLayer()
-//        gradLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 500)
-//        gradLayer.colors =
-//        gradLayer.colors = [
-//            UIColor.blue.cgColor,
-//            UIColor.red.cgColor,
-//        ]
-        
-//        canvasLayer.backgroundColor = CGColor.init(red: 255, green: 0, blue: 255, alpha: 0.5)
-//        canvasLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 300)
-//
-//        let newLayer = CALayer()
-//        newLayer.backgroundColor = CGColor.init(red: 0, green: 0, blue: 255, alpha: 0.3)
-//        newLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 1150)
-//
-//        let upLayer = CALayer()
-//        upLayer.backgroundColor = CGColor.init(red: 255, green: 0, blue: 0, alpha: 0.3)
-//        upLayer.frame = CGRect(x: 0, y: 0, width: 834, height: 1150)
-//
-//        newLayer.addSublayer(upLayer)
-//
-////        let line = UIBezierPath();
-//////        line.move(to: CGPoint(x: 0, y: 0));
-//////        line.addLine(to: CGPoint(x: 0, y: 1150));
-//////        line.addLine(to: CGPoint(x: 834, y: 1150));
-//////        line.addLine(to: CGPoint(x: 834, y: 0));
-////        line.move(to: CGPoint(x: 30, y: 80));
-////        line.addLine(to: CGPoint(x: 200, y: 450));
-////        line.addLine(to: CGPoint(x: 300, y: 280));
-////        line.close()
-////
-////        let ovalShapeLayer = CAShapeLayer()
-////        ovalShapeLayer.path = line.cgPath
-//
-//        // マスクを設定
-//        //upLayer.mask = ovalShapeLayer
-//
-//        //描写
-//        canvasLayer.addSublayer(newLayer)
+//        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.update2), userInfo: nil, repeats: true)
         
     }
     
@@ -356,7 +316,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 }
                 let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
                 let cgImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                self.current_imageData = cgImage.jpegData(compressionQuality: 0.5)
+                self.current_imageData = cgImage.jpegData(compressionQuality: 0.1)
                 
                 self.mesh_flag = true
                 self.parameta_flag = true
@@ -403,30 +363,41 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     @objc func Alert() {
-        //var alertTextField: UITextField?
         let title = "マッピング完了"
-        let message = "終了する場合は終了ボタンを押して下さい。"
+        let message = """
+                      終了する場合は終了して保存先の指定を
+                      続行する場合は続行を選択して下さい。
+                      """
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
-            self.Make_mesh_obj() //モデルを書き込み
+        alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
+            self.Make_mesh_obj() //モデルを一時保存
             self.mesh_flag = false
+        })
+        
+        alertController.addAction(UIAlertAction(title: "終了", style: .default) { [self] _ in
+            self.Make_mesh_obj() //モデルを一時保存
+            self.mesh_flag = false
+            
+            finish_mapping()
         })
             
         self.present(alertController, animated: true, completion: nil)
     }
     
-    @IBAction func tapped(_ sender: UIButton) {
-        depth_flag = true
+    func makeNode() {
+        let node = SCNNode(geometry: SCNSphere(radius: 0.1))
+        node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+        node.opacity = 0.5
+        sceneView.scene.rootNode.addChildNode(node)
     }
     
     var vertice_data: [PointCloudVertex] = []
-    
     var vertices: [SCNVector3] = []
     var indices: [Int32] = []
     
     
-    @IBAction func kari_make_model(_ sender: UIButton) {
+    func kari_make_model(_ sender: UIButton) {
         
         let depth_array = self.depth_pointCloudRenderer.depth_point()
         var depth_points: [PointCloudVertex] = []
@@ -552,49 +523,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //        self.scene.rootNode.addChildNode(node)
     }
     
-    private func buildNode(points: [PointCloudVertex]) -> SCNNode {
-        let vertexData = NSData(
-            bytes: points,
-            length: MemoryLayout<PointCloudVertex>.size * points.count
-        )
-        let positionSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        let colorSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.color,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: MemoryLayout<Float>.size * 3,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        
-        let element = SCNGeometryElement(
-            data: nil,
-            primitiveType: .point,
-            primitiveCount: points.count,
-            bytesPerIndex: MemoryLayout<Int>.size
-        )
-
-        // for bigger dots
-        element.pointSize = 1
-        element.minimumPointScreenSpaceRadius = 1
-        element.maximumPointScreenSpaceRadius = 7
-
-        let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [element])
-        
-        return SCNNode(geometry: pointsGeometry)
-    }
-    
     var pre_eulerAngles = SCNVector3(0,0,0)
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
@@ -610,8 +538,34 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //        }
     }
     
+    func snapshot() {
+        //コンテキスト開始
+        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+        //viewを書き出す
+        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
+        // imageにコンテキストの内容を書き出す
+        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        //コンテキストを閉じる
+        UIGraphicsEndImageContext()
+        // imageをカメラロールに保存
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
+    
+//    var snap_flag = false
+//    var snap_count = 0
+//    @objc func update2() {
+//        if snap_flag == true {
+//            snapshot()
+//            snap_count += 1
+//        }
+//        if snap_count == 15 {
+//            print("finish")
+//        }
+//    }
+    
     @objc func update() {
         //if depth_flag == true {
+        
         if parameta_flag == true {
             guard let frame = self.sceneView.session.currentFrame else {
                 fatalError("Couldn't get the current ARFrame")
@@ -706,7 +660,16 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     
                     let depthData = depth_pointCloudRenderer.depthData()
                     
-                    save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                    depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
+//                    if depth_pointCloudRenderer.imgPlaceMatrix.count >= 1 {
+//                        snapshot()
+//                        snap_flag = true
+//                    }
+                    
+                    DispatchQueue.global().async { [self] in
+                        save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                    }
+                    
                 }
                         
 //                        let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
@@ -945,120 +908,31 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if parameta_flag == true {
+            self.depth_pointCloudRenderer.draw100() //深度情報
             
-            if self.s_flag == true {
-                //self.depth_pointCloudRenderer.draw100()
-                self.depth_pointCloudRenderer.drawMesh2()
-            }
-//            let globalQueue = DispatchQueue.global(
-//                qos: DispatchQoS.QoSClass.background)
-//                  globalQueue.async { [] in
-//                      if self.s_flag == true {
-//                          self.depth_pointCloudRenderer.drawMesh()
-//                      }
-//            }
-            
-            
-            
-//            if calcu_flag == true {
-//                if updateAnchors.count > 0 {
-//                    for anchor in updateAnchors {
-//                        if let node = knownAnchors[anchor.identifier] {
-//                            if let meshAnchor = anchor as? ARMeshAnchor {
-//                                node.geometry = depth_pointCloudRenderer.drawMesh2(anchor: meshAnchor)
-//                                //node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
-//                            }
-//                            node.simdTransform = anchor.transform
-//                        }
-//                    }
-//                }
-//                updateAnchors = []
-//                calcu_flag = false
-//            }
-            
+            self.depth_pointCloudRenderer.mapping100() //マッピング支援
+
             if pointCloud_flag == true {
-                //pointCloudRenderer.draw()
+                //pointCloudRenderer.draw() //点群
             }
         }
-        
+
     }
-    
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-//        if s_flag == true {
-//            if startAnchor != nil {
-//                let node = SCNNode(geometry: startGeometry)
-//                node.simdTransform = startAnchor.transform
-//                knownAnchors[startAnchor.identifier] = node
-//                node.name = "mesh"
-//                sceneView.scene.rootNode.addChildNode(node)
-//            }
-//            s_flag = false
-//        }
-//
-//        if calcu_flag == true {
-//            print("true更新")
-////            if updateAnchors.count > 0 {
-////                for (i, anchor) in updateAnchors.enumerated() {
-////                    if let node = knownAnchors[anchor.identifier] {
-////                        node.geometry = updateGeometrys[i]
-////                        node.simdTransform = anchor.transform
-////                    }
-////                }
-////            }
-////            updateAnchors = []
-////            updateGeometrys = []
-//
-//            if updateAnchor != nil {
-//                if let node = knownAnchors[updateAnchor.identifier] {
-////                    node.geometry = updateGeometry
-////                    node.simdTransform = updateAnchor.transform
-//                }
-//            }
-//
-//            calcu_flag = false
-//        }
-    }
-    
-    var s_flag = false
-    var calcu_flag = false
-    var updateAnchors: [ARAnchor] = []
-    var updateGeometrys: [SCNGeometry] = []
-    var startAnchor: ARAnchor!
-    var startGeometry: SCNGeometry!
-    var updateAnchor: ARAnchor!
-    var updateGeometry: SCNGeometry!
-    
-    //knownAnchors = Dictionary<UUID, SCNNode>()
     
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         if mesh_flag == true {
             for anchor in anchors {
                 var sceneNode : SCNNode?
-                
                 if let meshAnchor = anchor as? ARMeshAnchor {
-                    //let meshGeo = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                    let geometry = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                    print(geometry)
-//                    let meshGeo = geometry
-//                    if s_flag == false {
-//                        startAnchor = meshAnchor
-//                        let geometry = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                        startGeometry = geometry
-//                        s_flag = true
-//                    }
-                    
                     let meshGeo = SCNGeometry.fromAnchor(meshAnchor:meshAnchor)
                     sceneNode = SCNNode(geometry: meshGeo)
-                    depth_pointCloudRenderer.AnchorsID = meshAnchor.identifier
-                    s_flag = true
                 }
                 if let node = sceneNode {
                     node.simdTransform = anchor.transform
                     knownAnchors[anchor.identifier] = node
-                    depth_pointCloudRenderer.knownAnchors[anchor.identifier] = node
                     node.name = "mesh"
                     meshAnchors_array.append(node.name!)
-                    sceneView.scene.rootNode.addChildNode(node)
+                    //sceneView.scene.rootNode.addChildNode(node)
                 }
             }
         }
@@ -1066,32 +940,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         if mesh_flag == true {
+            var meshAnchors = [ARMeshAnchor]()
             for anchor in anchors {
                 if let node = knownAnchors[anchor.identifier] {
                     if let meshAnchor = anchor as? ARMeshAnchor {
-//                        if calcu_flag == false {
-//                            //updateAnchors.append(meshAnchor)
-//                            updateAnchor = meshAnchor
-//                            //node.geometry = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                            //let (vertexBuffer, facesBuffer) = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                            //print(facesBuffer)
-//                            let geometry = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                            print(geometry)
-//                            //updateGeometrys.append(geometry)
-//                            updateGeometry = geometry
-//                            calcu_flag = true
-//                            //                            node.geometry = geometry
-//                            //let texcoords = depth_pointCloudRenderer.drawMesh(anchor: meshAnchor)
-//                            //print(texcoords)
-//                            //node.geometry = SCNGeometry.fromAnchor1(meshAnchor: meshAnchor, texcoords: texcoords)
-//                            //node.geometry = SCNGeometry.fromAnchor2(meshAnchor: meshAnchor, vertexBuffer: vertexBuffer!, facesBuffer: facesBuffer!)
-//                        }
+
+                        meshAnchors.append(meshAnchor) //updateされたメッシュ情報を格納
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }
                     node.simdTransform = anchor.transform
                 }
             }
+            depth_pointCloudRenderer.meshAnchors = meshAnchors
         }
     }
     
@@ -1105,13 +966,57 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         }
     }
     
-    @IBAction func Check_navidata(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "CheckDataCell", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataCellController") as! CheckDataCellController
-        self.present(vc, animated: true, completion: nil)
+    private func buildNode(points: [PointCloudVertex]) -> SCNNode {
+        let vertexData = NSData(
+            bytes: points,
+            length: MemoryLayout<PointCloudVertex>.size * points.count
+        )
+        let positionSource = SCNGeometrySource(
+            data: vertexData as Data,
+            semantic: SCNGeometrySource.Semantic.vertex,
+            vectorCount: points.count,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: 0,
+            dataStride: MemoryLayout<PointCloudVertex>.size
+        )
+        let colorSource = SCNGeometrySource(
+            data: vertexData as Data,
+            semantic: SCNGeometrySource.Semantic.color,
+            vectorCount: points.count,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: MemoryLayout<Float>.size * 3,
+            dataStride: MemoryLayout<PointCloudVertex>.size
+        )
+        
+        let element = SCNGeometryElement(
+            data: nil,
+            primitiveType: .point,
+            primitiveCount: points.count,
+            bytesPerIndex: MemoryLayout<Int>.size
+        )
+
+        // for bigger dots
+        element.pointSize = 10
+        element.minimumPointScreenSpaceRadius = 1
+        element.maximumPointScreenSpaceRadius = 7
+
+        let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [element])
+        
+        return SCNNode(geometry: pointsGeometry)
     }
     
-    @IBAction func Finish_navigate(_ sender: Any) {
+//    @IBAction func Finish_navigate(_ sender: Any) {
+//        timer.invalidate()
+//        let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
+//        self.present(vc, animated: true, completion: nil)
+//    }
+    
+    func finish_mapping() {
         timer.invalidate()
         let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
@@ -1136,56 +1041,11 @@ extension  SCNGeometry {
         let geometry = SCNGeometry(sources: [vertexSource], elements: [geometryElement])
         let defaultMaterial = SCNMaterial()
         defaultMaterial.fillMode = .lines
-        defaultMaterial.diffuse.contents = UIColor.white //UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
+        defaultMaterial.diffuse.contents = UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
         geometry.materials = [defaultMaterial]
         
         return geometry;
       }
-    
-    public static func fromAnchor1(meshAnchor: ARMeshAnchor, texcoords: [SIMD2<Float>]) -> SCNGeometry {
-        let vertices = meshAnchor.geometry.vertices
-        let faces = meshAnchor.geometry.faces
-        
-        let vertexSource = SCNGeometrySource(buffer: vertices.buffer, vertexFormat: vertices.format, semantic: .vertex, vertexCount: vertices.count, dataOffset: vertices.offset, dataStride: vertices.stride)
-        let faceData = Data(bytesNoCopy: faces.buffer.contents(), count: faces.buffer.length, deallocator: .none)
-        let geometryElement = SCNGeometryElement(data: faceData, primitiveType: .triangles, primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
-        let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
-        let geometry = SCNGeometry(sources: [vertexSource, textureCoordinates], elements: [geometryElement])
-        let defaultMaterial = SCNMaterial()
-        defaultMaterial.fillMode = .lines
-        defaultMaterial.diffuse.contents = UIColor.green //UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
-        geometry.materials = [defaultMaterial]
-        
-        return geometry;
-      }
-    
-    public static func fromAnchor2(meshAnchor: ARMeshAnchor, vertexBuffer: MTLBuffer, facesBuffer: MTLBuffer) -> SCNGeometry {
-        let vertexData = Data(bytesNoCopy: vertexBuffer.contents(), count: MemoryLayout<SIMD3<Float>>.stride * facesBuffer.length / 4, deallocator: .none)
-        let facesData = Data(bytesNoCopy: facesBuffer.contents(), count: MemoryLayout<Int32>.stride * facesBuffer.length / 4, deallocator: .none)
-        var faces = [Int32](repeating: Int32(0), count: facesBuffer.length / 4)
-        faces = facesData.withUnsafeBytes {
-            Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))}
-            
-        let vertexSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: facesBuffer.length / 4,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0,
-            dataStride: MemoryLayout<SIMD3<Float>>.size
-        )
-        let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
-        
-        let geometry = SCNGeometry(sources: [vertexSource], elements: [faceSource])
-        let defaultMaterial = SCNMaterial()
-        defaultMaterial.fillMode = .lines
-        defaultMaterial.diffuse.contents = UIColor.blue
-        geometry.materials = [defaultMaterial]
-        
-        return geometry
-    }
 }
 
 extension  SCNGeometryPrimitiveType {

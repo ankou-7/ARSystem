@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="5Uh-pH-a12">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="5Uh-pH-a12">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -40,12 +40,6 @@
                                     <action selector="to_UseNavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Wx3-Gl-zRA"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ARシステム" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZBZ-09-Jhs">
-                                <rect key="frame" x="256.5" y="190" width="321.5" height="72"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="60"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
                                 <rect key="frame" x="353.5" y="1052" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
@@ -76,14 +70,12 @@
                         <viewLayoutGuide key="safeArea" id="c9j-Hc-jbr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="ZBZ-09-Jhs" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="4be-u5-Uq1"/>
                             <constraint firstItem="tnG-qg-BNN" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="5J4-Az-a35"/>
                             <constraint firstItem="v2n-qN-cKG" firstAttribute="top" secondItem="tX3-2J-JNK" secondAttribute="bottom" constant="70" id="7Oq-tR-huz"/>
                             <constraint firstItem="v2n-qN-cKG" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="Byr-9Q-MN9"/>
                             <constraint firstItem="c9j-Hc-jbr" firstAttribute="bottom" secondItem="tnG-qg-BNN" secondAttribute="bottom" constant="80" id="Er7-Z9-FRG"/>
                             <constraint firstItem="PN0-NZ-TUh" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="G04-Kf-LJv"/>
                             <constraint firstItem="tnG-qg-BNN" firstAttribute="top" secondItem="Qxz-67-VmV" secondAttribute="bottom" constant="70" id="LmV-0R-Thu"/>
-                            <constraint firstItem="ZBZ-09-Jhs" firstAttribute="top" secondItem="c9j-Hc-jbr" secondAttribute="top" constant="166" id="Y9s-Gz-3ou"/>
                             <constraint firstItem="Qxz-67-VmV" firstAttribute="top" secondItem="PN0-NZ-TUh" secondAttribute="bottom" constant="70" id="d0J-tD-rJW"/>
                             <constraint firstItem="6AO-BN-D1d" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="d14-mJ-UeL"/>
                             <constraint firstItem="6AO-BN-D1d" firstAttribute="top" secondItem="v2n-qN-cKG" secondAttribute="bottom" constant="70" id="kgx-fi-I1T"/>

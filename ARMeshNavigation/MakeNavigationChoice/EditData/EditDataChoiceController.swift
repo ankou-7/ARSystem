@@ -14,6 +14,7 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
     var seni_id = Int()
     
     @IBOutlet var tableview: UITableView!
+    let results = try! Realm().objects(Navi_SectionTitle.self)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,35 +26,41 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
     }
     //sectionの数
     func numberOfSections(in tableview: UITableView) -> Int {
-        //return mySections.count
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
         return results.count
     }
     //sectionに値を設定
-    func tableView(_ tableview: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
-        return results[section].sectionName
+//    func tableView(_ tableview: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        let realm = try! Realm()
+//        let results = realm.objects(Navi_SectionTitle.self)
+//        return results[section].sectionName
+//    }
+    //sectionのviewを編集
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect.zero) //zeroは目一杯に広げる
+        view.backgroundColor = UIColor(red: CGFloat(229) / 255.0, green: CGFloat(229) / 255.0, blue: CGFloat(229) / 255.0, alpha: 1.0)
+
+        let label = UILabel(frame: CGRect(x:20, y:0, width: tableView.bounds.width, height: 50))
+        label.text = results[section].sectionName //追加の際入力した文字を表示
+        //label.textAlignment = NSTextAlignment.center //文字位置変更[.right][.center][.left]
+        label.font = UIFont.boldSystemFont(ofSize: 20) //文字サイズ変更
+        label.textColor =  UIColor.black //文字色変更
+        view.addSubview(label)
+
+        return view
     }
     //cellの数
     func tableView(_ tableview: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
         return results[section].cells.count
     }
     //cellに値を設定
     func tableView(_ tableview: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableview.dequeueReusableCell(withIdentifier: "EditData_choice_cell", for: indexPath)
-        let realm = try! Realm()
-        let results = realm.objects(Navi_SectionTitle.self)
         cell.textLabel?.text = results[indexPath.section].cells[indexPath.row].cellName
         return cell
     }
     //cellを選択直後に呼び出し
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath)
-        
+        //print(indexPath)
         //ナビゲーション作成ボタンから遷移してナビゲーション編集ボタンから遷移した場合
         if seni_id == 2 {
             let storyboard = UIStoryboard(name: "EditData", bundle: nil)
@@ -78,9 +85,6 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
         if editingStyle == UITableViewCell.EditingStyle.delete {
             
             //データベースから指定したセルを削除し，更新
-            let realm = try! Realm()
-            let results = realm.objects(Navi_SectionTitle.self)
-            
             //documents内のファイル削除
             for i in 0..<results[indexPath.section].cells[indexPath.row].models.count {
                 let objName = results[indexPath.section].cells[indexPath.row].models[i].modelname
@@ -109,10 +113,10 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
             }
         
             //データベースからcell削除
-            try! realm.write {
+            try! Realm().write {
                 results[indexPath.section].cells.remove(at: indexPath.row)
             }
-            print(realm.objects(Navi_SectionTitle.self))
+            //print(realm.objects(Navi_SectionTitle.self))
             
             //データベース更新
             tableView.deleteRows(at: [indexPath as IndexPath], with: UITableView.RowAnimation.automatic)

@@ -85,37 +85,37 @@ vertex void depth(uint id [[vertex_id]],
 }
 
 
-//// Camera's RGB vertex shader outputs
-//struct RGBVertexOut {
-//    float4 position [[position]];
-//    float2 texCoord;
-//};
+// Camera's RGB vertex shader outputs
+struct RGBVertexOut {
+    float4 position [[position]];
+    float2 texCoord;
+};
 
 //カメラから取得した画像情報用
-//vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],
-//                              constant RGBUniforms &uniforms [[buffer(0)]]) {
-//    const float3 texCoord = float3(viewTexCoords[vertexID], 1) * uniforms.viewToCamera;
-//
-//    RGBVertexOut out;
-//    out.position = float4(viewVertices[vertexID], 0, 1);
-//    out.texCoord = texCoord.xy;
-//
-//    return out;
-//}
-//
-//fragment float4 rgbFragment(RGBVertexOut in [[stage_in]],
-//                            constant RGBUniforms &uniforms [[buffer(0)]],
-//                            texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
-//                            texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]]) {
-//
-//    const float2 offset = (in.texCoord - 0.5) * float2(1, 1 / uniforms.viewRatio) * 2;
-//    const float visibility = saturate(uniforms.radius * uniforms.radius - length_squared(offset));
-//    const float4 ycbcr = float4(capturedImageTextureY.sample(colorSampler, in.texCoord.xy).r, capturedImageTextureCbCr.sample(colorSampler, in.texCoord.xy).rg, 1);
-//
-//    // convert and save the color back to the buffer
-//    const float3 sampledColor = (yCbCrToRGB * ycbcr).rgb;
-//    return float4(sampledColor, 1) * visibility;
-//}
+vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],
+                              constant RGBUniforms &uniforms [[buffer(0)]]) {
+    const float3 texCoord = float3(viewTexCoords[vertexID], 1) * uniforms.viewToCamera;
+
+    RGBVertexOut out;
+    out.position = float4(viewVertices[vertexID], 0, 1);
+    out.texCoord = texCoord.xy;
+
+    return out;
+}
+
+fragment float4 rgbFragment(RGBVertexOut in [[stage_in]],
+                            constant RGBUniforms &uniforms [[buffer(0)]],
+                            texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
+                            texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]]) {
+
+    const float2 offset = (in.texCoord - 0.5) * float2(1, 1 / uniforms.viewRatio) * 2;
+    const float visibility = saturate(uniforms.radius * uniforms.radius - length_squared(offset));
+    const float4 ycbcr = float4(capturedImageTextureY.sample(colorSampler, in.texCoord.xy).r, capturedImageTextureCbCr.sample(colorSampler, in.texCoord.xy).rg, 1);
+
+    // convert and save the color back to the buffer
+    const float3 sampledColor = (yCbCrToRGB * ycbcr).rgb;
+    return float4(sampledColor, 1) * visibility;
+}
 
 
 // Particle vertex shader outputs and fragment shader inputs
@@ -365,29 +365,6 @@ kernel void calcu(const device float *inputData [[ buffer(0) ]],
 }
 
 
-//kernel void calcu2(const device float3 *vertices [[ buffer(0) ]],
-//                   const device float3 *normals [[ buffer(1) ]],
-//                   const device int3 *faces [[ buffer(2) ]],
-//                   constant CalcuUniforms &uniforms [[ buffer(3) ]],
-//                   device float2 *texcoords [[buffer(4)]],
-//                         uint id [[ thread_position_in_grid ]])
-//{
-//    const auto faceID = faces[id];
-//    const auto x = faceID.x;
-//    const auto vertexPoint4 = uniforms.transform * simd_float4(vertices[id],1);
-//    const auto clipSpacePosition = uniforms.matrix * vertexPoint4;
-//    const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
-//    const auto pt = simd_float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
-//                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
-//                                (1 - (-normalizedDeviceCoordinate.z + 1)));
-//    if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
-//        const auto u = pt.x / (834 * uniforms.yoko)  + (0 % uniforms.yoko) / uniforms.yoko;
-//        const auto v = pt.y / (1150 * uniforms.tate) + (0 / uniforms.yoko) / uniforms.tate;
-//        texcoords[id] = float2(u, v);
-//    }
-//    
-//}
-
 static simd_float4 clipPoint(simd_float3 vertexPoint, matrix_float4x4 matrix) {
     const auto clipSpacePosition = matrix * simd_float4(vertexPoint, 1.0);
     
@@ -530,7 +507,7 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
                    constant float4x4 &uniforms [[ buffer(8) ]],
                    constant anchorUniforms &anchorUnifoms [[ buffer(9) ]],
                    constant float *depth [[ buffer(10) ]],
-                   device float3 *trys [[ buffer(11) ]],
+                   device int *trys [[ buffer(11) ]],
                    uint id [[ thread_position_in_grid ]])
 {
     if (int(id) > anchorUnifoms.maxCount) {
@@ -539,6 +516,8 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
     
     float yoko = anchorUnifoms.yoko;
     float tate = anchorUnifoms.tate;
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
     
     for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
         int count = 0;
@@ -552,21 +531,23 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
                                            normals[faces[int(id*3 + j)]*3 + 1],
                                            normals[faces[int(id*3 + j)]*3 + 2]);
             
-            const auto normalizedDeviceCoordinate = clipPoint(new_vertices[id*3 + j], matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));
-            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
-                                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
-                                        (1 - (-normalizedDeviceCoordinate.z + 1)));
-            if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
-                const auto du = int(round((1 - pt.x / 834) * 95));
-                const auto dv = int(round((pt.y / 1150) * 127));
+            const auto normalizedDeviceCoordinate = clipPoint(new_vertices[id*3 + j],
+                                                              matrix_float4x4(uniforms[i*4],uniforms[i*4+1],
+                                                                              uniforms[i*4+2], uniforms[i*4+3]));
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                   (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
+                                   (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
+                const auto du = int(round((1 - pt.x / screenWidth) * 95));
+                const auto dv = int(round((pt.y / screenHeight) * 127));
                 const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
                 const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
                 const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
                 const auto diff = pow(new_vertices[id*3 + j].x - deptPosi_x, 2) + pow(new_vertices[id*3 + j].y - deptPosi_y, 2) + pow(new_vertices[id*3 + j].z - deptPosi_z, 2);
                 if (diff < 0.04) {
                     count += 1;
-                    const auto u = ((pt.x / (834 * yoko))  + (fmod(i,yoko) / yoko));
-                    const auto v = ((pt.y / (1150 * tate)) + (floor(i / yoko) / tate));
+                    const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
                     facecoord[id*3 + j] = float2(u, v);
                 }
             }
@@ -576,6 +557,141 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
             texcoords[id*3] = facecoord[id*3];
             texcoords[id*3 + 1] = facecoord[id*3 + 1];
             texcoords[id*3 + 2] = facecoord[id*3 + 2];
+            
+            trys[0] += 3;
+        }
+    }
+}
+
+kernel void calcu50(constant float *vertices [[ buffer(0) ]],
+                   constant float *normals [[ buffer(1) ]],
+                   constant int *faces [[ buffer(2) ]],
+                   device float2 *texcoords [[buffer(3)]],
+                   device float3 *new_vertices [[ buffer(4) ]],
+                   device float3 *new_normals [[ buffer(5) ]],
+                   device int *new_faces [[ buffer(6)]],
+                   device float2 *facecoord [[ buffer(7) ]],
+                   constant float4x4 &uniforms [[ buffer(8) ]],
+                   constant anchorUniforms &anchorUnifoms [[ buffer(9) ]],
+                   constant float *depth [[ buffer(10) ]],
+                   device int *trys [[ buffer(11) ]],
+                   uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    float yoko = anchorUnifoms.yoko;
+    float tate = anchorUnifoms.tate;
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
+    
+    float3x3 kari_faces;
+    float3x3 kari_vertices;
+    float3x3 kari_normals;
+    float3x2 kari_texcoords;
+    
+    for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+        int count = 0;
+        for (int j = 0; j < 3; j++) {
+            kari_faces[j] = int(id*3 + j);
+            kari_vertices[j] = mul(float3(vertices[faces[int(id*3 + j)]*3 + 0],
+                                          vertices[faces[int(id*3 + j)]*3 + 1],
+                                          vertices[faces[int(id*3 + j)]*3 + 2]),
+                                   anchorUnifoms.transform);
+            kari_normals[j] = float3(normals[faces[int(id*3 + j)]*3 + 0],
+                                     normals[faces[int(id*3 + j)]*3 + 1],
+                                     normals[faces[int(id*3 + j)]*3 + 2]);
+            
+            const auto normalizedDeviceCoordinate = clipPoint(kari_vertices[j],
+                                                              matrix_float4x4(uniforms[i*4],
+                                                                              uniforms[i*4+1],
+                                                                              uniforms[i*4+2],
+                                                                              uniforms[i*4+3]));
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                   (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
+                                   (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
+                const auto du = int(round((1 - pt.x / screenWidth) * 95));
+                const auto dv = int(round((pt.y / screenHeight) * 127));
+                const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
+                const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
+                const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
+                const auto diff = pow(kari_vertices[j].x - deptPosi_x, 2) + pow(kari_vertices[j].y - deptPosi_y, 2) + pow(kari_vertices[j].z - deptPosi_z, 2);
+                if (diff < 0.04) {
+                    count += 1;
+                    const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
+                    kari_texcoords[j] = float2(u, v);
+                }
+            }
+        }
+        
+        if (count == 3) {
+            texcoords[id*3 + 0] = kari_texcoords[0];
+            texcoords[id*3 + 1] = kari_texcoords[1];
+            texcoords[id*3 + 2] = kari_texcoords[2];
+            
+            new_vertices[id*3 + 0] = kari_vertices[0];
+            new_vertices[id*3 + 1] = kari_vertices[1];
+            new_vertices[id*3 + 2] = kari_vertices[2];
+            
+            new_normals[id*3 + 0] = kari_normals[0];
+            new_normals[id*3 + 1] = kari_normals[1];
+            new_normals[id*3 + 2] = kari_normals[2];
+            
+            new_faces[id*3 + 0] = id*3 + 0;
+            new_faces[id*3 + 1] = id*3 + 1;
+            new_faces[id*3 + 2] = id*3 + 2;
+            
+            trys[0] += 3;
+            break;
+        }
+    }
+}
+
+kernel void Judge (constant float *vertices [[ buffer(0) ]],
+                   constant int *faces [[ buffer(1) ]],
+                   device float3 *judges [[ buffer(2) ]],
+                   constant float4x4 &uniforms [[ buffer(3) ]],
+                   device realAnchorUniforms &anchorUnifoms [[ buffer(10) ]],
+                   uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+        int count = 0;
+        for (int j = 0; j < 3; j++) {
+            float3 point = mul(float3(vertices[faces[int(id*3 + j)]*3 + 0],
+                                      vertices[faces[int(id*3 + j)]*3 + 1],
+                                      vertices[faces[int(id*3 + j)]*3 + 2]),
+                               anchorUnifoms.transform);
+            
+            const auto normalizedDeviceCoordinate = clipPoint(point, matrix_float4x4(uniforms[i*4],uniforms[i*4+1],uniforms[i*4+2], uniforms[i*4+3]));
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (834 / 2),
+                                        (-normalizedDeviceCoordinate.y + 1) * (1150 / 2),
+                                        (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0) {
+                count += 1;
+            }
+        }
+        
+        if (count == 1 || count == 2) {
+            judges[anchorUnifoms.currentIndex*3] = mul(float3(vertices[faces[int(id*3 + 0)]*3 + 0],
+                                                              vertices[faces[int(id*3 + 0)]*3 + 1],
+                                                              vertices[faces[int(id*3 + 0)]*3 + 2]),
+                                                       anchorUnifoms.transform);
+            judges[anchorUnifoms.currentIndex*3 + 1] = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
+                                                                  vertices[faces[int(id*3 + 1)]*3 + 1],
+                                                                  vertices[faces[int(id*3 + 1)]*3 + 2]),
+                                                           anchorUnifoms.transform);
+            judges[anchorUnifoms.currentIndex*3 + 2] = mul(float3(vertices[faces[int(id*3 + 2)]*3 + 0],
+                                                                  vertices[faces[int(id*3 + 2)]*3 + 1],
+                                                                  vertices[faces[int(id*3 + 2)]*3 + 2]),
+                                                           anchorUnifoms.transform);
+            anchorUnifoms.currentIndex += 1;
         }
     }
 }
@@ -613,49 +729,28 @@ kernel void meshCalculate(constant float *vertices [[ buffer(0) ]],
 //    texcoords[id*3 + 2] = float2(0, 0);
 }
 
-//vertex void depth(uint id [[vertex_id]],
-//                  constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
-//                  device DepthUniforms *depthUniforms [[buffer(kParticleUniforms)]],
-//                  constant float2 *gridPoints [[buffer(kGridPoints)]],
-//                  texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]],
-//                  texture2d<unsigned int, access::sample> confidenceTexture [[texture(kTextureConfidence)]]) {
-//
-//    const auto gridPoint = gridPoints[id];
-//    const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + id) % uniforms.maxPoints;
-//    const auto texCoord = gridPoint / uniforms.cameraResolution;
-//    const auto depth = depthTexture.sample(colorSampler, texCoord).r;
-//    const auto position = worldPoint(gridPoint, depth, uniforms.cameraIntrinsicsInversed, uniforms.localToWorld);
-//    float4 projectedPosition = position;//uniforms.viewProjectionMatrix *
-//    projectedPosition /= projectedPosition.w;
-//
-//    const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
-//
-//    depthUniforms[currentPointIndex].position = projectedPosition.xyz;
-//    depthUniforms[currentPointIndex].confidence = confidence;
-//}
-
 vertex void meshCalculate2(uint id [[ vertex_id ]],
                            constant float *vertices [[ buffer(0) ]],
                            constant int *faces [[ buffer(1) ]],
-                           device MeshUniforms *meshUniforms [[ buffer(5) ]],
+                           device MeshUniforms *meshUniforms [[ buffer(7) ]],
                            constant realAnchorUniforms &anchorUnifoms [[ buffer(6) ]])
 {
 //    if (int(id) > anchorUnifoms.maxCount) {
 //        return;
 //    }
     
-    const auto currentIndex = int(id / 3); //(anchorUnifoms.currentIndex + id) % anchorUnifoms.maxCount;
+    const auto currentIndex = id; //int(id / 3); //(anchorUnifoms.currentIndex + id) % anchorUnifoms.maxCount;
     meshUniforms[currentIndex].index = currentIndex;
     meshUniforms[currentIndex].originIndex = faces[id];
-    meshUniforms[currentIndex].faceIndex = int3(faces[int(id)]*3 + 0, faces[int(id)]*3 + 1, faces[int(id)]*3 + 2);
+    meshUniforms[currentIndex].faceIndex = int3(faces[int(id)], faces[int(id+1)], faces[int(id+2)]);
     
 //    meshUniforms[currentIndex].faces = int(id*3);
 //    meshUniforms[currentIndex + 1].faces = int(id*3 + 1);
 //    meshUniforms[currentIndex + 2].faces = int(id*3 + 2);
     
-    meshUniforms[currentIndex].vertex1 = mul(float3(vertices[faces[int(id)]*3 + 0],
-                                                    vertices[faces[int(id)]*3 + 1],
-                                                    vertices[faces[int(id)]*3 + 2]),
+    meshUniforms[currentIndex].vertex1 = mul(float3(vertices[faces[id]*3 + 0],
+                                                    vertices[faces[id]*3 + 1],
+                                                    vertices[faces[id]*3 + 2]),
                                              anchorUnifoms.transform);
 //    meshUniforms[currentIndex].vertex2 = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
 //                                                    vertices[faces[int(id*3 + 1)]*3 + 1],
@@ -666,7 +761,7 @@ vertex void meshCalculate2(uint id [[ vertex_id ]],
 //                                                    vertices[faces[int(id*3 + 2)]*3 + 2]),
 //                                             anchorUnifoms.transform);
     
-    meshUniforms[currentIndex].color = float4(0,0,1.0,0.5);
+    meshUniforms[currentIndex].color = float4(0,0,1.0,0.3);
     
 //    new_faces[id*3] = int(id*3);
 //    new_faces[id*3 + 1] = int(id*3 + 1);
@@ -694,7 +789,7 @@ struct MeshFragmentOut {
 };
 
 vertex MeshVertexOut meshVertex(uint id [[vertex_id]],
-                                constant MeshUniforms *meshUniforms [[ buffer(5) ]],
+                                constant MeshUniforms *meshUniforms [[ buffer(7) ]],
                                 constant realAnchorUniforms &anchorUnifoms [[ buffer(6) ]]) {
     
     const auto position = meshUniforms[id].vertex1;
@@ -705,7 +800,7 @@ vertex MeshVertexOut meshVertex(uint id [[vertex_id]],
     MeshVertexOut out;
     out.position = projectedPosition;
     out.pointSize = 10.0;
-    out.color = float4(0, 0, 1.0, 1.0);
+    out.color = meshUniforms[id].color; //float4(0, 0, 1.0, 1.0);
     
     return out;
 }
@@ -727,4 +822,85 @@ fragment MeshFragmentOut meshFragment(MeshVertexOut in [[stage_in]],
     out.color = in.color;
 
     return out;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct ColorInOut {
+    float4 position [[position]]; //特徴点の３次元座標
+    float2 texCoord;
+    int visible;
+};
+
+vertex ColorInOut meshVertex10(const device float4 *positions [[ buffer(0)]],
+                                uint id [[ vertex_id ]]) {
+    
+    ColorInOut out;
+    out.position = positions[id];
+    return out;
+}
+
+fragment float4 meshFragment10(ColorInOut in [[ stage_in ]]) {
+    return float4(1,0,0,0.5);
+}
+
+vertex ColorInOut meshVertex100(constant float *vertices [[ buffer(1) ]],
+                                constant int *faces [[ buffer(2) ]],
+                                constant AnchorUniforms &anchorUnifoms [[ buffer(3) ]],
+                                constant float4x4 *uniforms [[ buffer(4) ]],
+                                uint id [[ vertex_id ]]) {
+    
+    //メッシュの頂点をワールド座標系に変換
+    const auto position = mul(float3(vertices[faces[id]*3 + 0],
+                                     vertices[faces[id]*3 + 1],
+                                     vertices[faces[id]*3 + 2]),
+                              anchorUnifoms.transform);;
+    
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
+    
+    ColorInOut out;
+    
+    if (anchorUnifoms.calcuCount > 0) {
+        float4 projectedPosition = anchorUnifoms.viewProjectionMatrix * float4(position, 1.0);
+        projectedPosition /= projectedPosition.w; //必要
+        
+    //    const auto pt = float3((projectedPosition.x + 1) * (834 / 2),
+    //                           (-projectedPosition.y + 1) * (1150 / 2),
+    //                           (1 - (-projectedPosition.z + 1)));
+        
+        if (abs(projectedPosition.x) >= 5.0 || abs(projectedPosition.y >= 5.0 || projectedPosition.z > 1.0)) {
+            out.visible = 1;
+        } else {
+            out.visible = 2;
+            out.position = projectedPosition;
+        //const auto new_tex = float2(pt.y/1194, 1 - pt.x/834);
+        //out.texCoord = float2(pt.x/834, pt.y/1150);
+        }
+        
+        //変換した頂点が画面上に位置するかを判定
+        if (out.visible == 2) {
+            for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
+                const auto normalizedDeviceCoordinate = clipPoint(position, uniforms[i]);
+                const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                       (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
+                                       (1 - (-normalizedDeviceCoordinate.z + 1)));
+                
+                if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
+                    out.visible = 0;
+                }
+            }
+        }
+    }
+    
+    
+    return out;
+}
+
+fragment float4 meshFragment100(ColorInOut in [[ stage_in ]]) {
+    if (in.visible != 0) {
+        discard_fragment();
+    }
+    
+    return float4(0,0,0,0);
 }
