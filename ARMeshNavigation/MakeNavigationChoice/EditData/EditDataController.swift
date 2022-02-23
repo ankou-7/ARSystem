@@ -1053,25 +1053,26 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             
             self.calculate = CalculateRenderer(section_num: section_num, cell_num: cell_num, model_num: current_model_num, anchor: anchors, metalDevice: self.sceneView.device!, calcuUniforms: calcuUnifoms, depth: depth, tate: Int(tate), yoko: Int(yoko), screenWidth: Int(sceneView.bounds.width), screenHeight: Int(sceneView.bounds.height))
             self.calculate.drawRectResized(size: self.sceneView.bounds.size)
+            print("calcuCount(スクリーン座標変換用の行列数):\(calcuUnifoms.count)")
             
             
             DispatchQueue.main.async { [self] in
                 ActivityView.startAnimating()
                 for i in 0..<anchors.count {
-                    flag += self.calculate.calcu5(num: i)
-                    //let node = calculate.calcu4(num: 1)
-                    //sceneView.scene?.rootNode.addChildNode(node)
+                    print("---------------------------------------------------------------------------------")
                     print("\(flag)回目")
-                    print("配列中身：\(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i])")
-                    print("----------------------------------------------------------------------------------------")
+                    flag += self.calculate.calcu5(num: i)
+                    //print("配列中身：\(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i])")
+                    
                     if flag == anchors.count {
+                        print("---------------------------------------------------------------------------------")
                         print("calcu終了")
                         let elapsed = Date().timeIntervalSince(start)
                         print("処理時間：\(elapsed)")
                         //print("配列全て中身：\(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)")
 //                        print("load")
                         delete_mesh()
-                        let node =   build2(image: new_uiimage)
+                        let node = build2(image: new_uiimage)
                         sceneView.scene?.rootNode.addChildNode(node)
                         //load_anchor2()
                         ActivityView.stopAnimating()

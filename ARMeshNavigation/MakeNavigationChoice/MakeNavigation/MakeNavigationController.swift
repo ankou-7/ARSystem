@@ -363,14 +363,23 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     @objc func Alert() {
-        //var alertTextField: UITextField?
         let title = "マッピング完了"
-        let message = "終了する場合は終了ボタンを押して下さい。"
+        let message = """
+                      終了する場合は終了して保存先の指定を
+                      続行する場合は続行を選択して下さい。
+                      """
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
-            self.Make_mesh_obj() //モデルを書き込み
+        alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
+            self.Make_mesh_obj() //モデルを一時保存
             self.mesh_flag = false
+        })
+        
+        alertController.addAction(UIAlertAction(title: "終了", style: .default) { [self] _ in
+            self.Make_mesh_obj() //モデルを一時保存
+            self.mesh_flag = false
+            
+            finish_mapping()
         })
             
         self.present(alertController, animated: true, completion: nil)
@@ -1000,13 +1009,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         return SCNNode(geometry: pointsGeometry)
     }
     
-    @IBAction func Check_navidata(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "CheckDataCell", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataCellController") as! CheckDataCellController
-        self.present(vc, animated: true, completion: nil)
-    }
+//    @IBAction func Finish_navigate(_ sender: Any) {
+//        timer.invalidate()
+//        let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
+//        self.present(vc, animated: true, completion: nil)
+//    }
     
-    @IBAction func Finish_navigate(_ sender: Any) {
+    func finish_mapping() {
         timer.invalidate()
         let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
