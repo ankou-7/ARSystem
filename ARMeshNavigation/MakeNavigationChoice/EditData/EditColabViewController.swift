@@ -205,6 +205,7 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
     }
     
     
+    //MARK: - 通信設定
     @IBOutlet weak var sceneView: SCNView!
     let scene = SCNScene()
     @IBOutlet weak var imageView: UIImageView!
@@ -254,7 +255,6 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
     @IBAction func to_ARView(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "EditData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "EditColabARViewController") as! EditColabARViewController
-//        vc.view.backgroundColor = UIColor.white
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
