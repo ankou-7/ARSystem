@@ -182,42 +182,42 @@ class UseDataNavigationController: UIViewController, ARSCNViewDelegate, ARSessio
                         self.reworld_flag = false
                         self.worldImageview.isHidden = true
                         
-                        let realm = try! Realm()
-                        let usdz_results = realm.objects(Navi_SectionTitle.self)[self.section_num].cells[self.cell_num].models[self.current_model_num].usdz
-                        for usdz in usdz_results {
-                            if usdz.usdz_num >= 0 {
-                                guard let url = Bundle.main.url(forResource: "art.scnassets/"+self.url_name[usdz.usdz_num][0], withExtension: "usdz") else { return }
-                                let scene1 = try! SCNScene(url: url, options: [.checkConsistency: true])
-                                let node = scene1.rootNode.childNode(withName: self.url_name[usdz.usdz_num][1], recursively: true)
-                                node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                                node?.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
-                                node?.name = usdz.usdz_name
-                                self.model_name_array.append((node?.name)!)
-                                self.sceneView.scene.rootNode.addChildNode(node!)
-                            }
-                            else if usdz.usdz_num == -100 {
-                                let scene1 = SCNScene(named: "art.scnassets/try.scn")
-                                let node = (scene1?.rootNode.childNode(withName: "arrow", recursively: false))!
-                                node.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
-                                node.scale = SCNVector3(usdz.usdz_scale_x, usdz.usdz_scale_y, usdz.usdz_scale_z)
-                                node.eulerAngles = .init(usdz.usdz_euler_x, usdz.usdz_euler_y, usdz.usdz_euler_z)
-                                node.opacity = 0.9
-                                node.name = usdz.usdz_name
-                                self.model_name_array.append((node.name)!)
-                                self.sceneView.scene.rootNode.addChildNode(node)
-                            }
-                            else if usdz.usdz_num == -50 {
-                                let scene1 = SCNScene(named: "art.scnassets/\(usdz.usdz_name).scn")
-                                let node = (scene1?.rootNode.childNode(withName: usdz.usdz_name, recursively: false))!
-                                node.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
-                                node.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 2.5)))
-                                node.opacity = 0.9
-                                node.name = usdz.usdz_name
-                                self.model_name_array.append((node.name)!)
-                                self.sceneView.scene.rootNode.addChildNode(node)
-
-                            }
-                        }
+//                        let realm = try! Realm()
+//                        let usdz_results = realm.objects(Navi_SectionTitle.self)[self.section_num].cells[self.cell_num].models[self.current_model_num].usdz
+//                        for usdz in usdz_results {
+//                            if usdz.usdz_num >= 0 {
+//                                guard let url = Bundle.main.url(forResource: "art.scnassets/"+self.url_name[usdz.usdz_num][0], withExtension: "usdz") else { return }
+//                                let scene1 = try! SCNScene(url: url, options: [.checkConsistency: true])
+//                                let node = scene1.rootNode.childNode(withName: self.url_name[usdz.usdz_num][1], recursively: true)
+//                                node?.scale = SCNVector3(0.01, 0.01, 0.01)
+//                                node?.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
+//                                node?.name = usdz.usdz_name
+//                                self.model_name_array.append((node?.name)!)
+//                                self.sceneView.scene.rootNode.addChildNode(node!)
+//                            }
+//                            else if usdz.usdz_num == -100 {
+//                                let scene1 = SCNScene(named: "art.scnassets/try.scn")
+//                                let node = (scene1?.rootNode.childNode(withName: "arrow", recursively: false))!
+//                                node.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
+//                                node.scale = SCNVector3(usdz.usdz_scale_x, usdz.usdz_scale_y, usdz.usdz_scale_z)
+//                                node.eulerAngles = .init(usdz.usdz_euler_x, usdz.usdz_euler_y, usdz.usdz_euler_z)
+//                                node.opacity = 0.9
+//                                node.name = usdz.usdz_name
+//                                self.model_name_array.append((node.name)!)
+//                                self.sceneView.scene.rootNode.addChildNode(node)
+//                            }
+//                            else if usdz.usdz_num == -50 {
+//                                let scene1 = SCNScene(named: "art.scnassets/\(usdz.usdz_name).scn")
+//                                let node = (scene1?.rootNode.childNode(withName: usdz.usdz_name, recursively: false))!
+//                                node.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
+//                                node.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 2.5)))
+//                                node.opacity = 0.9
+//                                node.name = usdz.usdz_name
+//                                self.model_name_array.append((node.name)!)
+//                                self.sceneView.scene.rootNode.addChildNode(node)
+//
+//                            }
+//                        }
                     }
                 }
             }

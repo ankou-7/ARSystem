@@ -34,7 +34,6 @@ class Navi_Modelname: Object {
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
     
-    let usdz = List<Navi_Usdz_ModelInfo>()
     let obj = List<ObjectInfo>()
     @objc dynamic var add_obj_count: Int = 0
     
@@ -45,20 +44,6 @@ class Navi_Modelname: Object {
     @objc dynamic var texture_pic: Data!
     @objc dynamic var texture_bool: Int = 0
     let mesh_anchor = List<anchor_data>()
-}
-
-class Navi_Usdz_ModelInfo: Object {
-    @objc dynamic var usdz_name: String = ""
-    @objc dynamic var usdz_num: Int = 0
-    @objc dynamic var usdz_posi_x: Float = 0.0
-    @objc dynamic var usdz_posi_y: Float = 0.0
-    @objc dynamic var usdz_posi_z: Float = 0.0
-    @objc dynamic var usdz_scale_x: Float = 0.0
-    @objc dynamic var usdz_scale_y: Float = 0.0
-    @objc dynamic var usdz_scale_z: Float = 0.0
-    @objc dynamic var usdz_euler_x: Float = 0.0
-    @objc dynamic var usdz_euler_y: Float = 0.0
-    @objc dynamic var usdz_euler_z: Float = 0.0
 }
 
 class ObjectInfo: Object {
@@ -78,8 +63,6 @@ class Navityu: Object {
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
     @objc dynamic var exit_parameta: Int = 0
-    
-    let usdz = List<Navi_Usdz_ModelInfo>()
 }
 
 //内部パラメータ用

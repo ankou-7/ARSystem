@@ -19,14 +19,6 @@ class MenuViewModel {
             description: "ワールド座標系の原点表示を行うか"
         ),
         MenuItem (
-            title: "切り替えマーカの配置",
-            description: "スキャン切り替え時に切り替え場所を示すためのマーカを配置するか"
-        ),
-        MenuItem (
-            title: "マーカの手動配置",
-            description: "マーカを手動で配置するか"
-        ),
-        MenuItem (
             title: "メッシュの非表示",
             description: "メッシュを非表示する"
         ),

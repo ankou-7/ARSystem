@@ -53,7 +53,6 @@ class ChoiceDataAllCheckController: UIViewController, UITableViewDelegate, UITab
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
         
-        print(results[section_num].cells[cell_num].models[indexPath.row].usdz)
         let storyboard = UIStoryboard(name: "CheckAllData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataController") as! CheckDataController
         vc.section_num = section_num//indexPath.section

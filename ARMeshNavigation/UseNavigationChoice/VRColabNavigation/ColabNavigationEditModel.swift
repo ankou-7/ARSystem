@@ -576,16 +576,16 @@ class ColabNavigationEditModel: UIViewController, ARSCNViewDelegate, UIGestureRe
                         //startなどのオブジェクト情報を送信
                         let realm = try! Realm()
                         let results = realm.objects(Navi_SectionTitle.self)
-                        let usdzInfo = results[self.section_num].cells[self.cell_num].models[self.current_model_num].usdz
-                        for usdz in usdzInfo {
-                            if usdz.usdz_num == -50 {
-                                let str = "usdzInfo:\(usdz.usdz_name):\(usdz.usdz_posi_x):\(usdz.usdz_posi_y):\(usdz.usdz_posi_z)"
-                                
-                                guard let data = try? NSKeyedArchiver.archivedData(withRootObject: str as NSString, requiringSecureCoding: true)
-                                else{ return }
-                                try? self.session.send(data as Data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
-                            }
-                        }
+//                        let usdzInfo = results[self.section_num].cells[self.cell_num].models[self.current_model_num].usdz
+//                        for usdz in usdzInfo {
+//                            if usdz.usdz_num == -50 {
+//                                let str = "usdzInfo:\(usdz.usdz_name):\(usdz.usdz_posi_x):\(usdz.usdz_posi_y):\(usdz.usdz_posi_z)"
+//
+//                                guard let data = try? NSKeyedArchiver.archivedData(withRootObject: str as NSString, requiringSecureCoding: true)
+//                                else{ return }
+//                                try? self.session.send(data as Data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
+//                            }
+//                        }
                     }
                 }
                 

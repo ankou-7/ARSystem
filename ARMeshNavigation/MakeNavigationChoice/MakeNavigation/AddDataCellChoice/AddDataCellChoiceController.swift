@@ -208,13 +208,6 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                                                                             "exit_mesh": navityu_results[i].exit_mesh,
                                                                             "exit_point": navityu_results[i].exit_point]))
                 
-                if navityu_results[i].usdz.count > 0 {
-                    for j in 0...navityu_results[i].usdz.count-1 {
-                        results[section_num].cells[cell_num].models[i].usdz.append(Navi_Usdz_ModelInfo(value: ["usdz_name": navityu_results[i].usdz[j].usdz_name, "usdz_num": navityu_results[i].usdz[j].usdz_num, "usdz_posi_x": navityu_results[i].usdz[j].usdz_posi_x, "usdz_posi_y": navityu_results[i].usdz[j].usdz_posi_y, "usdz_posi_z": navityu_results[i].usdz[j].usdz_posi_z]))
-                    }
-                    print(results[section_num].cells[cell_num].models[i].usdz)
-                }
-                
                 if navityu_results[i].exit_mesh == 1 {
                     for j in 0...data_parameta_results[i].mesh_anchor.count-1 {
                         results[section_num].cells[cell_num].models[i].mesh_anchor.append(
@@ -250,7 +243,7 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                 }
                 
             }
-            
+            print(results[section_num].cells[cell_num].models)
         }
 
         try! realm.write {

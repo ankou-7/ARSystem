@@ -23,7 +23,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var sceneView: ARSCNView!
     //var sceneView: ARSCNView!
     let scene = SCNScene()
-    @IBOutlet weak var status_label: UILabel!
     
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
@@ -40,16 +39,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var exit_mesh_num = 0
     var exit_point_num = 0
     var exit_parameta = 0
-    
-    //let marker_name = ["toy_drummer", "toy_robot_vintage", "chair_swan", "toy_biplane", "tv_retro", "flower_tulip", "start", "goal"]
-    var select_marker_num = -100
-    //var place_object_name: [String] = []
-    var add_object_num: [Int] = []
-    var goal_marker_flag = false
-    
-    let ObjectdataSource = ObjectModel()
-    var item = ObjectItem(name: "", id: 0, kind: "")
-    @IBOutlet weak var Add_ModelButton: UIButton!
     
     @IBOutlet weak var make_modelButton: UIButton!
     @IBOutlet weak var make_out_modelButton: UIButton!
@@ -82,6 +71,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var depth_flag = false
     
+    //マッピング支援機構の動作設定
+    @IBOutlet weak var mapping_label: UILabel!
+    var mapping_flag = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -98,8 +91,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.scene = scene
         
         sceneView.debugOptions = .showWorldOrigin
-        
-        Add_ModelButton.isHidden = true
+
         
         //パラメータを一時的に保存する場所を初期化
         let realm = try! Realm()
@@ -168,74 +160,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         popoverPresentationController.permittedArrowDirections = .any
         popoverPresentationController.delegate = self
         
-        contentVC.closure = { (cell_num: Int, bool: Bool) -> Void in
-            self.menu_array[cell_num] = bool
-            if self.menu_array[2] == true {
-                self.Add_ModelButton.isHidden = false
-            } else {
-                self.Add_ModelButton.isHidden = true
-            }
-        }
         present(contentVC, animated: true, completion: nil)
-    }
-    
-    @IBAction func marker_plus(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "PopOver", bundle: nil)
-        let contentVC = storyboard.instantiateViewController(withIdentifier: "MarkerPopOverController") as! MarkerPopOverController
-        
-        contentVC.modalPresentationStyle = .popover
-        contentVC.preferredContentSize = CGSize(width: 200, height: 400)
-        
-        guard let popoverPresentationController = contentVC.popoverPresentationController else { return }
-        
-        popoverPresentationController.sourceView = view
-        popoverPresentationController.sourceRect = sender.frame
-        popoverPresentationController.permittedArrowDirections = .any
-        popoverPresentationController.delegate = self
-        
-        contentVC.closure = { (num: Int) -> Void in
-            self.select_marker_num = num
-            self.item = self.ObjectdataSource.item(row: self.select_marker_num)
-        }
-        
-        present(contentVC, animated: true, completion: nil)
-    }
-    
-    //画面タップしたとき
-    @IBAction func handleTap(_ sender: UITapGestureRecognizer) {
-        if menu_array[2] == true {
-            let location = sender.location(in: sceneView)
-            let hitResults = sceneView.hitTest(location, options: [:])
-            if !hitResults.isEmpty {
-                let posi = hitResults[0].worldCoordinates
-                //if select_marker_num >= 6 {
-                if item.kind == "scn" {
-                    let scene1 = SCNScene(named: "art.scnassets/\(item.name).scn")
-                    let node = (scene1?.rootNode.childNode(withName: item.name, recursively: false))!
-                    if item.name == "goal" {
-                        goal_marker_flag = true
-                    }
-                    node.position = posi
-                    node.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 2.5)))
-                    node.name = item.name
-                    //place_object_name.append(node.name!)
-                    add_object_num.append(item.id)
-                    sceneView.scene.rootNode.addChildNode(node)
-                }
-                //else if select_marker_num <= 5 {
-                else if item.kind == "usdz" {
-                    guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
-                    let scene1 = try! SCNScene(url: url, options: [.checkConsistency: true])
-                    let node = scene1.rootNode.childNode(withName: item.name, recursively: true)
-                    node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                    node?.position = posi
-                    node!.name = item.name
-                    //place_object_name.append(node!.name!)
-                    add_object_num.append(item.id)
-                    sceneView.scene.rootNode.addChildNode(node!)
-                }
-            }
-        }
     }
     
     @IBAction func make_modelButton_Tapped(_ sender: UIButton) {
@@ -277,36 +202,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     sceneView: self.sceneView)
                 self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
                 
-//                self.calculateRenderer = Calcu_Renderer(
-//                    session: self.sceneView.session,
-//                    metalDevice: self.sceneView.device!,
-//                    sceneView: self.sceneView)
-//                self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
-                
                 self.lastCameraTransform = self.sceneView.session.currentFrame?.camera.transform
                 
-
-                //配置したscnオブジェクトを削除
-                //for name in self.place_object_name {
-                for num in self.add_object_num {
-                    let ite = self.ObjectdataSource.item(row: num)
-                    if let node = self.sceneView.scene.rootNode.childNode(withName: ite.name, recursively: false) {
-                        node.removeFromParentNode()
-                    }
-                }
-                self.select_marker_num = -100
-                //self.place_object_name = []
-                self.add_object_num = []
-                
-                if self.menu_array[4] == false {
+                //点群の表示
+                if self.menu_array[2] == false {
                     self.exit_point_num = 1
                     self.pointCloud_flag = true
                 }
-//                else if self.menu_array[4] == true {
-//                    self.exit_point_num = 0
-//                }
 
-                self.status_label.text = "Mapping"
                 self.recording_count += 1
                 self.make_out_modelButton.layer.cornerRadius = 3.0
                 self.make_modelButton.layer.cornerRadius = 3.0
@@ -325,25 +228,25 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     self.sceneView.debugOptions = .showWorldOrigin
                 }
                 
-                if self.menu_array[3] == false {
+                //メッシュの表示
+                if self.menu_array[1] == false {
                     self.exit_mesh_num = 1
                     if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
                         self.configuration.sceneReconstruction = .meshWithClassification
                     }
                 }
-//                else if self.menu_array[3] == true {
-//                    self.exit_mesh_num = 0
-//                }
+
                 self.configuration.environmentTexturing = .automatic
                 self.configuration.planeDetection = [.horizontal, .vertical]
                 self.configuration.frameSemantics =  .sceneDepth //.smoothedSceneDepth
                 //configuration.isLightEstimationEnabled = false
                 self.configuration.environmentTexturing = .none
                 
-                if self.menu_array[5] == false {
+                //原点の更新
+                if self.menu_array[3] == false {
                     self.sceneView.session.run(self.configuration, options: [.removeExistingAnchors, .resetSceneReconstruction])
                 }
-                else if self.menu_array[5] == true {
+                else if self.menu_array[3] == true {
                     self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
                 }
                 
@@ -563,6 +466,17 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //        }
 //    }
     
+    @IBAction func mappingSwitch(_ sender: UISwitch) {
+        if sender.isOn == false {
+            mapping_label.text = "動作停止"
+            mapping_flag = false
+        } else {
+            mapping_label.text = "動作中"
+            mapping_flag = true
+        }
+    }
+    
+    
     @objc func update() {
         //if depth_flag == true {
         
@@ -660,15 +574,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     
                     let depthData = depth_pointCloudRenderer.depthData()
                     
-                    depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
+                    if mapping_flag == true {
+                        depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
+                        
+                        DispatchQueue.global().async { [self] in
+                            save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                        }
+                    }
+                    
+                    
 //                    if depth_pointCloudRenderer.imgPlaceMatrix.count >= 1 {
 //                        snapshot()
 //                        snap_flag = true
 //                    }
-                    
-                    DispatchQueue.global().async { [self] in
-                        save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
-                    }
                     
                 }
                         
@@ -779,21 +697,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //        guard let frame = sceneView.session.currentFrame else {
         //            fatalError("Couldn't get the current ARFrame")
         //        }
-        if menu_array[1] == true {
-            if goal_marker_flag == false {
-                if let camera = sceneView.pointOfView { // カメラを取得
-                    let camera_posi = camera.convertPosition(SCNVector3(0, 0, -0.2), to: nil)
-                    let scene1 = SCNScene(named: "art.scnassets/kirikae.scn")
-                    let node = (scene1?.rootNode.childNode(withName: "kirikae", recursively: false))!
-                    node.position = camera_posi
-                    node.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 2.5)))
-                    node.name = "kirikae"
-                    //place_object_name.append(node.name!)
-                    add_object_num.append(8)
-                    sceneView.scene.rootNode.addChildNode(node)
-                }
-            }
-        }
+        
         
         let realm = try! Realm()
         let results = realm.objects(Navityu.self)
@@ -812,11 +716,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             let targetTextFilePath = documentDirectoryFileURL.appendingPathComponent(objName+".scn")
             
             //point cloudをtxtファイルで保存
-            if menu_array[4] == false {
+            if menu_array[2] == false {
                 self.pointCloudRenderer.savePointsToFile(failname: objName)
             }
             //sceneをscnファイルで保存
-            if menu_array[3] == false {
+            if menu_array[1] == false {
                 //self.sceneView.scene.write(to: targetTextFilePath, options: nil, delegate: nil, progressHandler: nil)
                 
                 guard let anchors = sceneView.session.currentFrame?.anchors else { return }
@@ -858,28 +762,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         self.exit_mesh_num = 0
                         self.exit_point_num = 0
                         
-                        //for name in self.place_object_name {
-                        for num in self.add_object_num {
-                            let ite = self.ObjectdataSource.item(row: num)
-                            let node = self.sceneView.scene.rootNode.childNode(withName: ite.name, recursively: false)
-//                            var usdz_num = -1000
-//                            if let num = marker_name.firstIndex(of: name) {
-//                                if num >= 6 {
-//                                    usdz_num = -50
-//                                }
-//                                else {
-//                                    usdz_num = num
-//                                }
-//                            }
-                            try! realm.write {
-                                results[self.recording_count].usdz.append(Navi_Usdz_ModelInfo(value:
-                                                                                                ["usdz_name": ite.name,
-                                                                                                 "usdz_num": ite.id,
-                                                                                                 "usdz_posi_x": node!.position.x,
-                                                                                                 "usdz_posi_y": node!.position.y,
-                                                                                                 "usdz_posi_z": node!.position.z]))
-                            }
-                        }
                     } else {
                         //fatalError("can't encode map")
                         let alertController = UIAlertController(title: "Failed to save the model1", message: "Try again", preferredStyle: .alert)
@@ -909,7 +791,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100() //深度情報
-            
             self.depth_pointCloudRenderer.mapping100() //マッピング支援
 
             if pointCloud_flag == true {
@@ -1009,13 +890,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         return SCNNode(geometry: pointsGeometry)
     }
     
-//    @IBAction func Finish_navigate(_ sender: Any) {
-//        timer.invalidate()
-//        let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
-//        let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
-//        self.present(vc, animated: true, completion: nil)
-//    }
-    
     func finish_mapping() {
         timer.invalidate()
         let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
@@ -1068,35 +942,5 @@ extension ARMeshGeometry {
         let classificationPointer = classification.buffer.contents().advanced(by: classification.offset + (classification.stride * index))
         let classificationValue = Int(classificationPointer.assumingMemoryBound(to: CUnsignedChar.self).pointee)
         return ARMeshClassification(rawValue: classificationValue) ?? .none
-    }
-}
-
-extension ARMeshClassification {
-    var description: String {
-        switch self {
-        case .ceiling: return "Ceiling"
-        case .door: return "Door"
-        case .floor: return "Floor"
-        case .seat: return "Seat"
-        case .table: return "Table"
-        case .wall: return "Wall"
-        case .window: return "Window"
-        case .none: return "None"
-        @unknown default: return "Unknown"
-        }
-    }
-    
-    var color: UIColor {
-        switch self {
-        case .ceiling: return .cyan
-        case .door: return .brown
-        case .floor: return .red
-        case .seat: return .purple
-        case .table: return .yellow
-        case .wall: return .green
-        case .window: return .blue
-        case .none: return .lightGray
-        @unknown default: return .gray
-        }
     }
 }
