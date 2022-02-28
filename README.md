@@ -24,7 +24,6 @@ https://github.com/noppefoxwolf/HandTracker/releases
 
 ## 機能概要
 
-![ezgif com-gif-maker](https://user-images.githubusercontent.com/61243751/144311168-25d93b41-b921-49aa-aa52-67c7a9fdac70.gif)
-
+![３次元空間構築_言葉なし_AdobeCreativeCloudExpress](https://user-images.githubusercontent.com/61243751/155966245-e37da51b-d2db-4d96-bae1-611575ebd0e5.gif)
 
 
