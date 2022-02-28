@@ -144,6 +144,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         try? self.session.send(StringData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
     }
     
+    func send_remoteSupportObjectData(state: String, name_identify: String, info_data_array: [Data]) {
+        guard let startData = try? NSKeyedArchiver.archivedData(withRootObject: "オブジェクト\(state)情報送信開始" as NSString, requiringSecureCoding: true)
+        else { return }
+        try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        
+        try? self.session.send(info_data_array[0], toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        try? self.session.send(info_data_array[1], toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+    }
+    
     //MARK: - 変数の設定
     //画面遷移した際のsectionとcellの番号を格納
     var section_num = Int()
@@ -644,6 +653,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBAction func makeArrow(_ sender: UIButton) {
         let arrowNode = SCNNode()
         arrowNode.name = "all_arrow"
+        var data_array: [Data] = []
         
         //配置した始点，終点の3次元座標を取得
         var startPointCoord: SCNVector3!
@@ -653,12 +663,34 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         if let node = sceneView.scene?.rootNode.childNode(withName: "startPoint", recursively: false) {
             startPointCoord = node.position
             arrowNode.addChildNode(node)
-            //node.removeFromParentNode()
+            
+            let entity = ObjectInfo_data(Position: Vector3Entity(x: node.position.x,
+                                                                 y: node.position.y,
+                                                                 z: node.position.z),
+                                         Scale: Vector3Entity(x: (node.scale.x),
+                                                              y: (node.scale.y),
+                                                              z: (node.scale.z)),
+                                         EulerAngles: Vector3Entity(x: (node.eulerAngles.x),
+                                                                    y: (node.eulerAngles.y),
+                                                                    z: (node.eulerAngles.z)))
+            let json_data = try! JSONEncoder().encode(entity)
+            data_array.append(json_data)
         }
         if let node = sceneView.scene?.rootNode.childNode(withName: "endPoint", recursively: false) {
             endPointCoord = SCNVector3(node.position.x - startPointCoord.x, node.position.y - startPointCoord.y, node.position.z - startPointCoord.z)
             arrowNode.addChildNode(node)
-            //node.removeFromParentNode()
+            
+            let entity = ObjectInfo_data(Position: Vector3Entity(x: node.position.x,
+                                                                 y: node.position.y,
+                                                                 z: node.position.z),
+                                         Scale: Vector3Entity(x: (node.scale.x),
+                                                              y: (node.scale.y),
+                                                              z: (node.scale.z)),
+                                         EulerAngles: Vector3Entity(x: (node.eulerAngles.x),
+                                                                    y: (node.eulerAngles.y),
+                                                                    z: (node.eulerAngles.z)))
+            let json_data = try! JSONEncoder().encode(entity)
+            data_array.append(json_data)
         }
         
         //print("startPointCoord：\(startPointCoord)")
@@ -743,6 +775,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         objectName_array.append(arrowNode.name!)
         sceneView.scene!.rootNode.addChildNode(arrowNode)
+        
+        send_remoteSupportObjectData(state: "遠隔サポート", name_identify: arrowNode.name!, info_data_array: data_array)
         
         makeArrowButton.isHidden = true
     }    

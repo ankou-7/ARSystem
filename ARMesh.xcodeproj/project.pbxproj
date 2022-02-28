@@ -429,9 +429,9 @@
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
 				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
-				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
 				CF8804A627BECAD500146230 /* EditColabViewController.swift */,
 				CF8804A827BF0BC700146230 /* EditColabARViewController.swift */,
+				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
 				26AAA2382563C997008FE5EB /* NavigationEditModel.swift */,
 				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
