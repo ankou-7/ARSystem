@@ -16,6 +16,11 @@ struct ObjectItem {
 class ObjectModel {
     private let dataSource = [
         ObjectItem (
+            name: "arrow100",
+            id: 6,
+            kind: "scn"
+        ),
+        ObjectItem (
             name: "toy_drummer",
             id: 0,
             kind: "usdz"
@@ -45,21 +50,21 @@ class ObjectModel {
             id: 5,
             kind: "usdz"
         ),
-        ObjectItem (
-            name: "start",
-            id: 6,
-            kind: "scn"
-        ),
-        ObjectItem (
-            name: "goal",
-            id: 7,
-            kind: "scn"
-        ),
-        ObjectItem (
-            name: "kirikae",
-            id: 8,
-            kind: "scn"
-        ),
+//        ObjectItem (
+//            name: "start",
+//            id: 6,
+//            kind: "scn"
+//        ),
+//        ObjectItem (
+//            name: "goal",
+//            id: 7,
+//            kind: "scn"
+//        ),
+//        ObjectItem (
+//            name: "kirikae",
+//            id: 8,
+//            kind: "scn"
+//        ),
     ]
     
     var count: Int {

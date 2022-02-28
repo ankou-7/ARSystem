@@ -332,6 +332,10 @@
                             <sceneKitView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sZd-tj-z5g">
                                 <rect key="frame" x="0.0" y="24" width="834" height="1150"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="kfx-gr-wsj" appends="YES" id="M88-kV-qw2"/>
+                                </connections>
                             </sceneKitView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bg8-nC-QUg">
                                 <rect key="frame" x="492" y="1021" width="50" height="50"/>
@@ -665,6 +669,38 @@
                                     <action selector="load_saveObject:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="VNw-Bu-NWB"/>
                                 </connections>
                             </button>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-4" maxValue="4" translatesAutoresizingMaskIntoConstraints="NO" id="Y24-Zk-mx5">
+                                <rect key="frame" x="662" y="809" width="154" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="HaQ-4c-bcw"/>
+                                    <constraint firstAttribute="width" constant="150" id="vxs-1h-9MA"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="change_euler:" destination="OtV-2Q-EG5" eventType="valueChanged" id="fLz-aP-T29"/>
+                                </connections>
+                            </slider>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hEE-xb-3P0">
+                                <rect key="frame" x="372" y="912" width="90" height="40"/>
+                                <color key="backgroundColor" systemColor="systemTealColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="99Y-gL-XGs"/>
+                                    <constraint firstAttribute="width" constant="90" id="Lnr-fd-JjB"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <color key="tintColor" systemColor="systemBlueColor"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="作成">
+                                    <color key="titleColor" systemColor="systemBackgroundColor"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="makeArrow:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="CJ4-ca-4sK"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uxY-IE-l79"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -689,6 +725,7 @@
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="TTx-dK-m6l" secondAttribute="bottom" constant="15" id="M9M-qC-Nac"/>
                             <constraint firstItem="LDa-i1-7Tp" firstAttribute="top" secondItem="Fjr-no-xHa" secondAttribute="bottom" constant="25" id="N4r-Xj-v97"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="W9t-4u-SvZ" secondAttribute="bottom" constant="103" id="O0H-8b-0Sa"/>
+                            <constraint firstItem="hEE-xb-3P0" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="Oen-Vd-eV5"/>
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="jZi-Ii-d2G" secondAttribute="top" id="V2N-wu-pTu"/>
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="bottom" secondItem="uxY-IE-l79" secondAttribute="bottom" id="XUr-2E-Srh"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" id="ZgC-Za-6SF"/>
@@ -698,11 +735,14 @@
                             <constraint firstItem="bg8-nC-QUg" firstAttribute="leading" secondItem="gsO-eN-2KE" secondAttribute="trailing" constant="15" id="cOS-6D-PrF"/>
                             <constraint firstItem="TTx-dK-m6l" firstAttribute="leading" secondItem="Hco-Fc-Ets" secondAttribute="trailing" constant="30" id="cOw-de-GxZ"/>
                             <constraint firstItem="fVa-9P-J8W" firstAttribute="top" secondItem="YBp-Mr-SRK" secondAttribute="bottom" constant="30" id="cPg-yF-H2D"/>
+                            <constraint firstItem="ZSf-9a-1Nf" firstAttribute="top" secondItem="Y24-Zk-mx5" secondAttribute="bottom" constant="280" id="ceG-is-qbj"/>
                             <constraint firstItem="fVa-9P-J8W" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="150" id="d5d-jS-9mV"/>
                             <constraint firstItem="Amz-lM-Q8r" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="30" id="eK7-ZA-J8f"/>
+                            <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="Y24-Zk-mx5" secondAttribute="trailing" constant="20" id="eq8-1S-Cah"/>
                             <constraint firstItem="en9-hO-Idw" firstAttribute="leading" secondItem="gAr-g0-QhN" secondAttribute="trailing" constant="15" id="fin-wc-sd6"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="Fjr-no-xHa" secondAttribute="trailing" constant="30" id="gqU-r0-gOV"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="ZSf-9a-1Nf" secondAttribute="trailing" constant="30" id="hfU-gP-ESP"/>
+                            <constraint firstItem="gsO-eN-2KE" firstAttribute="top" secondItem="hEE-xb-3P0" secondAttribute="bottom" constant="80" id="jNO-j4-8Z0"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="ZSf-9a-1Nf" secondAttribute="bottom" constant="15" id="ly2-7j-zgV"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" id="msP-xp-aAQ"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="FPe-9M-JqV" secondAttribute="trailing" constant="30" id="nuN-Dl-40t"/>
@@ -724,15 +764,16 @@
                         <outlet property="colabStopButton" destination="jZi-Ii-d2G" id="U4p-8c-zKR"/>
                         <outlet property="imageView" destination="Xs8-EH-W3u" id="AAE-Xl-hCI"/>
                         <outlet property="left_modelbutton" destination="W9t-4u-SvZ" id="jSM-Of-xA2"/>
+                        <outlet property="makeArrowButton" destination="hEE-xb-3P0" id="xXM-Z5-vfk"/>
                         <outlet property="modelname_label" destination="gsO-eN-2KE" id="SXv-f1-dE8"/>
                         <outlet property="right_modelbutton" destination="bg8-nC-QUg" id="C75-LY-MIT"/>
                         <outlet property="sceneView" destination="sZd-tj-z5g" id="9Zb-Pq-rsS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Ll-bW-fv3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="I4V-0H-0Kw">
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="kfx-gr-wsj">
                     <connections>
-                        <action selector="long_touches:" destination="OtV-2Q-EG5" id="ZsD-4r-9sl"/>
+                        <action selector="long_touches:" destination="OtV-2Q-EG5" id="7JV-Ge-tfA"/>
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
@@ -1215,6 +1256,9 @@
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemTealColor">
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
