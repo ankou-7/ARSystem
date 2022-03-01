@@ -442,8 +442,8 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Amz-lM-Q8r">
-                                <rect key="frame" x="30" y="1119" width="90" height="40"/>
-                                <color key="backgroundColor" systemColor="systemBlueColor"/>
+                                <rect key="frame" x="244" y="1119" width="90" height="40"/>
+                                <color key="backgroundColor" systemColor="systemPinkColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="bSN-9h-f0s"/>
                                     <constraint firstAttribute="width" constant="90" id="hPw-vA-vxZ"/>
@@ -451,7 +451,7 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <color key="tintColor" systemColor="systemBlueColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="Tex GPU">
+                                <state key="normal" title="GPU">
                                     <color key="titleColor" systemColor="systemBackgroundColor"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
@@ -465,7 +465,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZSf-9a-1Nf">
                                 <rect key="frame" x="714" y="1119" width="90" height="40"/>
-                                <color key="backgroundColor" systemColor="systemPurpleColor"/>
+                                <color key="backgroundColor" systemColor="systemIndigoColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="90" id="AKi-Lb-toj"/>
                                     <constraint firstAttribute="height" constant="40" id="BlL-Ox-UrF"/>
@@ -473,7 +473,7 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <color key="tintColor" systemColor="systemBlueColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="ColabVR">
+                                <state key="normal" title="VRColab">
                                     <color key="titleColor" systemColor="systemBackgroundColor"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
@@ -495,7 +495,7 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <color key="tintColor" systemColor="systemBlueColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="ColabAR">
+                                <state key="normal" title="ARColab">
                                     <color key="titleColor" systemColor="systemBackgroundColor"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
@@ -556,7 +556,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hco-Fc-Ets">
-                                <rect key="frame" x="150" y="1119" width="90" height="40"/>
+                                <rect key="frame" x="364" y="1119" width="90" height="40"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="90" id="i5M-N0-8dE"/>
@@ -565,7 +565,7 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <color key="tintColor" systemColor="systemBlueColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="Tex CPU">
+                                <state key="normal" title="CPU">
                                     <color key="titleColor" systemColor="systemBackgroundColor"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
@@ -670,7 +670,7 @@
                                 </connections>
                             </switch>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TTx-dK-m6l">
-                                <rect key="frame" x="270" y="1119" width="90" height="40"/>
+                                <rect key="frame" x="484" y="1119" width="90" height="40"/>
                                 <color key="backgroundColor" systemColor="systemGreenColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="90" id="NfP-ti-5xQ"/>
@@ -728,6 +728,7 @@
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="LY7-2D-xhj"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="TTx-dK-m6l" secondAttribute="bottom" constant="15" id="M9M-qC-Nac"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="peU-gA-goK" secondAttribute="trailing" constant="30" id="Mex-wT-gRo"/>
+                            <constraint firstItem="HS4-Ar-sRK" firstAttribute="leading" secondItem="TTx-dK-m6l" secondAttribute="trailing" constant="25" id="MnJ-di-pVD"/>
                             <constraint firstItem="LDa-i1-7Tp" firstAttribute="top" secondItem="peU-gA-goK" secondAttribute="bottom" constant="30" id="Nh8-xS-VV8"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="W9t-4u-SvZ" secondAttribute="bottom" constant="103" id="O0H-8b-0Sa"/>
                             <constraint firstItem="hEE-xb-3P0" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="Oen-Vd-eV5"/>
@@ -741,7 +742,6 @@
                             <constraint firstItem="TTx-dK-m6l" firstAttribute="leading" secondItem="Hco-Fc-Ets" secondAttribute="trailing" constant="30" id="cOw-de-GxZ"/>
                             <constraint firstItem="fVa-9P-J8W" firstAttribute="top" secondItem="YBp-Mr-SRK" secondAttribute="bottom" constant="30" id="cPg-yF-H2D"/>
                             <constraint firstItem="fVa-9P-J8W" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="150" id="d5d-jS-9mV"/>
-                            <constraint firstItem="Amz-lM-Q8r" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="30" id="eK7-ZA-J8f"/>
                             <constraint firstItem="en9-hO-Idw" firstAttribute="leading" secondItem="gAr-g0-QhN" secondAttribute="trailing" constant="15" id="fin-wc-sd6"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="Fjr-no-xHa" secondAttribute="trailing" constant="30" id="gqU-r0-gOV"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="ZSf-9a-1Nf" secondAttribute="trailing" constant="30" id="hfU-gP-ESP"/>
@@ -1252,11 +1252,14 @@
         <systemColor name="systemGreenColor">
             <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
+        <systemColor name="systemIndigoColor">
+            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemOrangeColor">
             <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
-        <systemColor name="systemPurpleColor">
-            <color red="0.68627450980392157" green="0.32156862745098042" blue="0.87058823529411766" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
