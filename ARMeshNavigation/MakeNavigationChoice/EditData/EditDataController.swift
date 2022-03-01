@@ -144,6 +144,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         try? self.session.send(StringData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
     }
     
+    func send_remoteSupportObjectData(state: String, name_identify: String, info_data_array: [Data]) {
+        guard let startData = try? NSKeyedArchiver.archivedData(withRootObject: "オブジェクト\(state)情報送信開始" as NSString, requiringSecureCoding: true)
+        else { return }
+        try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        
+        try? self.session.send(info_data_array[0], toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        try? self.session.send(info_data_array[1], toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+    }
+    
     //MARK: - 変数の設定
     //画面遷移した際のsectionとcellの番号を格納
     var section_num = Int()
@@ -190,6 +199,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     let deleteObjectButton = UIButton()
     var deleteObjectName = ""
+    
+    @IBOutlet weak var makeArrowButton: UIButton!
+    //nodeの向きをカメラ方向に
+    let billboardConstraint = SCNBillboardConstraint()
     
     private var calculate: CalculateRenderer!
     var texString: String = "calcu50"
@@ -244,7 +257,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         sceneView.addGestureRecognizer(pinch)
         
         
-        // deleteObjectButtonの設定
+        // deleteObjectButtonの設定（オブジェクト長押し時に表示する）
         deleteObjectButton.setTitle("削除", for:UIControl.State.normal)
         deleteObjectButton.setTitleColor(UIColor.white, for: .normal)
         deleteObjectButton.titleLabel?.font =  UIFont.systemFont(ofSize: 20)
@@ -254,7 +267,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         deleteObjectButton.isHidden = true
         
         self.colabStopButton.isHidden = true
+        self.makeArrowButton.isHidden = true
         
+        //通信用設定
         self.peerID = MCPeerID(displayName: UIDevice.current.name)
         self.session = MCSession(peer: peerID)
         self.session.delegate = self
@@ -309,6 +324,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
         
         //メッシュ情報初期化
+        print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
+        
         for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
             let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
             if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
@@ -333,7 +350,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 0
 //        }
         
-        print(results[section_num].cells[cell_num].models[current_model_num].texture_bool)
+        print("計算したテクスチャの型：\(results[section_num].cells[cell_num].models[current_model_num].texture_bool)")
         
         if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 1 {
             load_anchor(tex_bool: true)
@@ -420,6 +437,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     let ObjectdataSource = ObjectModel()
     var select_object_num = 0
     var tap_object_flag = false
+    var tap_arrow_flag = false
+    var arrowPoint_count = 0
     
     @IBAction func tap_objectMenu_button(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "PopOver", bundle: nil)
@@ -436,12 +455,36 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         popoverPresentationController.delegate = self
         
         contentVC.closure = { (num: Int) -> Void in
-            self.select_object_num = num
-            self.item = self.ObjectdataSource.item(row: self.select_object_num)
+            DispatchQueue.main.async {
+                self.select_object_num = num
+                self.item = self.ObjectdataSource.item(row: self.select_object_num)
+                
+//                if self.item.name == "arrow100" {
+//                    self.Alert_arrow()
+//                }
+            }
         }
         
         tap_object_flag = true
         present(contentVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func tap_remoteSupport(_ sender: UIButton) {
+        self.Alert_arrow()
+    }
+    
+    
+    @objc func Alert_arrow() {
+        let title = "物体の移動支援"
+        let message = "移動させたい物体と移動先を指定して作成ボタンを押して下さい。"
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
+            tap_arrow_flag = true
+            tap_object_flag = true
+        })
+            
+        self.present(alertController, animated: true, completion: nil)
     }
     
     //MARK: -オブジェクト処理
@@ -467,60 +510,22 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         touchMove_flag = true
     }
     
-    @IBAction func long_touches(_ sender: UILongPressGestureRecognizer) {
-        let location = sender.location(in: self.sceneView)
-        let hitResults = sceneView.hitTest(location, options: [:])
-        if hitResults.count > 0 {
-            for name in objectName_array {
-                if (hitResults[0].node.name == name ||
-                    hitResults[0].node.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
-                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
-                    
-                    deleteObjectButton.frame = CGRect(x:location.x - 50, y:location.y - 100, width:70, height:40)
-                    deleteObjectName = name
-                    deleteObjectButton.isHidden = false
-                
-                }
-            }
-        }
-    }
-    
-    @objc func deleteObject() {
-        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
-            node.removeFromParentNode()
-        }
-        
-        sceneView.scene?.rootNode.childNode(withName: deleteObjectName, recursively: false)!.removeFromParentNode()
-        let index = objectName_array.firstIndex(of: deleteObjectName)
-        let realm = try! Realm()
-        try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].obj.remove(at: index!)
-        }
-        objectName_array.remove(at: index!)
-            
-        //削除
-        send_deleteObjectData(state: "削除", name_identify: deleteObjectName)
-        
-        deleteObjectButton.isHidden = true
-    }
-    
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.sceneView)
         endAxisDrag(screenPos: location)
         sceneView.allowsCameraControl = true
-        
         deleteObjectButton.isHidden = true
+        
+//        print("---------------------------------------------------------")
+//        //print("touchMove_flag：\(touchMove_flag)")
+//        print("tap_object_flag：\(tap_object_flag)")
+//        print("tap_arrow_flag：\(tap_arrow_flag)")
         
         if touchMove_flag == false {
             if tap_object_flag == true {
                 let hitResults = sceneView.hitTest(location, options: [:])
                 if hitResults.count > 0 {
+                    //配置したオブジェクトをタップした際に操作用座標軸を表示
                     for (i, name) in objectName_array.enumerated() {
                         if (hitResults[0].node.name == name ||
                             hitResults[0].node.parent?.name == name ||
@@ -552,41 +557,52 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                         }
                     }
                     
-                    if hitResults[0].node.name == "child_tex_node" {
+                    //タップした位置にオブジェクト配置
+                    if hitResults[0].node.name == "child_tex_node" && tap_arrow_flag == false {
                         let posi = hitResults[0].worldCoordinates
-                        guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
-                        let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
-                        let node = scene.rootNode.childNode(withName: item.name, recursively: true)
-                        node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                        node?.position = posi
-                        node!.name = item.name + String(results[section_num].cells[cell_num].models[current_model_num].add_obj_count)
-                        sceneView.scene!.rootNode.addChildNode(node!)
+                        var node = SCNNode()
+                        if item.kind == "usdz" {
+                            guard let url = Bundle.main.url(forResource: "art.scnassets/\(item.name)", withExtension: "usdz") else { return }
+                            let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
+                            node = scene.rootNode.childNode(withName: item.name, recursively: true)!
+                            node.scale = SCNVector3(0.01, 0.01, 0.01)
+                        } else if item.kind == "scn" {
+                            let scene = SCNScene(named: "art.scnassets/arrow.scn")
+                            node = (scene?.rootNode.childNode(withName: "arrow", recursively: false))!
+                            node.scale = SCNVector3(0.1, 0.1, 0.1)
+                            node.eulerAngles = SCNVector3(0, 0, 0)
+                        }
+                        //let node = scene.rootNode.childNode(withName: item.name, recursively: true)
                         
-                        choiceNode_name = node!.name!
-                        objectName_array.append(node!.name!)
+                        node.position = posi
+                        node.name = item.name + String(results[section_num].cells[cell_num].models[current_model_num].add_obj_count)
+                        sceneView.scene!.rootNode.addChildNode(node)
+                        
+                        choiceNode_name = node.name!
+                        objectName_array.append(node.name!)
                         
                         let entity = ObjectInfo_data(Position: Vector3Entity(x: posi.x,
                                                                              y: posi.y,
                                                                              z: posi.z),
-                                                     Scale: Vector3Entity(x: (node?.scale.x)!,
-                                                                          y: (node?.scale.y)!,
-                                                                          z: (node?.scale.z)!),
-                                                     EulerAngles: Vector3Entity(x: (node?.eulerAngles.x)!,
-                                                                                y: (node?.eulerAngles.y)!,
-                                                                                z: (node?.eulerAngles.z)!))
+                                                     Scale: Vector3Entity(x: (node.scale.x),
+                                                                          y: (node.scale.y),
+                                                                          z: (node.scale.z)),
+                                                     EulerAngles: Vector3Entity(x: (node.eulerAngles.x),
+                                                                                y: (node.eulerAngles.y),
+                                                                                z: (node.eulerAngles.z)))
                         let json_data = try! JSONEncoder().encode(entity)
                         let realm = try! Realm()
                         try! realm.write {
                             results[section_num].cells[cell_num].models[current_model_num].add_obj_count += 1
                             results[section_num].cells[cell_num].models[current_model_num].obj.append(ObjectInfo(
                                 value: ["name": item.name,
-                                        "name_identify": node!.name!,
+                                        "name_identify": node.name!,
                                         "type": item.kind,
                                         "info_data": json_data]))
                         }
                         
                         //配置
-                        send_ObjectData(state: "配置", name: item.name, name_identify: node!.name!, type: item.kind, info_data: json_data)
+                        send_ObjectData(state: "配置", name: item.name, name_identify: node.name!, type: item.kind, info_data: json_data)
                         
                         if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
                             node.removeFromParentNode()
@@ -598,10 +614,217 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                         
                         tap_object_flag = false
                         touchMove_flag = false
+                        
+                    } else if hitResults[0].node.name == "child_tex_node" && tap_arrow_flag == true {
+                        let posi = hitResults[0].worldCoordinates
+                        billboardConstraint.freeAxes = SCNBillboardAxis.Y //Y軸の回転はこの制約を加えない様にします。
+                        if arrowPoint_count == 0 {
+                            let scene = SCNScene(named: "art.scnassets/startPoint.scn")
+                            let node = (scene?.rootNode.childNode(withName: "startPoint", recursively: false))!
+                            node.position = posi
+                            node.scale = SCNVector3(0.15, 0.15, 0.15)
+                            node.position.y += 0.05
+                            node.constraints = [billboardConstraint]
+                            node.name = "startPoint"
+                            //node.opacity = 0.7
+                            sceneView.scene!.rootNode.addChildNode(node)
+                            
+                            arrowPoint_count += 1
+                        } else if arrowPoint_count == 1 {
+                            let scene = SCNScene(named: "art.scnassets/endPoint.scn")
+                            let node = (scene?.rootNode.childNode(withName: "endPoint", recursively: false))!
+                            node.position = posi
+                            node.scale = SCNVector3(0.15, 0.15, 0.15)
+                            node.position.y += 0.05
+                            node.constraints = [billboardConstraint]
+                            node.name = "endPoint"
+                            //node.opacity = 0.9
+                            sceneView.scene!.rootNode.addChildNode(node)
+                            
+                            arrowPoint_count = 0
+                            makeArrowButton.isHidden = false
+                            tap_arrow_flag = false
+                        }
                     }
                 }
             }
         }
+    }
+    
+    //配置した始点，終点に従って矢印オブジェクトを表示
+    @IBAction func makeArrow(_ sender: UIButton) {
+        let arrowNode = SCNNode()
+        arrowNode.name = "all_arrow"
+        var data_array: [Data] = []
+        
+        //配置した始点，終点の3次元座標を取得
+        var startPointCoord: SCNVector3!
+        //var PointCoord = SCNVector3(0, 0, 0)
+        var endPointCoord: SCNVector3! //原点に対する終点の座標
+        
+        if let node = sceneView.scene?.rootNode.childNode(withName: "startPoint", recursively: false) {
+            startPointCoord = node.position
+            arrowNode.addChildNode(node)
+            
+            let entity = ObjectInfo_data(Position: Vector3Entity(x: node.position.x,
+                                                                 y: node.position.y,
+                                                                 z: node.position.z),
+                                         Scale: Vector3Entity(x: (node.scale.x),
+                                                              y: (node.scale.y),
+                                                              z: (node.scale.z)),
+                                         EulerAngles: Vector3Entity(x: (node.eulerAngles.x),
+                                                                    y: (node.eulerAngles.y),
+                                                                    z: (node.eulerAngles.z)))
+            let json_data = try! JSONEncoder().encode(entity)
+            data_array.append(json_data)
+        }
+        if let node = sceneView.scene?.rootNode.childNode(withName: "endPoint", recursively: false) {
+            endPointCoord = SCNVector3(node.position.x - startPointCoord.x, node.position.y - startPointCoord.y, node.position.z - startPointCoord.z)
+            arrowNode.addChildNode(node)
+            
+            let entity = ObjectInfo_data(Position: Vector3Entity(x: node.position.x,
+                                                                 y: node.position.y,
+                                                                 z: node.position.z),
+                                         Scale: Vector3Entity(x: (node.scale.x),
+                                                              y: (node.scale.y),
+                                                              z: (node.scale.z)),
+                                         EulerAngles: Vector3Entity(x: (node.eulerAngles.x),
+                                                                    y: (node.eulerAngles.y),
+                                                                    z: (node.eulerAngles.z)))
+            let json_data = try! JSONEncoder().encode(entity)
+            data_array.append(json_data)
+        }
+        
+        //print("startPointCoord：\(startPointCoord)")
+        print("endPointCoord：\(endPointCoord)")
+        
+        let thita_xz: Float = atan(endPointCoord.z / endPointCoord.x)
+        //print(thita_xz)
+        
+        let thita_zy: Float = atan(endPointCoord.y / endPointCoord.z)
+        print("thita_zy : \(thita_zy)")
+        
+        let thita_xy: Float = atan(endPointCoord.y / endPointCoord.x)
+        print("thita_xy : \(thita_xy)")
+        
+        var arrow_y: Float = 0
+        if endPointCoord.x >= 0 {
+            arrow_y = -1.57 - thita_xz
+        } else if endPointCoord.x < 0 {
+            arrow_y = 1.57 - thita_xz
+        }
+        
+        var arrow_x: Float = 0
+        if endPointCoord.y <= 0 && endPointCoord.z >= 0 && endPointCoord.x >= 0 {
+            arrow_x = -1.57 + thita_zy
+        } else if endPointCoord.y <= 0 && endPointCoord.z < 0 && endPointCoord.x >= 0 {
+            arrow_x = -1.57 + thita_xy
+        } else if endPointCoord.y <= 0 && endPointCoord.z >= 0 && endPointCoord.x < 0 {
+            arrow_x = -1.57 - thita_xy
+        } else if endPointCoord.y <= 0 && endPointCoord.z < 0 && endPointCoord.x < 0 {
+            arrow_x = -1.57 - thita_zy
+        }
+        else if endPointCoord.y > 0 && endPointCoord.z >= 0 && endPointCoord.x < 0 {
+            arrow_x = -1.57 - thita_xy
+        } else if endPointCoord.y > 0 && endPointCoord.z < 0 && endPointCoord.x < 0 {
+            arrow_x = -1.57 - thita_zy
+        } else if endPointCoord.y > 0 && endPointCoord.z >= 0 && endPointCoord.x >= 0 {
+            arrow_x = -1.57 + thita_zy
+        } else if endPointCoord.y > 0 && endPointCoord.z < 0 && endPointCoord.x >= 0 {
+            arrow_x = -1.57 + thita_xy
+        }
+        
+//        let spher0 = SCNNode(geometry: SCNSphere(radius: 0.01))
+//        spher0.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+//        spher0.position = SCNVector3(0, 0, 0)
+//        sceneView.scene?.rootNode.addChildNode(spher0)
+//
+//        let spher = SCNNode(geometry: SCNSphere(radius: 0.01))
+//        spher.position = endPointCoord
+//        sceneView.scene?.rootNode.addChildNode(spher)
+        
+        
+        let distance = sqrt(endPointCoord.x * endPointCoord.x + endPointCoord.y * endPointCoord.y + endPointCoord.z * endPointCoord.z)
+        //print(distance * 100)
+        let num = Int((distance * 100 ) / 20)
+        //print(num)
+        let s: Float = 1/3
+        
+        let objName = "arrow"
+        
+        for i in 1..<num {
+            let posi = SCNVector3((startPointCoord.x + Float(i) * endPointCoord.x * s) - (endPointCoord.x * 0.2),
+                                  (startPointCoord.y + Float(i) * endPointCoord.y * s) - (endPointCoord.y * 0.2),
+                                  (startPointCoord.z + Float(i) * endPointCoord.z * s) - (endPointCoord.z * 0.2))
+            let scene = SCNScene(named: "art.scnassets/\(objName).scn")
+            let node = (scene?.rootNode.childNode(withName: objName, recursively: false))!
+            node.position = posi
+            node.scale = SCNVector3(0.1, 0.1, 0.1) //SCNVector3(0.05, 0.05, 0.05)
+            node.eulerAngles.y = arrow_y
+            node.eulerAngles.x = arrow_x
+            //node.eulerAngles.x += 1.57
+            //node.eulerAngles.y -= 1.57
+            node.name = "child_arrow"
+            arrowNode.addChildNode(node)
+            
+            let now_dis = sqrt((Float(i+1) * endPointCoord.x * s) * (Float(i+1) * endPointCoord.x * s) +
+                               (Float(i+1) * endPointCoord.y * s) * (Float(i+1) * endPointCoord.y * s) +
+                               (Float(i+1) * endPointCoord.z * s) * (Float(i+1) * endPointCoord.z * s))
+            if now_dis > distance {
+                break
+            }
+        }
+        
+        objectName_array.append(arrowNode.name!)
+        sceneView.scene!.rootNode.addChildNode(arrowNode)
+        
+        send_remoteSupportObjectData(state: "遠隔サポート", name_identify: arrowNode.name!, info_data_array: data_array)
+        
+        makeArrowButton.isHidden = true
+    }    
+    
+    @IBAction func long_touches(_ sender: UILongPressGestureRecognizer) {
+        let location = sender.location(in: self.sceneView)
+        let hitResults = sceneView.hitTest(location, options: [:])
+        if hitResults.count > 0 {
+            for name in objectName_array {
+                if (hitResults[0].node.name == name ||
+                    hitResults[0].node.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
+                    hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
+                    
+                    deleteObjectButton.frame = CGRect(x:location.x - 50, y:location.y - 100, width:70, height:40)
+                    deleteObjectName = name
+                    deleteObjectButton.isHidden = false
+                }
+            }
+        }
+    }
+    
+    @objc func deleteObject() {
+        if let node = sceneView.scene?.rootNode.childNode(withName: "axis", recursively: false) {
+            node.removeFromParentNode()
+        }
+        
+        sceneView.scene?.rootNode.childNode(withName: deleteObjectName, recursively: false)!.removeFromParentNode()
+        let index = objectName_array.firstIndex(of: deleteObjectName)
+        if deleteObjectName != "all_arrow" {
+            let realm = try! Realm()
+            try! realm.write {
+                results[section_num].cells[cell_num].models[current_model_num].obj.remove(at: index!)
+            }
+        }
+        objectName_array.remove(at: index!)
+            
+        //削除
+        send_deleteObjectData(state: "削除", name_identify: deleteObjectName)
+        
+        deleteObjectButton.isHidden = true
     }
     
     //MARK: - オブジェクト移動用の軸設定
@@ -927,11 +1150,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
             nodeGeometry.firstMaterial?.diffuse.contents = image
             
-//            let defaultMaterial = SCNMaterial()
-//            defaultMaterial.fillMode = .lines
-//            defaultMaterial.diffuse.contents = UIColor.blue
-//            nodeGeometry.materials = [defaultMaterial]
-            
             let node = SCNNode(geometry: nodeGeometry)
             knownAnchors[anchors[i].identifier] = node
             node.name = "child_tex_node"
@@ -1112,72 +1330,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //        }
     }
     
-    func Make_meshInfo_Array() {
-        for (i, meshAnchor) in anchors.enumerated() {
-            texcoords2[i] = []
-            tex_bool[i] = []
-            vertex_array[i] = []
-            face_array[i] = []
-            face_bool[i] = []
-            normal_array[i] = []
-            
-            let verticles = meshAnchor.geometry.vertices
-            let normals = meshAnchor.geometry.normals
-            for j in 0..<verticles.count {
-                texcoords2[i].append(SIMD2<Float>(0, 0))
-                tex_bool[i].append(false)
-                
-                let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * j))
-                let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
-                let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
-                let world_vertex4 = simd_mul(meshAnchor.transform, vertex4)
-                let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
-                vertex_array[i].append(world_vector3)
-                
-                let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * j))
-                let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
-                normal_array[i].append(normal)
-            }
-            
-            let faces = meshAnchor.geometry.faces
-            for j in 0..<faces.count {
-                let indicesPerFace = faces.indexCountPerPrimitive
-                for offset in 0..<indicesPerFace {
-                    let vertexIndexAddress = faces.buffer.contents().advanced(by: (j * indicesPerFace + offset) * MemoryLayout<UInt32>.size)
-                    let per_face = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
-                    face_array[i].append(per_face)
-                }
-                face_bool[i].append(-1)
-            }
-        }
-    }
-    
-    func remake_mesh() {
-        var num_array: [[Int]] = []
-        
-        for index in 0..<vertex_array.count {
-            //new_face_array.append([])
-            num_array = []
-            for _ in 0..<(face_array[index].count) { // / 10)+1 {
-                num_array.append([])
-            }
-            for i in 0..<face_array[index].count {
-                let n = Int(face_array[index][i])
-                if num_array[n].count == 0 {
-                    num_array[n].append(Int(face_array[index][i]))
-                    new_face_array[index].append(face_array[index][i])
-                }
-                else {
-                    vertex_array[index].append(vertex_array[index][Int(face_array[index][i])])
-                    normal_array[index].append(normal_array[index][Int(face_array[index][i])])
-                    texcoords2[index].append(SIMD2<Float>(0, 0))
-                    tex_bool[index].append(false)
-                    new_face_array[index].append(Int32(vertex_array[index].count - 1))
-                }
-            }
-        }
-    }
-    
     func ComposeUIImage(UIImageArray : [UIImage], width: CGFloat, height : CGFloat, yoko: Float, num: CGFloat)->UIImage!{
         // 指定された画像の大きさのコンテキストを用意
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
@@ -1238,20 +1390,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         load_anchor2()
         
         //print(new_texcoords2)
-    }
-    
-    @objc func Alert() {
-        let title = "テクスチャ座標計算完了"
-        let message = "モデルを表示しますか"
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .default) { [self] _ in
-            //save_anchor()
-            delete_mesh()
-            load_anchor(tex_bool: true)
-        })
-            
-        self.present(alertController, animated: true, completion: nil)
     }
     
     func calcTextureCoordinates2000(num: Int, yoko: Float, tate: Float, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){

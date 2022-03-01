@@ -418,16 +418,16 @@ class NavigationEditModelController: UIViewController, ARSCNViewDelegate, UIGest
 //            realm.delete(results[section_num].cells[cell_num].models[current_model_num].usdz)
 //        }
         //データ書き込み
-        for usdz in usdzInfo {
-            try! realm.write {
-                results[section_num].cells[cell_num].models[current_model_num].usdz.append(Navi_Usdz_ModelInfo(value:
-                                                                                                                ["usdz_name": usdz.usdz_name,
-                                                                                                                 "usdz_num": usdz.usdz_num,
-                                                                                                                 "usdz_posi_x": usdz.usdz_posi_x,
-                                                                                                                 "usdz_posi_y": usdz.usdz_posi_y,
-                                                                                                                 "usdz_posi_z": usdz.usdz_posi_z]))
-            }
-        }
+//        for usdz in usdzInfo {
+//            try! realm.write {
+//                results[section_num].cells[cell_num].models[current_model_num].usdz.append(Navi_Usdz_ModelInfo(value:
+//                                                                                                                ["usdz_name": usdz.usdz_name,
+//                                                                                                                 "usdz_num": usdz.usdz_num,
+//                                                                                                                 "usdz_posi_x": usdz.usdz_posi_x,
+//                                                                                                                 "usdz_posi_y": usdz.usdz_posi_y,
+//                                                                                                                 "usdz_posi_z": usdz.usdz_posi_z]))
+//            }
+//        }
         
         print(arrowInfo.last?.0 as Any)
         if arrowInfo.last?.0 != arrowNode_name {
@@ -439,15 +439,15 @@ class NavigationEditModelController: UIViewController, ARSCNViewDelegate, UIGest
                 arrowInfo.append(tuple_youso)
             }
         }
-        for arrow in arrowInfo {
-            try! realm.write {
-                results[section_num].cells[cell_num].models[current_model_num].usdz.append(Navi_Usdz_ModelInfo(value:
-                                                                                                                ["usdz_name": arrow.arrow_name, "usdz_num" : -100,
-                                                                                                                 "usdz_posi_x": arrow.arrow_posi_x, "usdz_posi_y": arrow.arrow_posi_y, "usdz_posi_z": arrow.arrow_posi_z,
-                                                                                                                 "usdz_scale_x": arrow.arrow_scale_x, "usdz_scale_y": arrow.arrow_scale_y, "usdz_scale_z": arrow.arrow_scale_z,
-                                                                                                                 "usdz_euler_x": arrow.arrow_euler_x, "usdz_euler_y": arrow.arrow_euler_y, "usdz_euler_z": arrow.arrow_euler_z]))
-            }
-        }
+//        for arrow in arrowInfo {
+//            try! realm.write {
+//                results[section_num].cells[cell_num].models[current_model_num].usdz.append(Navi_Usdz_ModelInfo(value:
+//                                                                                                                ["usdz_name": arrow.arrow_name, "usdz_num" : -100,
+//                                                                                                                 "usdz_posi_x": arrow.arrow_posi_x, "usdz_posi_y": arrow.arrow_posi_y, "usdz_posi_z": arrow.arrow_posi_z,
+//                                                                                                                 "usdz_scale_x": arrow.arrow_scale_x, "usdz_scale_y": arrow.arrow_scale_y, "usdz_scale_z": arrow.arrow_scale_z,
+//                                                                                                                 "usdz_euler_x": arrow.arrow_euler_x, "usdz_euler_y": arrow.arrow_euler_y, "usdz_euler_z": arrow.arrow_euler_z]))
+//            }
+//        }
         
 //        usdzInfo = []
 //        arrowInfo = []
@@ -458,9 +458,9 @@ class NavigationEditModelController: UIViewController, ARSCNViewDelegate, UIGest
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
         //データ消去
-        try! realm.write {
-            realm.delete(results[section_num].cells[cell_num].models[current_model_num].usdz)
-        }
+//        try! realm.write {
+//            realm.delete(results[section_num].cells[cell_num].models[current_model_num].usdz)
+//        }
         
         if usdzInfo.count > 0 {
             for n in usdzInfo {
@@ -484,47 +484,47 @@ class NavigationEditModelController: UIViewController, ARSCNViewDelegate, UIGest
             node.removeFromParentNode()
         }
         
-        print(results[section_num].cells[cell_num].models[current_model_num].usdz)
+        //print(results[section_num].cells[cell_num].models[current_model_num].usdz)
     }
     
     func object_re_haiti() {
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
-        print(results[section_num].cells[cell_num].models[current_model_num].usdz)
-        print(results[section_num].cells[cell_num].models[current_model_num].usdz.count)
+//        print(results[section_num].cells[cell_num].models[current_model_num].usdz)
+//        print(results[section_num].cells[cell_num].models[current_model_num].usdz.count)
         usdzInfo = []
         arrowInfo = []
         
-        for usdz in results[section_num].cells[cell_num].models[current_model_num].usdz {
-            if usdz.usdz_num >= 0 {
-                guard let url = Bundle.main.url(forResource: "art.scnassets/"+usdz.usdz_name, withExtension: "usdz") else { return }
-                let scene1 = try! SCNScene(url: url, options: [.checkConsistency: true])
-                let node = scene1.rootNode.childNode(withName: usdz.usdz_name, recursively: true)
-                node?.scale = SCNVector3(0.01, 0.01, 0.01)
-                node?.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
-                node!.name = "usdz" + String(usdzInfo.count)
-                //sceneView.scene!.rootNode.addChildNode(node!)
-                scene.rootNode.addChildNode(node!)
-                
-                let tuple_youso = (node!.name!, usdz.usdz_name, usdz.usdz_num, usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
-                usdzInfo.append(tuple_youso)
-            }
-            else if usdz.usdz_num == -100 {
-                let scene1 = SCNScene(named: "art.scnassets/try.scn")
-                let node = (scene1?.rootNode.childNode(withName: "arrow", recursively: false))!
-                node.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
-                node.scale = SCNVector3(usdz.usdz_scale_x, usdz.usdz_scale_y, usdz.usdz_scale_z)
-                node.eulerAngles = .init(usdz.usdz_euler_x, usdz.usdz_euler_y, usdz.usdz_euler_z)
-                node.opacity = 0.9
-                node.name = "arrow" + String(arrowInfo.count)
-                //arrowNode_name = node.name!
-                scene.rootNode.addChildNode(node)
-                
-                let tuple_youso = (node.name!, usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z, usdz.usdz_scale_x, usdz.usdz_scale_y, usdz.usdz_scale_z, usdz.usdz_euler_x, usdz.usdz_euler_y, usdz.usdz_euler_z)
-                arrowInfo.append(tuple_youso)
-            }
-            //arrowNode_name = ""
-        }
+//        for usdz in results[section_num].cells[cell_num].models[current_model_num].usdz {
+//            if usdz.usdz_num >= 0 {
+//                guard let url = Bundle.main.url(forResource: "art.scnassets/"+usdz.usdz_name, withExtension: "usdz") else { return }
+//                let scene1 = try! SCNScene(url: url, options: [.checkConsistency: true])
+//                let node = scene1.rootNode.childNode(withName: usdz.usdz_name, recursively: true)
+//                node?.scale = SCNVector3(0.01, 0.01, 0.01)
+//                node?.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
+//                node!.name = "usdz" + String(usdzInfo.count)
+//                //sceneView.scene!.rootNode.addChildNode(node!)
+//                scene.rootNode.addChildNode(node!)
+//                
+//                let tuple_youso = (node!.name!, usdz.usdz_name, usdz.usdz_num, usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
+//                usdzInfo.append(tuple_youso)
+//            }
+//            else if usdz.usdz_num == -100 {
+//                let scene1 = SCNScene(named: "art.scnassets/try.scn")
+//                let node = (scene1?.rootNode.childNode(withName: "arrow", recursively: false))!
+//                node.position = SCNVector3(usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z)
+//                node.scale = SCNVector3(usdz.usdz_scale_x, usdz.usdz_scale_y, usdz.usdz_scale_z)
+//                node.eulerAngles = .init(usdz.usdz_euler_x, usdz.usdz_euler_y, usdz.usdz_euler_z)
+//                node.opacity = 0.9
+//                node.name = "arrow" + String(arrowInfo.count)
+//                //arrowNode_name = node.name!
+//                scene.rootNode.addChildNode(node)
+//                
+//                let tuple_youso = (node.name!, usdz.usdz_posi_x, usdz.usdz_posi_y, usdz.usdz_posi_z, usdz.usdz_scale_x, usdz.usdz_scale_y, usdz.usdz_scale_z, usdz.usdz_euler_x, usdz.usdz_euler_y, usdz.usdz_euler_z)
+//                arrowInfo.append(tuple_youso)
+//            }
+//            //arrowNode_name = ""
+//        }
     }
     
     //オブジェクト選択画面をポップアップ表示

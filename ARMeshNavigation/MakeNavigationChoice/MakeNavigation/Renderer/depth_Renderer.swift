@@ -538,9 +538,9 @@ final class depth_Renderer {
         viewProjectionMatrix = projectionMatrix * viewMatrix
         
         //let meshAnchors = currentFrame.anchors.compactMap { $0 as? ARMeshAnchor }
-        print("Rendering : \(meshAnchors.count)")
+        //print("Rendering : \(meshAnchors.count)")
         
-        print("imgPlaceMatrix : \(imgPlaceMatrix.count)")
+        //print("imgPlaceMatrix : \(imgPlaceMatrix.count)")
         if imgPlaceMatrix.count > 0 {
             let calcuUniformsBuffer = device.makeBuffer(bytes: imgPlaceMatrix, length: MemoryLayout<float4x4>.stride * imgPlaceMatrix.count, options: [])
             renderEncoder.setVertexBuffer(calcuUniformsBuffer, offset: 0, index: 4)
