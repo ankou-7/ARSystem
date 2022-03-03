@@ -20,9 +20,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //    var section_num = Int()
 //    var cell_num = Int()
     
+    var restart_flag = false
+    let coachingOverlay = ARCoachingOverlayView()
+    var restartCalucuMatrix: [float4x4] = []
+    
     @IBOutlet weak var sceneView: ARSCNView!
     //var sceneView: ARSCNView!
     let scene = SCNScene()
+    var configuration = ARWorldTrackingConfiguration()
     
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
@@ -43,7 +48,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var make_modelButton: UIButton!
     @IBOutlet weak var make_out_modelButton: UIButton!
     
-    let configuration = ARWorldTrackingConfiguration()
     var make_modelButton_Tapped_count = 0 //マップ作成ボタンを押した数
     
     var isRecording = false
@@ -77,21 +81,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-//        sceneView = ARSCNView()
-//        sceneView.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
-//        sceneView.backgroundColor = UIColor.red
-//        view.addSubview(sceneView)
-        
-//        let image = UIImage(named: "toy_drummer")
-//        depthImage.image = image
         
         sceneView.delegate = self //delegateのセット
         sceneView.session.delegate = self
         sceneView.scene = scene
         
         sceneView.debugOptions = .showWorldOrigin
-
+        
         
         //パラメータを一時的に保存する場所を初期化
         let realm = try! Realm()
@@ -109,19 +105,16 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         numGridPoints_label.text = "\(numGridPoints)個/frame"
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
-        
-//        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.update2), userInfo: nil, repeats: true)
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
-//        //AR使用のための設定
-        let configuration = ARWorldTrackingConfiguration()
+        //        //AR使用のための設定
         //configuration.isLightEstimationEnabled = false
+        //configuration = ARWorldTrackingConfiguration()
         configuration.environmentTexturing = .none
-//        configuration.sceneReconstruction = .meshWithClassification
-//        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
-        sceneView.session.run(configuration) // Run the view's session
+        //        configuration.sceneReconstruction = .meshWithClassification
+        //        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
+        sceneView.session.run(configuration)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -162,7 +155,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         present(contentVC, animated: true, completion: nil)
     }
-    
+              
     @IBAction func make_modelButton_Tapped(_ sender: UIButton) {
         //スキャン終了時
         if isRecording {
@@ -173,14 +166,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.pointCloud_flag = false
                 self.parameta_flag = false
                 self.depth_flag = false
-
+                
                 self.Alert() //モデル作成部分
                 
                 let realm = try! Realm()
                 let results = realm.objects(Data_parameta.self)
                 print(results[0].pic.count)
             }
-        //スキャン開始時
+            //スキャン開始時
         } else {
             UIView.animate(withDuration: 0.2) {
                 if self.make_modelButton_Tapped_count == 0 {
@@ -205,15 +198,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.lastCameraTransform = self.sceneView.session.currentFrame?.camera.transform
                 
                 //点群の表示
-                if self.menu_array[2] == false {
-                    self.exit_point_num = 1
-                    self.pointCloud_flag = true
-                }
-
+                //                if self.menu_array[2] == false {
+                //                    self.exit_point_num = 1
+                //                    self.pointCloud_flag = true
+                //                }
+                
                 self.recording_count += 1
                 self.make_out_modelButton.layer.cornerRadius = 3.0
                 self.make_modelButton.layer.cornerRadius = 3.0
-
+                
                 guard let frame = self.sceneView.session.currentFrame else {
                     fatalError("Couldn't get the current ARFrame")
                 }
@@ -235,8 +228,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         self.configuration.sceneReconstruction = .meshWithClassification
                     }
                 }
-
-                self.configuration.environmentTexturing = .automatic
+                
+                //self.configuration.environmentTexturing = .automatic
                 self.configuration.planeDetection = [.horizontal, .vertical]
                 self.configuration.frameSemantics =  .sceneDepth //.smoothedSceneDepth
                 //configuration.isLightEstimationEnabled = false
@@ -269,13 +262,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let title = "マッピング完了"
         let message = """
                       終了する場合は終了して保存先の指定を
-                      続行する場合は続行を選択して下さい。
+                      確認する場合は確認を選択して下さい。
                       """
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
+        alertController.addAction(UIAlertAction(title: "確認", style: .default) { [self] _ in
             self.Make_mesh_obj() //モデルを一時保存
             self.mesh_flag = false
+            
+            self.to_CheckDataViewController()
         })
         
         alertController.addAction(UIAlertAction(title: "終了", style: .default) { [self] _ in
@@ -288,158 +283,42 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func makeNode() {
-        let node = SCNNode(geometry: SCNSphere(radius: 0.1))
-        node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-        node.opacity = 0.5
-        sceneView.scene.rootNode.addChildNode(node)
+    @IBAction func to_CheckDataViewController(_ sender: UIButton) {
+        guard let anchors = sceneView.session.currentFrame?.anchors else { return }
+        let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
+        for (_, anchor) in meshAnchors.enumerated() {
+            guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
+            else{ return }
+            let realm = try! Realm()
+            let results = realm.objects(Data_parameta.self)
+            try! realm.write {
+                results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+            }
+        }
+        
+        //self.mesh_flag = false
+        self.mapping_flag = false
+        sceneView.session.pause()
+        
+        self.to_CheckDataViewController()
+    }
+    
+    @IBAction func restart(_ sender: UIButton) {
+        sceneView.session.run(configuration, options: [])
+        //self.mesh_flag = true
+        self.mapping_flag = true
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+    }
+    
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+
     }
     
     var vertice_data: [PointCloudVertex] = []
     var vertices: [SCNVector3] = []
     var indices: [Int32] = []
     
-    
-    func kari_make_model(_ sender: UIButton) {
-        
-        let depth_array = self.depth_pointCloudRenderer.depth_point()
-        var depth_points: [PointCloudVertex] = []
-        for depth in depth_array {
-            depth_points.append(PointCloudVertex(x: depth.x,
-                                                 y: depth.y,
-                                                 z: depth.z,
-                                                 r: 255,
-                                                 g: 255,
-                                                 b: 255))
-            
-        }
-        let node = buildNode(points: vertice_data)
-        self.scene.rootNode.addChildNode(node)
-        
-//        guard let depthMap = frame.sceneDepth?.depthMap else {
-//            fatalError("Couldn't get the current depthMap")
-//        }
-////        let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
-////        let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-////        let resizeScale = CGFloat(256) / CGFloat(2880)
-////        let resizeScale_y = CGFloat(192) / CGFloat(3840)
-////        let resizedColorImage = CIImage(cgImage: uiImage.cgImage!).transformed(by: CGAffineTransform(scaleX: resizeScale, y: resizeScale_y))
-////        let pixelArray = resizedColorImage.createCGImage().pixelData()!
-//
-//        let camera = frame.camera
-//        let IntrinsicsInversed = camera.intrinsics.inverse
-//        let flipYZ = simd_float4x4(
-//            [1, 0, 0, 0],
-//            [0, 1, 0, 0],
-//            [0, 0, -1, 0],
-//            [0, 0, 0, 1] )
-//        let localToworld = camera.viewMatrix(for: orientation).inverse * flipYZ// * matrix_float4x4(simd_quaternion(180 * .degreesToRadian, Float3(0, 0, 1)))
-//        print(matrix_float4x4(simd_quaternion(90 * .degreesToRadian, Float3(0, 0, 1))))
-//
-//        let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: self.sceneView.bounds.size, zNear: 0.001, zFar: 0) * camera.viewMatrix(for: orientation)
-//
-//        let aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
-//        var (depthArray, depthSize) = frame.cropPortraitCenterSquareDepth(aspectRatio: aspectRatio)
-//        let (depthConfidenceArray, _) = frame.cropPortraitCenterSquareDepthConfidence(aspectRatio: aspectRatio)
-//        print("depthConfidenceArray.count:\(depthConfidenceArray.count)")
-//        // 信頼度が高い深度情報のみ抽出
-//        if depthArray.count != depthConfidenceArray.count  {
-//            depthArray = depthConfidenceArray.enumerated().map {
-//                // 信頼度が high 未満は深度を -1 に書き換え
-//                return $0.element >= UInt8(ARConfidenceLevel.high.rawValue) ? depthArray[$0.offset] : -1
-//            }
-//        }
-//
-////        CVPixelBufferLockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-////        let baseAddress = CVPixelBufferGetBaseAddress(depthMap)
-////        let width = CVPixelBufferGetWidth(depthMap)
-////        let height = CVPixelBufferGetHeight(depthMap)
-////        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
-////        var depthArray: [Float32] = []
-////        for x in (0 ..< 256).reversed() {
-////            for y in (0 ..< 192).reversed() {
-////                let index = y * width + x
-////                depthArray.append(pointer[index])
-////            }
-////        }
-////        CVPixelBufferUnlockBaseAddress(depthMap, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-//
-//        let depthScreenScaleFactor: Float = Float(self.sceneView.bounds.width * UIScreen.screens.first!.scale / CGFloat(depthSize))
-//        let depthScreenScaleFactor_w: Float = Float(frame.camera.imageResolution.height) / Float(192)
-//        let depthScreenScaleFactor_h: Float = Float(frame.camera.imageResolution.width) / Float(256) //Float(self.sceneView.bounds.height * UIScreen.screens.first!.scale / CGFloat(256))
-//
-//        // 信頼度が高い深度情報のみ3Dモデル化
-////        let isConfidentDepth: (Int, Int) -> Bool = { (x, y) in
-////            guard x < depthSize && y < depthSize else { return false }
-////            return depthArray[y * depthSize + x] >= 0.0
-////        }
-//
-//        for y in 0 ..< depthSize {
-//            for x in 0 ..< depthSize {
-//                let depth = depthArray[y * depthSize + x]
-//                if depth < 0 {
-//                    continue
-//                }
-//                let x_px = Float(x) * depthScreenScaleFactor
-//                let y_px = Float(y) * depthScreenScaleFactor
-//                let localPoint = IntrinsicsInversed * simd_float3(x_px, y_px, 1) * depth
-//                var worldPoint = localToworld * simd_float4(localPoint, 1)
-//
-//                //worldPoint = projectionMatrix * worldPoint
-//                //worldPoint = worldPoint / worldPoint.w
-//
-//                vertice_data.append(PointCloudVertex(x: worldPoint.x,
-//                                                     y: worldPoint.y,
-//                                                     z: worldPoint.z,
-//                                                     r: 255,
-//                                                     g: 255,
-//                                                     b: 255))
-//            }
-//        }
-//
-//        print(256*depthScreenScaleFactor_h)
-//        print(192*depthScreenScaleFactor)
-//
-////        for y in 0 ..< 256 { //depthSize { //256 {
-////            for x in 0 ..< 192 { //depthSize {
-////                let depth = depthArray[y * 192 + x]
-////                if depth < 0 {
-////                    continue
-////                }
-////                let x_px = Float(x) * depthScreenScaleFactor
-////                let y_px = Float(y) * depthScreenScaleFactor_h
-////
-////                let localPoint = IntrinsicsInversed * simd_float3(x_px, y_px, 1) * depth
-////                var worldPoint = localToworld * simd_float4(localPoint, 1)
-////                //worldPoint = projectionMatrix * worldPoint
-////
-////                vertice_data.append(PointCloudVertex(x: worldPoint.x / worldPoint.w,
-////                                                     y: worldPoint.y / worldPoint.w,
-////                                                     z: worldPoint.z / worldPoint.w,
-////                                                     r: 255,
-////                                                     g: 255,
-////                                                     b: 255))
-////
-////            }
-////        }
-//        let node = buildNode(points: vertice_data)
-//        self.scene.rootNode.addChildNode(node)
-    }
-    
     var pre_eulerAngles = SCNVector3(0,0,0)
-    
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
-//        guard let frame = self.sceneView.session.currentFrame else {
-//            fatalError("Couldn't get the current ARFrame")
-//        }
-//        if frame.sceneDepth?.depthMap != nil {
-//            let depthMap = frame.sceneDepth?.depthMap
-//            let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
-//            let depth_cgImage = UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-//            //UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))
-//            depthImage.image = depth_cgImage
-//        }
-    }
     
     func snapshot() {
         //コンテキスト開始
@@ -478,7 +357,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     
     @objc func update() {
-        //if depth_flag == true {
+        print("update")
+        
         
         if parameta_flag == true {
             guard let frame = self.sceneView.session.currentFrame else {
@@ -583,81 +463,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     }
                     
                     
-//                    if depth_pointCloudRenderer.imgPlaceMatrix.count >= 1 {
-//                        snapshot()
-//                        snap_flag = true
-//                    }
+                    //                    if depth_pointCloudRenderer.imgPlaceMatrix.count >= 1 {
+                    //                        snapshot()
+                    //                        snap_flag = true
+                    //                    }
                     
                 }
-                        
-//                        let depth_ciImage = CIImage.init(cvPixelBuffer: depthMap!)
-//                        let depth_cgImage = UIImage(ciImage: screenTransformed(frame: frame, ciImage: depth_ciImage, orientation: orientation, viewPort: CGRect(x: 0, y: 0, width: 834, height: 1150)))//UIImage.init(ciImage: depth_ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-//                        let depthMapData = depth_cgImage.jpegData(compressionQuality: 0.5)!
-                        
-//                        let depthMapData = toData(pixelBuffer: depthMap)
-                        
-                        //②
-    //                    CVPixelBufferLockBaseAddress(depthMap, .readOnly)
-    //                    let base = CVPixelBufferGetBaseAddress(depthMap) // 先頭ポインタの取得
-    //                    let width = CVPixelBufferGetWidth(depthMap) // 横幅の取得
-    //                    let height = CVPixelBufferGetHeight(depthMap) // 縦幅の取得
-    //                    print("width:\(width)")
-    //                    print("height:\(height)")
-    //                    let bindPtr = base?.bindMemory(to: Float32.self, capacity: width * height)
-    //                    let bufPtr = UnsafeBufferPointer(start: bindPtr, count: width * height)
-    //                    let depthArray = Array(bufPtr)
-    //                    CVPixelBufferUnlockBaseAddress(depthMap, .readOnly)
-    //                    let fixedArray = depthArray.map({ $0.isNaN ? 0 : $0 })
-    //                    print(fixedArray.count)
-    //                    print(fixedArray)
-                        
-                        //①
-//                        CVPixelBufferLockBaseAddress(depthMap!, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-//                        let baseAddress = CVPixelBufferGetBaseAddress(depthMap!)
-//                        let width = CVPixelBufferGetWidth(depthMap!)
-//                        let height = CVPixelBufferGetHeight(depthMap!)
-//                        let pointer = UnsafeMutableBufferPointer<Float32>(start: baseAddress!.assumingMemoryBound(to: Float32.self), count: width * height)
-//                        var depthArray: [Float32] = []
-//                        for x in (0 ..< 256).reversed() {
-//                            for y in (0 ..< 192).reversed() {
-//                                let index = y * width + x
-//                                depthArray.append(pointer[index])
-//                            }
-//                        }
-//                        CVPixelBufferUnlockBaseAddress(depthMap!, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-                        
-    //                    //深度画像
-                        //③
-//                        let aspectRatio = self.sceneView.bounds.height / self.sceneView.bounds.width
-//                        var (depthArray, depthSize) = frame.cropPortraitCenterSquareDepth(aspectRatio: aspectRatio)
-//                        print("depthSize:\(depthSize)")
-//                        print("depthArray.count:\(depthArray.count)")
-//    //
-//    //                    // 深度の信頼度情報を取得
-//                        let (depthConfidenceArray, _) = frame.cropPortraitCenterSquareDepthConfidence(aspectRatio: aspectRatio)
-//                        print("depthConfidenceArray.count:\(depthConfidenceArray.count)")
-//                        // 信頼度が高い深度情報のみ抽出
-//                        if depthArray.count != depthConfidenceArray.count  {
-//                            depthArray = depthConfidenceArray.enumerated().map {
-//                                // 信頼度が high 未満は深度を -1 に書き換え
-//                                return $0.element >= UInt8(ARConfidenceLevel.high.rawValue) ? depthArray[$0.offset] : -1
-//                            }
-//                        }
-                        
-//                        let depthMapData: Data = try! JSONEncoder().encode(depthArray)
-    //                    var depthDataArray: [depthMap_data] = []
-    //                    for i in depthArray {
-    //                        depthDataArray.append(depthMap_data(depth: i))
-    //                    }
-                        
-                        
-                        
-//                    }
-                }
+                
             }
-            
-            //save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data)//, depthMapData: depthMapData)
-        //}
+        }
     }
     
     private let cameraRotationThreshold = cos(2 * .degreesToRadian)
@@ -716,30 +530,28 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             let targetTextFilePath = documentDirectoryFileURL.appendingPathComponent(objName+".scn")
             
             //point cloudをtxtファイルで保存
-            if menu_array[2] == false {
-                self.pointCloudRenderer.savePointsToFile(failname: objName)
-            }
+//            if menu_array[2] == false {
+//                self.pointCloudRenderer.savePointsToFile(failname: objName)
+//            }
             //sceneをscnファイルで保存
             if menu_array[1] == false {
                 //self.sceneView.scene.write(to: targetTextFilePath, options: nil, delegate: nil, progressHandler: nil)
+            
+                let realm = try! Realm()
+                let results = realm.objects(Data_parameta.self)
+                try! Realm().write {
+                    results[self.recording_count].mesh_anchor.removeAll()
+                }
                 
                 guard let anchors = sceneView.session.currentFrame?.anchors else { return }
                 let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
                 for (_, anchor) in meshAnchors.enumerated() {
-//                    texcoords2.append([])
-//                    let verticles = anchor.geometry.vertices
-//                    for _ in 0..<verticles.count {
-//                        texcoords2[i].append(SIMD2<Float>(0, 0))
-//                    }
+
                     guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                     else{ return }
-//                    let texcoords_data = try! JSONEncoder().encode(texcoords2[i])
-                    
-                    let realm = try! Realm()
                     let results = realm.objects(Data_parameta.self)
                     try! realm.write {
                         results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
-                        //,"texcoords": texcoords_data]))
                     }
                 }
             }
@@ -752,7 +564,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                             realm.add(Navityu(value: ["modelname": objName,
                                                       "dayString": dayString,
                                                       "worlddata": data, //current_worlddata!,
-                                                      "worldimage": self.current_imageData!,
+                                                      "worldimage": self.current_imageData,
                                                       "exit_mesh": self.exit_mesh_num,
                                                       "exit_point": self.exit_point_num,
                                                       "exit_parameta": self.exit_parameta]))
@@ -888,6 +700,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [element])
         
         return SCNNode(geometry: pointsGeometry)
+    }
+    
+    func to_CheckDataViewController() {
+        timer.invalidate()
+        let storyboard = UIStoryboard(name: "CheckData", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataViewController") as! CheckDataViewController
+        vc.calcuMatrix = depth_pointCloudRenderer.imgPlaceMatrix
+        let depth_result = try! Realm().objects(Data_parameta.self)
+        for i in 0..<depth_result[0].depth.count {
+            let depth_array = (try? JSONDecoder().decode([depthPosition].self, from: depth_result[0].depth[i].depth_data!))!
+            vc.depth.append(contentsOf: depth_array)
+        }
+        self.present(vc, animated: true, completion: nil)
     }
     
     func finish_mapping() {

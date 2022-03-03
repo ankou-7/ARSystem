@@ -189,13 +189,13 @@ class EditColabARViewController: UIViewController, ARSCNViewDelegate, MCBrowserV
         }
         
         let distance = sqrt(diffPointCoord.x * diffPointCoord.x + diffPointCoord.y * diffPointCoord.y + diffPointCoord.z * diffPointCoord.z)
-        let num = Int((distance * 100 ) / 20)
-        let s: Float = 1/3
+        let num = Int((distance * 100 ) / 10)
+        let s: Float = 1/8
         
         for i in 1..<num {
-            let posi = SCNVector3((startPoint_node.position.x + Float(i) * diffPointCoord.x * s) - (diffPointCoord.x * 0.2),
-                                  (startPoint_node.position.y + Float(i) * diffPointCoord.y * s) - (diffPointCoord.y * 0.2),
-                                  (startPoint_node.position.z + Float(i) * diffPointCoord.z * s) - (diffPointCoord.z * 0.2))
+            let posi = SCNVector3((startPoint_node.position.x + Float(i) * diffPointCoord.x * s) - (diffPointCoord.x * 0.1),
+                                  (startPoint_node.position.y + Float(i) * diffPointCoord.y * s) - (diffPointCoord.y * 0.1),
+                                  (startPoint_node.position.z + Float(i) * diffPointCoord.z * s) - (diffPointCoord.z * 0.1))
             let scene = SCNScene(named: "art.scnassets/arrow.scn")
             let node = (scene?.rootNode.childNode(withName: "arrow", recursively: false))!
             node.position = posi
@@ -287,12 +287,16 @@ class EditColabARViewController: UIViewController, ARSCNViewDelegate, MCBrowserV
         sceneView.session.delegate = self
         sceneView.debugOptions = [.showWorldOrigin]
         
-        sceneView.autoenablesDefaultLighting = true
+        //sceneView.autoenablesDefaultLighting = true
         
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal, .vertical]
         sceneView.session.run(configuration)
         
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .ambient //.omni
+        sceneView.scene.rootNode.addChildNode(lightNode)
         
         self.peerID = MCPeerID(displayName: UIDevice.current.name)
         self.session = MCSession(peer: peerID)

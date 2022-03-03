@@ -324,6 +324,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
         
         //メッシュ情報初期化
+        print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
+        
         for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
             let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
             if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
@@ -744,16 +746,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         let distance = sqrt(endPointCoord.x * endPointCoord.x + endPointCoord.y * endPointCoord.y + endPointCoord.z * endPointCoord.z)
         //print(distance * 100)
-        let num = Int((distance * 100 ) / 20)
-        //print(num)
-        let s: Float = 1/3
+        let num = Int((distance * 100 ) / 10)
+        let s: Float = 1/8
         
         let objName = "arrow"
         
         for i in 1..<num {
-            let posi = SCNVector3((startPointCoord.x + Float(i) * endPointCoord.x * s) - (endPointCoord.x * 0.2),
-                                  (startPointCoord.y + Float(i) * endPointCoord.y * s) - (endPointCoord.y * 0.2),
-                                  (startPointCoord.z + Float(i) * endPointCoord.z * s) - (endPointCoord.z * 0.2))
+            let posi = SCNVector3((startPointCoord.x + Float(i) * endPointCoord.x * s) - (endPointCoord.x * 0.1),
+                                  (startPointCoord.y + Float(i) * endPointCoord.y * s) - (endPointCoord.y * 0.1),
+                                  (startPointCoord.z + Float(i) * endPointCoord.z * s) - (endPointCoord.z * 0.1))
             let scene = SCNScene(named: "art.scnassets/\(objName).scn")
             let node = (scene?.rootNode.childNode(withName: objName, recursively: false))!
             node.position = posi
