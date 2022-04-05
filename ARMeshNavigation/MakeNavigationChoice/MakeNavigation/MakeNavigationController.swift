@@ -262,15 +262,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let title = "マッピング完了"
         let message = """
                       終了する場合は終了して保存先の指定を
-                      確認する場合は確認を選択して下さい。
+                      続行する場合は続行を選択して下さい。
                       """
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "確認", style: .default) { [self] _ in
+        alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
             self.Make_mesh_obj() //モデルを一時保存
             self.mesh_flag = false
-            
-            self.to_CheckDataViewController()
         })
         
         alertController.addAction(UIAlertAction(title: "終了", style: .default) { [self] _ in

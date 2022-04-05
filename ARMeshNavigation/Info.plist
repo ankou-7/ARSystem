@@ -28,7 +28,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>カメラを使用します。</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>説明文</string>
+	<string>Wi-Fiを使用します。</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>マイクを使用します。</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -77,7 +78,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sKi-4W-IKO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="50.359712230215834" y="2346.7336683417084"/>
+            <point key="canvasLocation" x="-759" y="2354"/>
         </scene>
         <!--Edit Colab View Controller-->
         <scene sceneID="Jhe-fo-uVx">
@@ -209,7 +210,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sPv-0S-oKD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="730.93525179856124" y="1640.7035175879398"/>
+            <point key="canvasLocation" x="983" y="2354"/>
         </scene>
         <!--Edit ColabAR View Controller-->
         <scene sceneID="C90-8d-XPa">
@@ -319,7 +320,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NA5-9P-PAV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1369.7841726618706" y="1647.7386934673366"/>
+            <point key="canvasLocation" x="1858" y="2354"/>
         </scene>
         <!--Edit Data Controller-->
         <scene sceneID="6wL-I6-sUh">
@@ -780,7 +781,7 @@
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="750.35971223021591" y="2341.708542713568"/>
+            <point key="canvasLocation" x="109" y="2354"/>
         </scene>
         <!--CheckAR View Controller-->
         <scene sceneID="olE-fQ-YXY">
@@ -837,7 +838,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rkx-jX-8GO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1408.6330935251799" y="2353.7688442211056"/>
+            <point key="canvasLocation" x="109" y="3077"/>
         </scene>
         <!--Navigation Edit Model Controller-->
         <scene sceneID="OfP-tA-IIA">
@@ -1205,7 +1206,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="794.24460431654677" y="3130.6532663316584"/>
+            <point key="canvasLocation" x="-1538" y="3507"/>
         </scene>
     </scenes>
     <resources>
