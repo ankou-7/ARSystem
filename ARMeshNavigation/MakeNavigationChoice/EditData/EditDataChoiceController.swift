@@ -18,6 +18,8 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationItem.title = "編集するデータ選択"
     }
     
     //sectionの高さを決める

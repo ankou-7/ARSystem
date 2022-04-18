@@ -115,6 +115,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //        configuration.sceneReconstruction = .meshWithClassification
         //        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
         sceneView.session.run(configuration)
+        
+        
+//        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+//        self.navigationController?.navigationBar.shadowImage = UIImage()
+//        self.navigationController?.navigationBar.barTintColor = .clear
+//        self.navigationController?.navigationBar.backgroundColor = .clear
+        //self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -718,6 +725,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let storyboard = UIStoryboard(name: "AddDataCellChoice", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "AddDataCellChoiceController") as! AddDataCellChoiceController
         self.present(vc, animated: true, completion: nil)
+        //self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func back(_ sender: Any) {

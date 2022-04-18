@@ -18,18 +18,19 @@ class NavigationChoiceController: UIViewController {
     @IBAction func to_MakeNavigationController(_ sender: Any) {
         let storyboard = UIStoryboard(name: "MakeNavigation", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "MakeNavigationController") as! MakeNavigationController
-        //vc.view.backgroundColor = UIColor.white
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
+        //self.navigationController?.pushViewController(vc, animated: true)//遷移する
     }
     
     @IBAction func to_NavigationDataCell1(_ sender: Any) {
         let storyboard = UIStoryboard(name: "EditData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "EditDataChoiceController") as! EditDataChoiceController
         vc.seni_id = 2
-        vc.view.backgroundColor = UIColor.white
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true, completion: nil)
+//        vc.view.backgroundColor = UIColor.white
+//        vc.modalPresentationStyle = .fullScreen
+//        self.present(vc, animated: true, completion: nil)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func to_EditColabViewController(_ sender: UIButton) {
@@ -50,7 +51,7 @@ class NavigationChoiceController: UIViewController {
         self.present(vc, animated: true, completion: nil)
     }
     
-    @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
+//    @IBAction func back(_ sender: Any) {
+//        self.dismiss(animated: true, completion: nil)
+//    }
 }
