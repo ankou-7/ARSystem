@@ -664,49 +664,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         }
     }
     
-    private func buildNode(points: [PointCloudVertex]) -> SCNNode {
-        let vertexData = NSData(
-            bytes: points,
-            length: MemoryLayout<PointCloudVertex>.size * points.count
-        )
-        let positionSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        let colorSource = SCNGeometrySource(
-            data: vertexData as Data,
-            semantic: SCNGeometrySource.Semantic.color,
-            vectorCount: points.count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: MemoryLayout<Float>.size * 3,
-            dataStride: MemoryLayout<PointCloudVertex>.size
-        )
-        
-        let element = SCNGeometryElement(
-            data: nil,
-            primitiveType: .point,
-            primitiveCount: points.count,
-            bytesPerIndex: MemoryLayout<Int>.size
-        )
-
-        // for bigger dots
-        element.pointSize = 10
-        element.minimumPointScreenSpaceRadius = 1
-        element.maximumPointScreenSpaceRadius = 7
-
-        let pointsGeometry = SCNGeometry(sources: [positionSource, colorSource], elements: [element])
-        
-        return SCNNode(geometry: pointsGeometry)
-    }
-    
     func to_CheckDataViewController() {
         timer.invalidate()
         let storyboard = UIStoryboard(name: "CheckData", bundle: nil)
@@ -733,45 +690,4 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.dismiss(animated: true, completion: nil)
     }
     
-}
-
-extension  SCNGeometry {
-    public static func fromAnchor(meshAnchor: ARMeshAnchor) -> SCNGeometry {
-        let vertices = meshAnchor.geometry.vertices
-        let faces = meshAnchor.geometry.faces
-        
-        let vertexSource = SCNGeometrySource(buffer: vertices.buffer, vertexFormat: vertices.format, semantic: .vertex, vertexCount: vertices.count, dataOffset: vertices.offset, dataStride: vertices.stride)
-        let faceData = Data(bytesNoCopy: faces.buffer.contents(), count: faces.buffer.length, deallocator: .none)
-        let geometryElement = SCNGeometryElement(data: faceData, primitiveType: .triangles, primitiveCount: faces.count, bytesPerIndex: faces.bytesPerIndex)
-        let geometry = SCNGeometry(sources: [vertexSource], elements: [geometryElement])
-        let defaultMaterial = SCNMaterial()
-        defaultMaterial.fillMode = .lines
-        defaultMaterial.diffuse.contents = UIColor(displayP3Red:1, green:1, blue:1, alpha:0.7)
-        geometry.materials = [defaultMaterial]
-        
-        return geometry;
-      }
-}
-
-extension  SCNGeometryPrimitiveType {
-    static  func  of(_ type: ARGeometryPrimitiveType) -> SCNGeometryPrimitiveType {
-       switch type {
-       case .line:
-            return .line
-       case .triangle:
-            return .triangles
-       @unknown default:
-            return .line
-       }
-    }
-}
-
-extension ARMeshGeometry {
-    func classificationOf(faceWithIndex index: Int) -> ARMeshClassification {
-        guard let classification = classification else { return .none }
-        assert(classification.format == MTLVertexFormat.uchar, "Expected one unsigned char (one byte) per classification")
-        let classificationPointer = classification.buffer.contents().advanced(by: classification.offset + (classification.stride * index))
-        let classificationValue = Int(classificationPointer.assumingMemoryBound(to: CUnsignedChar.self).pointee)
-        return ARMeshClassification(rawValue: classificationValue) ?? .none
-    }
 }

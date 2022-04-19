@@ -74,7 +74,7 @@ class MapExpansionReceiveController: UIViewController, ARSCNViewDelegate,  MCBro
         LongPressGesture.isEnabled = false
         
         //座標軸
-        let axis = ObjectOrigin().makeAxisNode()
+        let axis = ObjectOriginAxis(sceneView: sceneView)//.makeAxisNode()
         scene.rootNode.addChildNode(axis)
         
         self.stop_button.isHidden = true

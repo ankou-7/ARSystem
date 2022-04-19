@@ -1,13 +1,41 @@
 //
-//  ObjectOrigin.swift
+//  ObjectOriginAxis.swift
 //  ARMesh
 //
-//  Created by yasue kouki on 2021/10/22.
+//  Created by yasue kouki on 2022/04/19.
 //
 
 import SceneKit
 
-class ObjectOrigin: SCNNode {
+class ObjectOriginAxis: SCNNode {
+    
+    private var sceneView: SCNView
+    
+    init(sceneView: SCNView) {
+        self.sceneView = sceneView
+        super.init()
+        
+        let node = SCNNode()
+        node.name = "axis"
+        
+        // x軸
+        node.addChildNode(makeXAxisNode())
+        // y軸
+        node.addChildNode(makeYAxisNode())
+        // z軸
+        node.addChildNode(makeZAxisNode())
+        
+        node.addChildNode(makeXAxisCurveNode())
+        node.addChildNode(makeYAxisCurveNode())
+        node.addChildNode(makeZAxisCurveNode())
+        
+        addChildNode(node)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     /// 原点を作成する
     func makeOriginNode() -> SCNNode {
         let sphere = makeSphereNode(radius: 0.005)
@@ -22,6 +50,7 @@ class ObjectOrigin: SCNNode {
         let sphereNode = SCNNode(geometry: sphere)
         return sphereNode
     }
+    
     
     /// 座標軸ノードを作成する
     func makeAxisNode() -> SCNNode {
