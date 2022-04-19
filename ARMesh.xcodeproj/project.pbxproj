@@ -89,6 +89,13 @@
 		CF96614D280DA44500D4C8BA /* Multipeer+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */; };
 		CF966153280EAD6800D4C8BA /* ObjectOriginAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966152280EAD6800D4C8BA /* ObjectOriginAxis.swift */; };
 		CF966155280EB7A200D4C8BA /* OperateObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966154280EB7A200D4C8BA /* OperateObject.swift */; };
+		CF966157280F126B00D4C8BA /* CPU_CalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966156280F126B00D4C8BA /* CPU_CalculateTexture.swift */; };
+		CF966159280F14B700D4C8BA /* GPU_CalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966158280F14B700D4C8BA /* GPU_CalculateTexture.swift */; };
+		CF96615B280F237E00D4C8BA /* LightNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96615A280F237E00D4C8BA /* LightNode.swift */; };
+		CF96615D280F24B100D4C8BA /* ArrowNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96615C280F24B100D4C8BA /* ArrowNode.swift */; };
+		CF96615F280F360800D4C8BA /* TextureImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96615E280F360800D4C8BA /* TextureImage.swift */; };
+		CF966161280F3DE100D4C8BA /* BuildMeshNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966160280F3DE100D4C8BA /* BuildMeshNode.swift */; };
+		CF966163280F4E9200D4C8BA /* BuildTextureMeshNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966162280F4E9200D4C8BA /* BuildTextureMeshNode.swift */; };
 		CF98DE8027484EF90023A1E4 /* HandTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF98DE7E27484EF40023A1E4 /* HandTracker.framework */; platformFilter = ios; };
 		CF98DE8127484EF90023A1E4 /* HandTracker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CF98DE7E27484EF40023A1E4 /* HandTracker.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */; };
@@ -213,6 +220,13 @@
 		CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multipeer+Ext.swift"; sourceTree = "<group>"; };
 		CF966152280EAD6800D4C8BA /* ObjectOriginAxis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOriginAxis.swift; sourceTree = "<group>"; };
 		CF966154280EB7A200D4C8BA /* OperateObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperateObject.swift; sourceTree = "<group>"; };
+		CF966156280F126B00D4C8BA /* CPU_CalculateTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU_CalculateTexture.swift; sourceTree = "<group>"; };
+		CF966158280F14B700D4C8BA /* GPU_CalculateTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPU_CalculateTexture.swift; sourceTree = "<group>"; };
+		CF96615A280F237E00D4C8BA /* LightNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightNode.swift; sourceTree = "<group>"; };
+		CF96615C280F24B100D4C8BA /* ArrowNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowNode.swift; sourceTree = "<group>"; };
+		CF96615E280F360800D4C8BA /* TextureImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureImage.swift; sourceTree = "<group>"; };
+		CF966160280F3DE100D4C8BA /* BuildMeshNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildMeshNode.swift; sourceTree = "<group>"; };
+		CF966162280F4E9200D4C8BA /* BuildTextureMeshNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildTextureMeshNode.swift; sourceTree = "<group>"; };
 		CF98DE7E27484EF40023A1E4 /* HandTracker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HandTracker.framework; sourceTree = "<group>"; };
 		CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+.swift"; sourceTree = "<group>"; };
 		CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+.swift"; sourceTree = "<group>"; };
@@ -449,11 +463,18 @@
 				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
+				CF96615A280F237E00D4C8BA /* LightNode.swift */,
+				CF966156280F126B00D4C8BA /* CPU_CalculateTexture.swift */,
+				CF966158280F14B700D4C8BA /* GPU_CalculateTexture.swift */,
+				CF96615E280F360800D4C8BA /* TextureImage.swift */,
+				CF966160280F3DE100D4C8BA /* BuildMeshNode.swift */,
+				CF966162280F4E9200D4C8BA /* BuildTextureMeshNode.swift */,
+				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
+				CF96615C280F24B100D4C8BA /* ArrowNode.swift */,
+				CF966154280EB7A200D4C8BA /* OperateObject.swift */,
 				CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */,
 				CF13205727223CD400277339 /* ObjectOrigin.swift */,
 				CF966152280EAD6800D4C8BA /* ObjectOriginAxis.swift */,
-				CF966154280EB7A200D4C8BA /* OperateObject.swift */,
-				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
 				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
 				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
@@ -721,6 +742,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF98DE9627485DDF0023A1E4 /* CVMetalTexture+.swift in Sources */,
+				CF966157280F126B00D4C8BA /* CPU_CalculateTexture.swift in Sources */,
 				2632F46225F04482006B7366 /* Helpers.swift in Sources */,
 				CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */,
 				CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */,
@@ -742,6 +764,7 @@
 				CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */,
 				CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */,
 				260D431827CE4D690020039E /* CheckRenderer.swift in Sources */,
+				CF966161280F3DE100D4C8BA /* BuildMeshNode.swift in Sources */,
 				262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */,
 				CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */,
 				CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */,
@@ -750,10 +773,12 @@
 				CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */,
 				CF966155280EB7A200D4C8BA /* OperateObject.swift in Sources */,
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
+				CF96615D280F24B100D4C8BA /* ArrowNode.swift in Sources */,
 				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,
 				CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
+				CF966163280F4E9200D4C8BA /* BuildTextureMeshNode.swift in Sources */,
 				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,
 				26AAA2642563C998008FE5EB /* ChoiceDataAllCheckController.swift in Sources */,
 				CF966153280EAD6800D4C8BA /* ObjectOriginAxis.swift in Sources */,
@@ -767,9 +792,11 @@
 				CF98DE9927485DE70023A1E4 /* default.metal in Sources */,
 				CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */,
 				CFD96D3E2748222C00083E90 /* CheckARViewController.swift in Sources */,
+				CF96615B280F237E00D4C8BA /* LightNode.swift in Sources */,
 				26AAA2562563C998008FE5EB /* MakeNavigationController.swift in Sources */,
 				26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */,
 				26AAA25B2563C998008FE5EB /* UseNavigationChoiceController.swift in Sources */,
+				CF966159280F14B700D4C8BA /* GPU_CalculateTexture.swift in Sources */,
 				CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */,
 				2682062F25C3F7BC00519E42 /* Renderer.swift in Sources */,
 				CF966149280D9F5900D4C8BA /* SCNGeometry+Ext.swift in Sources */,
@@ -789,6 +816,7 @@
 				CF98DE9427485DDF0023A1E4 /* CVReturnError.swift in Sources */,
 				CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */,
 				26AAA2522563C998008FE5EB /* TitleViewController.swift in Sources */,
+				CF96615F280F360800D4C8BA /* TextureImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
