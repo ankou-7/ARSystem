@@ -404,14 +404,6 @@
                                     <action selector="tap_meshNode:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="PfN-Oi-Lm4"/>
                                 </connections>
                             </button>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="KOs-gL-ufa">
-                                <rect key="frame" x="402" y="582" width="30" height="30"/>
-                                <color key="tintColor" systemColor="systemGreenColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="30" id="Iid-Yi-S8I"/>
-                                    <constraint firstAttribute="height" constant="30" id="b5r-l8-WVw"/>
-                                </constraints>
-                            </activityIndicatorView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xs8-EH-W3u">
                                 <rect key="frame" x="46" y="125" width="250" height="250"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -699,7 +691,6 @@
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="gvt-cA-fnd" secondAttribute="trailing" constant="30" id="Fue-mz-3Na"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="Amz-lM-Q8r" secondAttribute="bottom" constant="15" id="HZT-LV-phH"/>
                             <constraint firstItem="Fjr-no-xHa" firstAttribute="top" secondItem="gvt-cA-fnd" secondAttribute="bottom" constant="30" id="HiF-01-elT"/>
-                            <constraint firstItem="KOs-gL-ufa" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="K9N-ry-y87"/>
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="LY7-2D-xhj"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="TTx-dK-m6l" secondAttribute="bottom" constant="15" id="M9M-qC-Nac"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="peU-gA-goK" secondAttribute="trailing" constant="30" id="Mex-wT-gRo"/>
@@ -710,7 +701,6 @@
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="jZi-Ii-d2G" secondAttribute="top" id="V2N-wu-pTu"/>
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="bottom" secondItem="uxY-IE-l79" secondAttribute="bottom" id="XUr-2E-Srh"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" id="ZgC-Za-6SF"/>
-                            <constraint firstItem="KOs-gL-ufa" firstAttribute="centerY" secondItem="pVR-0h-4Jw" secondAttribute="centerY" id="am8-ki-Ord"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="YBp-Mr-SRK" secondAttribute="trailing" constant="30" id="aoD-T7-WLF"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="ZSf-9a-1Nf" secondAttribute="bottom" constant="15" id="bsV-YP-hbQ"/>
                             <constraint firstItem="bg8-nC-QUg" firstAttribute="leading" secondItem="gsO-eN-2KE" secondAttribute="trailing" constant="15" id="cOS-6D-PrF"/>
@@ -736,7 +726,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="ActivityView" destination="KOs-gL-ufa" id="DiT-dX-AnB"/>
                         <outlet property="browserButton" destination="gAr-g0-QhN" id="uVh-RA-ydY"/>
                         <outlet property="colabInfoLabel" destination="PTE-O2-UKJ" id="YcD-8k-cvZ"/>
                         <outlet property="colabStopButton" destination="jZi-Ii-d2G" id="U4p-8c-zKR"/>

@@ -10,6 +10,7 @@ import SceneKit
 import ARKit
 import RealmSwift
 import MultipeerConnectivity
+import SVProgressHUD
 
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
 
@@ -32,22 +33,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var tate: Float!
     
     var anchors: [ARMeshAnchor] = []
-    var texcoords2: [[SIMD2<Float>]] = []
-    var tex_bool: [[Bool]] = []
-    var vertex_array: [[SCNVector3]] = []
-    var normal_array: [[SCNVector3]] = []
-    var face_array: [[Int32]] = []
-    var face_bool: [[Int]] = []
-    
-    var new_face_array: [[Int32]] = []
-    var new_vertex_array: [[SIMD3<Float>]] = []
-    var new_normal_array: [[SIMD3<Float>]] = []
-    var new_texcoords2: [[SIMD2<Float>]] = []
     
     var new_uiimage: UIImage!
     var uiimage_array: [UIImage] = []
     @IBOutlet var imageView: UIImageView!
-    @IBOutlet weak var ActivityView: UIActivityIndicatorView!
     
     var objectName_array: [String] = []
     
@@ -91,11 +80,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         sceneView.delegate = self
         sceneView.scene = scene
         //sceneView.allowsCameraControl = true
-        
         sceneView.scene?.rootNode.addChildNode(LightNode())
-        
-        ActivityView.stopAnimating()
-        //ActivityView.isHidden = true
         
         if results[section_num].cells[cell_num].models.count < 2 {
             right_modelbutton.isHidden = true
@@ -114,7 +99,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         )
         pinch.delegate = self
         sceneView.addGestureRecognizer(pinch)
-        
         
         // deleteObjectButtonの設定（オブジェクト長押し時に表示する）
         deleteObjectButton.setTitle("削除", for:UIControl.State.normal)
@@ -154,7 +138,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
         
         let num: CGFloat = 3.0 //画像のサイズの縮尺率
-        print("pic_count：\(picCount)")
         
         for i in 0..<picCount {
             let uiimage = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[i].pic_data!)
@@ -162,8 +145,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
         //16384以下にする必要あり
         new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, tate: tate, num: num).makeTexture()
-        //print(new_uiimage.size)
-        //imageView.image = new_uiimage
         let uiImage = new_uiimage
         let imageData = uiImage!.jpegData(compressionQuality: 0.5)
         let realm = try! Realm()
@@ -179,17 +160,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
                 anchors.append(meshAnchor)
             }
-            texcoords2.append([])
-            normal_array.append([])
-            tex_bool.append([])
-            vertex_array.append([])
-            face_array.append([])
-            face_bool.append([])
-            
-            new_face_array.append([])
-            new_vertex_array.append([])
-            new_normal_array.append([])
-            new_texcoords2.append([])
         }
         
 //        let realm = try! Realm()
@@ -355,8 +325,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
         touchMove_flag = true
     }
-    
-    
     
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.sceneView)
@@ -578,40 +546,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         sceneView.scene?.rootNode.addChildNode(meshNode)
     }
     
-    
-    func save_model(num: Int) {
-        for (i, _) in anchors.enumerated() {
-            var texcoords_data = Data()
-            var vertices_data = Data()
-            var normals_data = Data()
-            var faces_data = Data()
-            
-            if num == 2 {
-                texcoords_data = try! JSONEncoder().encode(new_texcoords2[i])
-                vertices_data = Data(bytes: new_vertex_array[i], count: MemoryLayout<SIMD3<Float>>.size * new_vertex_array[i].count)
-                normals_data = Data(bytes: new_normal_array[i], count: MemoryLayout<SIMD3<Float>>.size * new_normal_array[i].count)
-                faces_data = try! JSONEncoder().encode(new_face_array[i])
-            }
-            
-            let realm = try! Realm()
-            try! realm.write {
-                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords = texcoords_data
-                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices = vertices_data
-                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals = normals_data
-                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces = faces_data
-                if num == 2 {
-                    results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count = new_vertex_array[i].count
-                }
-            }
-        }
-        let realm = try! Realm()
-        try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 2
-        }
-        print("save完了")
-        //print(results[section_num].cells[cell_num].models[current_model_num])
-    }
-    
     func delete_mesh() {
         if let node = sceneView.scene!.rootNode.childNode(withName: "meshNode", recursively: false) {
             print("delete mesh")
@@ -634,31 +568,48 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     //Metalを用いたテクスチャ割り当て
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
-        //ActivityView.isHidden = false
-//        ActivityView.startAnimating()
-        //GPU_makeTexture()
         
-        let models = results[section_num].cells[cell_num].models[current_model_num]
-        let calculateParameta = calculateParameta(device: self.sceneView.device!,
-                                                  W: Int(sceneView.bounds.width),
-                                                  H: Int(sceneView.bounds.height),
-                                                  tate: Int(tate), yoko: Int(yoko),
-                                                  funcString: texString)
-        let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, picCount: models.pic.count, models: models, calculateParameta: calculateParameta)
-        GPUCalculateTexture.makeGPUTexture() { [self] in
-            delete_mesh()
-            texmeshNode = BuildTextureMeshNode(result: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor, texImage: new_uiimage)
-            sceneView.scene?.rootNode.addChildNode(texmeshNode)
-        }
+        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "calculating･･･")
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            let models = results[section_num].cells[cell_num].models[current_model_num]
+            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                      W: Int(sceneView.bounds.width),
+                                                      H: Int(sceneView.bounds.height),
+                                                      tate: Int(tate), yoko: Int(yoko),
+                                                      funcString: texString)
+            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, picCount: models.pic.count, models: models, calculateParameta: calculateParameta)
+            GPUCalculateTexture.makeGPUTexture() { [self] in
+                delete_mesh()
+                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+                SVProgressHUD.dismiss()
+            }
+        })
+                                      
     }
     
     //CPUでのテクスチャ割り当て
     @IBAction func tap_makeTexture3(_ sender: UIButton) {
-//        DispatchQueue.global().sync {
-//            self.ActivityView.startAnimating()
-            make_texture1000(num: 2)
-//            self.ActivityView.stopAnimating()
-//        }
+        
+        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "calculating･･･")
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            let models = results[section_num].cells[cell_num].models[current_model_num]
+            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                      W: Int(sceneView.bounds.width),
+                                                      H: Int(sceneView.bounds.height),
+                                                      tate: Int(tate), yoko: Int(yoko),
+                                                      funcString: texString)
+            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta)
+            CPUCalculateTexture.makeCPUTexture() { [self] in
+                delete_mesh()
+                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+                SVProgressHUD.dismiss()
+            }
+        })
+        
     }
     
     //MARK: - コラボレーション用

@@ -6,6 +6,7 @@ target 'ARMesh' do
   use_frameworks!
   pod 'RealmSwift'
   pod 'Matft'
+  pod 'SVProgressHUD'
 
   # Pods for ARMeshNavigation
 

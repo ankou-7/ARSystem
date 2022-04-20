@@ -38,7 +38,10 @@ class CPUCalculateTexture {
     init(anchors: [ARMeshAnchor], models: Navi_Modelname, picCount: Int, calculateParameta: calculateParameta) {
         self.anchors = anchors
         self.models = models
+        self.picCount = picCount
         self.calculateParameta = calculateParameta
+        
+        setupArray()
     }
     
     func setupArray() {
@@ -65,9 +68,10 @@ class CPUCalculateTexture {
         let start = Date()
         print("calcu開始")
         for i in 0..<picCount {
-            make_calcuParameta(i: i)
-            calcTextureCoordinates2000(num: i, cameraVector: cameraVector, depthArray: depth, matrix: calcuMatrix)
+            make_calcuParameta(num: i)
+            calcTextureCoordinates(num: i, cameraVector: cameraVector, depthArray: depth, matrix: calcuMatrix)
         }
+        save_model()
         
         print("calcu終了")
         let elapsed = Date().timeIntervalSince(start)
@@ -75,9 +79,9 @@ class CPUCalculateTexture {
         completionHandler()
     }
     
-    func make_calcuParameta(i: Int) {
-        depth = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
-        let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
+    func make_calcuParameta(num: Int) {
+        depth = (try? decoder.decode([depthPosition].self, from: models.depth[num].depth_data!))!
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[num].json_data!)
         cameraVector = SCNVector3(json_data!.cameraVector.x,
                                       json_data!.cameraVector.y,
                                       json_data!.cameraVector.z)
@@ -94,8 +98,8 @@ class CPUCalculateTexture {
     
     func calcTextureCoordinates(num: Int, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
         for (i, mesh_anchor) in anchors.enumerated() {
-            var tate = calculateParameta.tate
-            var yoko = calculateParameta.yoko
+            let tate = Float(calculateParameta.tate)
+            let yoko = Float(calculateParameta.yoko)
             var points: [SCNVector3] = []
             var points_index: [Int] = []
             var perVerticles: [SCNVector3] = []
@@ -170,5 +174,29 @@ class CPUCalculateTexture {
             
         }
         print("calculate\(num)完了")
+    }
+    
+    func save_model() {
+        for (i, _) in anchors.enumerated() {
+            let texcoords_data = try! JSONEncoder().encode(new_texcoords2[i])
+            let vertices_data = Data(bytes: new_vertex_array[i], count: MemoryLayout<SIMD3<Float>>.size * new_vertex_array[i].count)
+            let normals_data = Data(bytes: new_normal_array[i], count: MemoryLayout<SIMD3<Float>>.size * new_normal_array[i].count)
+            let faces_data = try! JSONEncoder().encode(new_face_array[i])
+            
+            let realm = try! Realm()
+            try! realm.write {
+                models.mesh_anchor[i].texcoords = texcoords_data
+                models.mesh_anchor[i].vertices = vertices_data
+                models.mesh_anchor[i].normals = normals_data
+                models.mesh_anchor[i].faces = faces_data
+                models.mesh_anchor[i].vertice_count = new_vertex_array[i].count
+            }
+        }
+        
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_bool = 2
+        }
+        print("save完了")
     }
 }

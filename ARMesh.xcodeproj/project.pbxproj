@@ -89,7 +89,6 @@
 		CF96614D280DA44500D4C8BA /* Multipeer+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */; };
 		CF966153280EAD6800D4C8BA /* ObjectOriginAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966152280EAD6800D4C8BA /* ObjectOriginAxis.swift */; };
 		CF966155280EB7A200D4C8BA /* OperateObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966154280EB7A200D4C8BA /* OperateObject.swift */; };
-		CF966157280F126B00D4C8BA /* CPU_CalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966156280F126B00D4C8BA /* CPU_CalculateTexture.swift */; };
 		CF96615B280F237E00D4C8BA /* LightNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96615A280F237E00D4C8BA /* LightNode.swift */; };
 		CF96615D280F24B100D4C8BA /* ArrowNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96615C280F24B100D4C8BA /* ArrowNode.swift */; };
 		CF96615F280F360800D4C8BA /* TextureImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96615E280F360800D4C8BA /* TextureImage.swift */; };
@@ -221,7 +220,6 @@
 		CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multipeer+Ext.swift"; sourceTree = "<group>"; };
 		CF966152280EAD6800D4C8BA /* ObjectOriginAxis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOriginAxis.swift; sourceTree = "<group>"; };
 		CF966154280EB7A200D4C8BA /* OperateObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperateObject.swift; sourceTree = "<group>"; };
-		CF966156280F126B00D4C8BA /* CPU_CalculateTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU_CalculateTexture.swift; sourceTree = "<group>"; };
 		CF96615A280F237E00D4C8BA /* LightNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightNode.swift; sourceTree = "<group>"; };
 		CF96615C280F24B100D4C8BA /* ArrowNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowNode.swift; sourceTree = "<group>"; };
 		CF96615E280F360800D4C8BA /* TextureImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureImage.swift; sourceTree = "<group>"; };
@@ -464,7 +462,6 @@
 				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
-				CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */,
 				CF96615E280F360800D4C8BA /* TextureImage.swift */,
 				CF966154280EB7A200D4C8BA /* OperateObject.swift */,
 				CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */,
@@ -564,7 +561,7 @@
 		CF966166280F5AE400D4C8BA /* Calculate */ = {
 			isa = PBXGroup;
 			children = (
-				CF966156280F126B00D4C8BA /* CPU_CalculateTexture.swift */,
+				CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */,
 				CF966168280FD32E00D4C8BA /* GPUCalculateTexture.swift */,
 				262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */,
 			);
@@ -777,7 +774,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF98DE9627485DDF0023A1E4 /* CVMetalTexture+.swift in Sources */,
-				CF966157280F126B00D4C8BA /* CPU_CalculateTexture.swift in Sources */,
 				2632F46225F04482006B7366 /* Helpers.swift in Sources */,
 				CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */,
 				CF3D80D1262B9CEB007904E6 /* SaveDataChoiceController.swift in Sources */,
