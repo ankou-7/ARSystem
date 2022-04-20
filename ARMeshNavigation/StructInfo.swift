@@ -62,3 +62,21 @@ struct json_parameta: Codable {
     var cameraEulerAngles: Vector3Entity
     var cameraTransform: Vector44Entity
 }
+
+struct calculateParameta {
+    var device: MTLDevice
+    var screenWidth: Int
+    var screenHeight: Int
+    var tate: Int
+    var yoko: Int
+    var funcString: String
+    
+    init(device: MTLDevice, W: Int, H: Int, tate: Int, yoko: Int, funcString: String) {
+        self.device = device
+        self.screenWidth = W
+        self.screenHeight = H
+        self.tate = tate
+        self.yoko = yoko
+        self.funcString = funcString
+    }
+}

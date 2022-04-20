@@ -27,6 +27,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     let results = try! Realm().objects(Navi_SectionTitle.self)
     var knownAnchors = Dictionary<UUID, SCNNode>()
     
+    var picCount: Int!
+    var yoko: Float!
+    var tate: Float!
+    
     var anchors: [ARMeshAnchor] = []
     var texcoords2: [[SIMD2<Float>]] = []
     var tex_bool: [[Bool]] = []
@@ -99,6 +103,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             modelname_label.isHidden = true
         }
         
+        picCount = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        yoko = 17.0
+        tate = ceil(Float(picCount)/yoko)
+        
         //pinch gesuture
         let pinch = UIPinchGestureRecognizer(
             target: self,
@@ -145,13 +153,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-        let count = results[section_num].cells[cell_num].models[current_model_num].pic.count
-        let yoko: Float = 17.0//4.0
-        let tate: Float = ceil(Float(count)/yoko)
         let num: CGFloat = 3.0 //画像のサイズの縮尺率
-        print("pic_count：\(count)")
+        print("pic_count：\(picCount)")
         
-        for i in 0..<count {
+        for i in 0..<picCount {
             let uiimage = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[i].pic_data!)
             uiimage_array.append(uiimage!)
         }
@@ -184,7 +189,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             new_face_array.append([])
             new_vertex_array.append([])
             new_normal_array.append([])
-            new_face_array.append([])
             new_texcoords2.append([])
         }
         
@@ -632,7 +636,20 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         //ActivityView.isHidden = false
 //        ActivityView.startAnimating()
-        GPU_makeTexture()
+        //GPU_makeTexture()
+        
+        let models = results[section_num].cells[cell_num].models[current_model_num]
+        let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                  W: Int(sceneView.bounds.width),
+                                                  H: Int(sceneView.bounds.height),
+                                                  tate: Int(tate), yoko: Int(yoko),
+                                                  funcString: texString)
+        let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, picCount: models.pic.count, models: models, calculateParameta: calculateParameta)
+        GPUCalculateTexture.makeGPUTexture() { [self] in
+            delete_mesh()
+            texmeshNode = BuildTextureMeshNode(result: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor, texImage: new_uiimage)
+            sceneView.scene?.rootNode.addChildNode(texmeshNode)
+        }
     }
     
     //CPUでのテクスチャ割り当て

@@ -31,7 +31,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
-    //private var calculateRenderer: Calcu_Renderer!
     var pointCloud_flag = false
     var numGridPoints = 1000
     @IBOutlet weak var numGridPoints_label: UILabel!
