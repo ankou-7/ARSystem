@@ -16,8 +16,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 
     //MARK: - 変数の設定
     //画面遷移した際のsectionとcellの番号を格納
-    var section_num = Int()
-    var cell_num = Int()
+    var section_num: Int!
+    var cell_num: Int!
+    var models: Navi_Modelname!
     
     var current_model_num = 0 //現在表示しているモデルの番号を格納
     var database_model_num = 1 //読み込んだcellの中に格納されているモデル数
@@ -77,6 +78,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        section_num = ViewManagement.sectionID!
+        cell_num = ViewManagement.cellID!
+        models = results[section_num].cells[cell_num].models[current_model_num]
+        
+        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "Loading･･･")
+        
         sceneView.delegate = self
         sceneView.scene = scene
         //sceneView.allowsCameraControl = true
@@ -88,7 +96,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             modelname_label.isHidden = true
         }
         
-        picCount = results[section_num].cells[cell_num].models[current_model_num].pic.count
+        picCount = models.pic.count
         yoko = 17.0
         tate = ceil(Float(picCount)/yoko)
         
@@ -133,14 +141,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        for s in results[section_num].cells[cell_num].models[current_model_num].obj {
+        for s in models.obj {
             objectName_array.append(s.name_identify)
         }
         
         let num: CGFloat = 3.0 //画像のサイズの縮尺率
         
         for i in 0..<picCount {
-            let uiimage = UIImage(data: results[section_num].cells[cell_num].models[current_model_num].pic[i].pic_data!)
+            let uiimage = UIImage(data: models.pic[i].pic_data!)
             uiimage_array.append(uiimage!)
         }
         //16384以下にする必要あり
@@ -149,34 +157,29 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         let imageData = uiImage!.jpegData(compressionQuality: 0.5)
         let realm = try! Realm()
         try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].texture_pic = imageData
+            models.texture_pic = imageData
         }
         
-        //メッシュ情報初期化
-        //print(results[section_num].cells[cell_num].models[current_model_num].mesh_anchor)
-        
-        for i in 0..<results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.count {
-            let mesh_data = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].mesh
+        for i in 0..<models.mesh_anchor.count {
+            let mesh_data = models.mesh_anchor[i].mesh
             if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
                 anchors.append(meshAnchor)
             }
         }
         
-//        let realm = try! Realm()
-//        try! realm.write {
-//            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 0
-//        }
         
-        print("計算したテクスチャの型：\(results[section_num].cells[cell_num].models[current_model_num].texture_bool)")
-        
-        if results[section_num].cells[cell_num].models[current_model_num].texture_bool == 0 {
-            let meshNode = BuildMeshNode(anchors: anchors)
-            meshNode.name = "meshNode"
-            sceneView.scene?.rootNode.addChildNode(meshNode)
-        } else if results[section_num].cells[cell_num].models[current_model_num].texture_bool != 0 {
-            texmeshNode = BuildTextureMeshNode(result: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor, texImage: new_uiimage)
-            sceneView.scene?.rootNode.addChildNode(texmeshNode)
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            if models.texture_bool == 0 {
+                let meshNode = BuildMeshNode(anchors: anchors)
+                meshNode.name = "meshNode"
+                sceneView.scene?.rootNode.addChildNode(meshNode)
+                SVProgressHUD.dismiss()
+            } else if models.texture_bool != 0 {
+                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+                SVProgressHUD.dismiss()
+            }
+        })
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -185,7 +188,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     @IBAction func tap_colorNode(_ sender: UIButton) {
         delete_mesh()
-        texmeshNode = BuildTextureMeshNode(result: results[section_num].cells[cell_num].models[current_model_num].mesh_anchor, texImage: new_uiimage)
+        texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
         sceneView.scene?.rootNode.addChildNode(texmeshNode)
     }
     
@@ -202,9 +205,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     }
     
     func load_pointCloud() {
-        let modelname = results[section_num].cells[cell_num].models[current_model_num].modelname
+        let modelname = models.modelname
         if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
-            if results[section_num].cells[cell_num].models[current_model_num].exit_point == 1 {
+            if models.exit_point == 1 {
                 let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
                 guard let data = try? Data(contentsOf: data_model_name) else {
                     fatalError("ファイル読み込みエラー")
@@ -222,8 +225,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     @IBAction func load_saveObject(_ sender: UIButton) {
         //tap_object_flag = true
-        if results[section_num].cells[cell_num].models[current_model_num].obj.count > 0 {
-            for obj in results[section_num].cells[cell_num].models[current_model_num].obj {
+        if models.obj.count > 0 {
+            for obj in models.obj {
                 if obj.type == "usdz" {
                     guard let url = Bundle.main.url(forResource: "art.scnassets/\(obj.name)", withExtension: "usdz") else { return }
                     let scene = try! SCNScene(url: url, options: [.checkConsistency: true])
@@ -360,7 +363,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                         node.eulerAngles = SCNVector3(0, 0, 0)
                     }
                     node.position = posi
-                    node.name = item.name + String(results[section_num].cells[cell_num].models[current_model_num].add_obj_count)
+                    node.name = item.name + String(models.add_obj_count)
                     sceneView.scene!.rootNode.addChildNode(node)
                     
                     choiceNode_name = node.name!
@@ -387,7 +390,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                         hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name ||
                         hitResults[0].node.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.parent?.name == name){
 
-                        let json_data = try? decoder.decode(ObjectInfo_data.self, from:results[section_num].cells[cell_num].models[current_model_num].obj[i].info_data)
+                        let json_data = try? decoder.decode(ObjectInfo_data.self, from: models.obj[i].info_data)
                         let posi = json_data!.Position
                         //let scale = json_data?.Scale
                         let euler = json_data!.EulerAngles
@@ -480,7 +483,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         if deleteObjectName != "all_arrow" {
             let realm = try! Realm()
             try! realm.write {
-                results[section_num].cells[cell_num].models[current_model_num].obj.remove(at: index!)
+                models.obj.remove(at: index!)
             }
         }
         objectName_array.remove(at: index!)
@@ -514,7 +517,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                 let json_data = makeNodeData(node: node)
                 let realm = try! Realm()
                 try! realm.write {
-                    results[section_num].cells[cell_num].models[current_model_num].obj[num].info_data = json_data
+                    models.obj[num].info_data = json_data
                 }
                     
                 //移動，拡大，縮小，回転
@@ -528,15 +531,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBAction func tap_texture_riset(_ sender: UIButton) {
         let realm = try! Realm()
         try! realm.write {
-            results[section_num].cells[cell_num].models[current_model_num].texture_bool = 0
-            results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.removeAll()
+            models.texture_bool = 0
+            models.mesh_anchor.removeAll()
         }
         
         for anchor in anchors {
             guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
             else{ return }
             try! realm.write {
-                results[section_num].cells[cell_num].models[current_model_num].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                models.mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
             }
         }
         
@@ -568,11 +571,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     //Metalを用いたテクスチャ割り当て
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
-        
         SVProgressHUD.show()
-        SVProgressHUD.show(withStatus: "calculating･･･")
+        SVProgressHUD.show(withStatus: "Calculating")
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
-            let models = results[section_num].cells[cell_num].models[current_model_num]
             let calculateParameta = calculateParameta(device: self.sceneView.device!,
                                                       W: Int(sceneView.bounds.width),
                                                       H: Int(sceneView.bounds.height),
@@ -586,16 +587,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                 SVProgressHUD.dismiss()
             }
         })
-                                      
     }
     
     //CPUでのテクスチャ割り当て
     @IBAction func tap_makeTexture3(_ sender: UIButton) {
-        
         SVProgressHUD.show()
-        SVProgressHUD.show(withStatus: "calculating･･･")
+        SVProgressHUD.show(withStatus: "Calculating")
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
-            let models = results[section_num].cells[cell_num].models[current_model_num]
             let calculateParameta = calculateParameta(device: self.sceneView.device!,
                                                       W: Int(sceneView.bounds.width),
                                                       H: Int(sceneView.bounds.height),
@@ -609,7 +607,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                 SVProgressHUD.dismiss()
             }
         })
-        
     }
     
     //MARK: - コラボレーション用

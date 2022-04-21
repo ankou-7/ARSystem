@@ -10,9 +10,6 @@ import RealmSwift
 
 class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    //どのボタンから画面遷移したかを表すID
-    var seni_id = Int()
-    
     @IBOutlet var tableview: UITableView!
     let results = try! Realm().objects(Navi_SectionTitle.self)
     
@@ -58,22 +55,19 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableview: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableview.dequeueReusableCell(withIdentifier: "EditData_choice_cell", for: indexPath)
         cell.textLabel?.text = results[indexPath.section].cells[indexPath.row].cellName
+        cell.detailTextLabel?.text = results[indexPath.section].cells[indexPath.row].models[0].dayString
         return cell
     }
     //cellを選択直後に呼び出し
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print(indexPath)
-        //ナビゲーション作成ボタンから遷移してナビゲーション編集ボタンから遷移した場合
-        if seni_id == 2 {
-            let storyboard = UIStoryboard(name: "EditData", bundle: nil)
-            //let vc = storyboard.instantiateViewController(withIdentifier: "NavigationEditModelController") as! NavigationEditModelController
-            let vc = storyboard.instantiateViewController(withIdentifier: "EditDataController") as! EditDataController
-            vc.section_num = indexPath.section
-            vc.cell_num = indexPath.row
-            //vc.view.backgroundColor = UIColor.white
-            vc.modalPresentationStyle = .fullScreen
-            self.present(vc, animated: true, completion: nil)
-        }
+        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
+        //let vc = storyboard.instantiateViewController(withIdentifier: "NavigationEditModelController") as! NavigationEditModelController
+        let vc = storyboard.instantiateViewController(withIdentifier: "EditDataController") as! EditDataController
+        ViewManagement.sectionID = indexPath.section
+        ViewManagement.cellID = indexPath.row
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
     }
     
     //セルの編集許可

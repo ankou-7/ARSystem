@@ -11,22 +11,26 @@ class NavigationChoiceController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
     
     @IBAction func to_MakeNavigationController(_ sender: Any) {
         let storyboard = UIStoryboard(name: "MakeNavigation", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "MakeNavigationController") as! MakeNavigationController
         vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true, completion: nil)
+        
+        let transition = CATransition()
+        transition.duration = 0.25
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromRight
+        view.window!.layer.add(transition, forKey: kCATransition)
+        
+        self.present(vc, animated: false, completion: nil)
         //self.navigationController?.pushViewController(vc, animated: true)//遷移する
     }
     
     @IBAction func to_NavigationDataCell1(_ sender: Any) {
         let storyboard = UIStoryboard(name: "EditData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "EditDataChoiceController") as! EditDataChoiceController
-        vc.seni_id = 2
 //        vc.view.backgroundColor = UIColor.white
 //        vc.modalPresentationStyle = .fullScreen
 //        self.present(vc, animated: true, completion: nil)
@@ -45,7 +49,6 @@ class NavigationChoiceController: UIViewController {
     @IBAction func to_NavigationDataCell1_eturan(_ sender: Any) {
         let storyboard = UIStoryboard(name: "CheckAllData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataChoiceController") as! CheckDataChoiceController
-        vc.seni_id = 4
         vc.view.backgroundColor = UIColor.white
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)

@@ -107,20 +107,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        //        //AR使用のための設定
+        //AR使用のための設定
         //configuration.isLightEstimationEnabled = false
         //configuration = ARWorldTrackingConfiguration()
         configuration.environmentTexturing = .none
         //        configuration.sceneReconstruction = .meshWithClassification
         //        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
         sceneView.session.run(configuration)
-        
-        
-//        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-//        self.navigationController?.navigationBar.shadowImage = UIImage()
-//        self.navigationController?.navigationBar.barTintColor = .clear
-//        self.navigationController?.navigationBar.backgroundColor = .clear
-        //self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -686,7 +679,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     @IBAction func back(_ sender: Any) {
         timer.invalidate()
-        self.dismiss(animated: true, completion: nil)
+        
+        let transition = CATransition()
+        transition.duration = 0.25
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromLeft
+        view.window!.layer.add(transition, forKey: kCATransition)
+        
+        self.dismiss(animated: false, completion: nil)
     }
     
 }

@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6AO-BN-D1d">
-                                <rect key="frame" x="328" y="716" width="178" height="42"/>
+                                <rect key="frame" x="328" y="800" width="178" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="特徴マッチング"/>
                                 <connections>
@@ -26,23 +26,15 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PN0-NZ-TUh">
-                                <rect key="frame" x="391.5" y="828" width="51" height="42"/>
+                                <rect key="frame" x="391.5" y="912" width="51" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="作成"/>
                                 <connections>
                                     <action selector="to_NavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="8In-iW-2cj"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qxz-67-VmV">
-                                <rect key="frame" x="391.5" y="940" width="51" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="開始"/>
-                                <connections>
-                                    <action selector="to_UseNavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Wx3-Gl-zRA"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
-                                <rect key="frame" x="353.5" y="1052" width="127" height="42"/>
+                                <rect key="frame" x="353.5" y="1024" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="マップ拡張"/>
                                 <connections>
@@ -50,7 +42,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v2n-qN-cKG">
-                                <rect key="frame" x="315.5" y="604" width="203" height="42"/>
+                                <rect key="frame" x="315.5" y="688" width="203" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="オブジェクト検出"/>
@@ -59,7 +51,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tX3-2J-JNK">
-                                <rect key="frame" x="353.5" y="492" width="127" height="42"/>
+                                <rect key="frame" x="353.5" y="576" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="マップ作成"/>
@@ -71,16 +63,14 @@
                         <viewLayoutGuide key="safeArea" id="c9j-Hc-jbr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="tnG-qg-BNN" firstAttribute="top" secondItem="PN0-NZ-TUh" secondAttribute="bottom" constant="70" id="40w-8s-DSy"/>
                             <constraint firstItem="tnG-qg-BNN" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="5J4-Az-a35"/>
                             <constraint firstItem="v2n-qN-cKG" firstAttribute="top" secondItem="tX3-2J-JNK" secondAttribute="bottom" constant="70" id="7Oq-tR-huz"/>
                             <constraint firstItem="v2n-qN-cKG" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="Byr-9Q-MN9"/>
-                            <constraint firstItem="c9j-Hc-jbr" firstAttribute="bottom" secondItem="tnG-qg-BNN" secondAttribute="bottom" constant="80" id="Er7-Z9-FRG"/>
                             <constraint firstItem="PN0-NZ-TUh" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="G04-Kf-LJv"/>
-                            <constraint firstItem="tnG-qg-BNN" firstAttribute="top" secondItem="Qxz-67-VmV" secondAttribute="bottom" constant="70" id="LmV-0R-Thu"/>
-                            <constraint firstItem="Qxz-67-VmV" firstAttribute="top" secondItem="PN0-NZ-TUh" secondAttribute="bottom" constant="70" id="d0J-tD-rJW"/>
                             <constraint firstItem="6AO-BN-D1d" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="d14-mJ-UeL"/>
+                            <constraint firstItem="tX3-2J-JNK" firstAttribute="centerY" secondItem="BYR-2w-BRG" secondAttribute="centerY" id="jOd-ti-GCb"/>
                             <constraint firstItem="6AO-BN-D1d" firstAttribute="top" secondItem="v2n-qN-cKG" secondAttribute="bottom" constant="70" id="kgx-fi-I1T"/>
-                            <constraint firstItem="Qxz-67-VmV" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="o3V-Kd-LhO"/>
                             <constraint firstItem="tX3-2J-JNK" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="qkO-gi-hdQ"/>
                             <constraint firstItem="PN0-NZ-TUh" firstAttribute="top" secondItem="6AO-BN-D1d" secondAttribute="bottom" constant="70" id="sfq-uh-Lcc"/>
                         </constraints>

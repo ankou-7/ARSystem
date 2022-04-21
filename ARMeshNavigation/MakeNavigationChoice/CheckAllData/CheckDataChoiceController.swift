@@ -10,9 +10,6 @@ import RealmSwift
 
 class CheckDataChoiceController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    //どのボタンから画面遷移したかを表すID
-    var seni_id = Int()
-    
     @IBOutlet var tableview: UITableView!
     
     override func viewDidLoad() {
@@ -52,16 +49,13 @@ class CheckDataChoiceController: UIViewController, UITableViewDelegate, UITableV
     }
     //cellを選択直後に呼び出し
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //ナビゲーションデータ閲覧ボタンから遷移した場合
-        if seni_id == 4 {
-            let storyboard = UIStoryboard(name: "CheckAllData", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceDataAllCheckController") as! ChoiceDataAllCheckController
-            vc.section_num = indexPath.section
-            vc.cell_num = indexPath.row
-            vc.view.backgroundColor = UIColor.white
-            vc.modalPresentationStyle = .fullScreen
-            self.present(vc, animated: true, completion: nil)
-        }
+        let storyboard = UIStoryboard(name: "CheckAllData", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceDataAllCheckController") as! ChoiceDataAllCheckController
+        vc.section_num = indexPath.section
+        vc.cell_num = indexPath.row
+        vc.view.backgroundColor = UIColor.white
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
     }
     
     @IBAction func back(_ sender: Any) {
