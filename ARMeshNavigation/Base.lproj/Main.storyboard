@@ -17,62 +17,108 @@
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6AO-BN-D1d">
-                                <rect key="frame" x="328" y="800" width="178" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="特徴マッチング"/>
-                                <connections>
-                                    <action selector="to_SceneViewController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="4P3-Q1-118"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PN0-NZ-TUh">
-                                <rect key="frame" x="391.5" y="912" width="51" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="作成"/>
-                                <connections>
-                                    <action selector="to_NavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="8In-iW-2cj"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
-                                <rect key="frame" x="353.5" y="1024" width="127" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="マップ拡張"/>
-                                <connections>
-                                    <action selector="to_MapExpansionChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="d8i-qF-7Nm"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v2n-qN-cKG">
-                                <rect key="frame" x="315.5" y="688" width="203" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="オブジェクト検出"/>
-                                <connections>
-                                    <action selector="to_ChoiceModelDataController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Aot-yd-ZEH"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tX3-2J-JNK">
-                                <rect key="frame" x="353.5" y="576" width="127" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="マップ作成"/>
-                                <connections>
-                                    <action selector="to_MakeMapViewController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="r7u-dj-Kst"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="85" translatesAutoresizingMaskIntoConstraints="NO" id="8Cg-x5-7h5">
+                                <rect key="frame" x="74.5" y="124" width="685" height="300"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v2n-qN-cKG">
+                                        <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="300" id="BZ4-SB-a9s"/>
+                                            <constraint firstAttribute="height" constant="300" id="kLg-T8-S0a"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="オブジェクト検出"/>
+                                        <buttonConfiguration key="configuration" style="tinted" title="オブジェクト検出">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="to_ChoiceModelDataController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Aot-yd-ZEH"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tX3-2J-JNK">
+                                        <rect key="frame" x="385" y="0.0" width="300" height="300"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="300" id="ekK-Ky-hkX"/>
+                                            <constraint firstAttribute="width" constant="300" id="gCT-jN-EK3"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="マップ作成"/>
+                                        <buttonConfiguration key="configuration" style="tinted" title="マップ作成">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="to_MakeMapViewController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="r7u-dj-Kst"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87T-n3-fz7">
+                                <rect key="frame" x="74.5" y="824" width="300" height="300"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
+                                        <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="300" id="Hdd-9t-7ux"/>
+                                            <constraint firstAttribute="height" constant="300" id="gQ2-Q0-MFZ"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <state key="normal" title="マップ拡張"/>
+                                        <buttonConfiguration key="configuration" style="tinted" title="マップ拡張">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="to_MapExpansionChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="d8i-qF-7Nm"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="85" translatesAutoresizingMaskIntoConstraints="NO" id="Fd0-tJ-dhj">
+                                <rect key="frame" x="74.5" y="474" width="685" height="300"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6AO-BN-D1d">
+                                        <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="300" id="HhF-So-TLV"/>
+                                            <constraint firstAttribute="width" constant="300" id="KOz-6K-eUp"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <state key="normal" title="特徴マッチング"/>
+                                        <buttonConfiguration key="configuration" style="tinted" title="特徴マッチング">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="to_SceneViewController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="4P3-Q1-118"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PN0-NZ-TUh">
+                                        <rect key="frame" x="385" y="0.0" width="300" height="300"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="300" id="D8e-q6-AFT"/>
+                                            <constraint firstAttribute="height" constant="300" id="hve-2e-I8d"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <state key="normal" title="作成"/>
+                                        <buttonConfiguration key="configuration" style="tinted" title="作成">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="to_NavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="8In-iW-2cj"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="c9j-Hc-jbr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="tnG-qg-BNN" firstAttribute="top" secondItem="PN0-NZ-TUh" secondAttribute="bottom" constant="70" id="40w-8s-DSy"/>
-                            <constraint firstItem="tnG-qg-BNN" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="5J4-Az-a35"/>
-                            <constraint firstItem="v2n-qN-cKG" firstAttribute="top" secondItem="tX3-2J-JNK" secondAttribute="bottom" constant="70" id="7Oq-tR-huz"/>
-                            <constraint firstItem="v2n-qN-cKG" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="Byr-9Q-MN9"/>
-                            <constraint firstItem="PN0-NZ-TUh" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="G04-Kf-LJv"/>
-                            <constraint firstItem="6AO-BN-D1d" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="d14-mJ-UeL"/>
-                            <constraint firstItem="tX3-2J-JNK" firstAttribute="centerY" secondItem="BYR-2w-BRG" secondAttribute="centerY" id="jOd-ti-GCb"/>
-                            <constraint firstItem="6AO-BN-D1d" firstAttribute="top" secondItem="v2n-qN-cKG" secondAttribute="bottom" constant="70" id="kgx-fi-I1T"/>
-                            <constraint firstItem="tX3-2J-JNK" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="qkO-gi-hdQ"/>
-                            <constraint firstItem="PN0-NZ-TUh" firstAttribute="top" secondItem="6AO-BN-D1d" secondAttribute="bottom" constant="70" id="sfq-uh-Lcc"/>
+                            <constraint firstItem="87T-n3-fz7" firstAttribute="top" secondItem="Fd0-tJ-dhj" secondAttribute="bottom" constant="50" id="019-Yq-CoM"/>
+                            <constraint firstItem="8Cg-x5-7h5" firstAttribute="top" secondItem="c9j-Hc-jbr" secondAttribute="top" constant="50" id="8lS-Tj-god"/>
+                            <constraint firstItem="87T-n3-fz7" firstAttribute="leading" secondItem="c9j-Hc-jbr" secondAttribute="leading" constant="74.5" id="Bq9-QD-GLr"/>
+                            <constraint firstItem="Fd0-tJ-dhj" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="Ew6-u0-jog"/>
+                            <constraint firstItem="Fd0-tJ-dhj" firstAttribute="top" secondItem="8Cg-x5-7h5" secondAttribute="bottom" constant="50" id="Rch-IU-bIS"/>
+                            <constraint firstItem="8Cg-x5-7h5" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="XVW-1P-qII"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="WNe-Z9-ymn"/>
