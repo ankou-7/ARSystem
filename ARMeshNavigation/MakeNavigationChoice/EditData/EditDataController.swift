@@ -152,7 +152,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             uiimage_array.append(uiimage!)
         }
         //16384以下にする必要あり
-        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, tate: tate, num: num).makeTexture()
+        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
         let uiImage = new_uiimage
         let imageData = uiImage!.jpegData(compressionQuality: 0.5)
         let realm = try! Realm()

@@ -13,19 +13,19 @@ import RealmSwift
 import AVFoundation
 import Photos
 import AssetsLibrary
+import SVProgressHUD
 
 class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-//    //画面遷移した際のsectionとcellの番号を格納
-//    var section_num = Int()
-//    var cell_num = Int()
+    //    //画面遷移した際のsectionとcellの番号を格納
+    //    var section_num = Int()
+    //    var cell_num = Int()
     
     var restart_flag = false
     let coachingOverlay = ARCoachingOverlayView()
     var restartCalucuMatrix: [float4x4] = []
     
     @IBOutlet weak var sceneView: ARSCNView!
-    //var sceneView: ARSCNView!
     let scene = SCNScene()
     var configuration = ARWorldTrackingConfiguration()
     
@@ -52,7 +52,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var isRecording = false
     var recording_count = -1 //何回スキャンを行なったか
     
-    var current_imageData: Data!
+    var current_imageData: Data?
     var current_worlddata: Data!
     var push_buttonCount = 0
     
@@ -84,9 +84,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.delegate = self //delegateのセット
         sceneView.session.delegate = self
         sceneView.scene = scene
-        
         sceneView.debugOptions = .showWorldOrigin
-        
         
         //パラメータを一時的に保存する場所を初期化
         let realm = try! Realm()
@@ -154,7 +152,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         present(contentVC, animated: true, completion: nil)
     }
-              
+    
     @IBAction func make_modelButton_Tapped(_ sender: UIButton) {
         //スキャン終了時
         if isRecording {
@@ -276,39 +274,22 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             
             finish_mapping()
         })
-            
+        
         self.present(alertController, animated: true, completion: nil)
     }
     
     @IBAction func to_CheckDataViewController(_ sender: UIButton) {
-        guard let anchors = sceneView.session.currentFrame?.anchors else { return }
-        let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
-        for (_, anchor) in meshAnchors.enumerated() {
-            guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
-            else{ return }
-            let realm = try! Realm()
-            let results = realm.objects(Data_parameta.self)
-            try! realm.write {
-                results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
-            }
-        }
-        
+
         //self.mesh_flag = false
         self.mapping_flag = false
+        self.parameta_flag = false
         sceneView.session.pause()
-        
+
         self.to_CheckDataViewController()
     }
     
-    @IBAction func restart(_ sender: UIButton) {
-        sceneView.session.run(configuration, options: [])
-        //self.mesh_flag = true
-        self.mapping_flag = true
-        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
-    }
-    
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-
+        
     }
     
     var vertice_data: [PointCloudVertex] = []
@@ -330,17 +311,17 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
     
-//    var snap_flag = false
-//    var snap_count = 0
-//    @objc func update2() {
-//        if snap_flag == true {
-//            snapshot()
-//            snap_count += 1
-//        }
-//        if snap_count == 15 {
-//            print("finish")
-//        }
-//    }
+    //    var snap_flag = false
+    //    var snap_count = 0
+    //    @objc func update2() {
+    //        if snap_flag == true {
+    //            snapshot()
+    //            snap_count += 1
+    //        }
+    //        if snap_count == 15 {
+    //            print("finish")
+    //        }
+    //    }
     
     @IBAction func mappingSwitch(_ sender: UISwitch) {
         if sender.isOn == false {
@@ -354,10 +335,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     
     @objc func update() {
-        print("update")
-        
         
         if parameta_flag == true {
+            print("update")
             guard let frame = self.sceneView.session.currentFrame else {
                 fatalError("Couldn't get the current ARFrame")
             }
@@ -479,8 +459,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //return true
         let cameraTransform = frame.camera.transform
         let shouldAccum = dot(cameraTransform.columns.2, lastCameraTransform.columns.2) <= cameraRotationThreshold
-          || distance_squared(cameraTransform.columns.3, lastCameraTransform.columns.3) >= cameraTranslationThreshold
-
+        || distance_squared(cameraTransform.columns.3, lastCameraTransform.columns.3) >= cameraTranslationThreshold
+        
         return shouldAccum
     }
     
@@ -492,7 +472,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         try! realm.write {
             results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
                                                                       "pic_data": jpegData]))
-
+            
             results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
                                                                         "json_data": jsonData]))
             
@@ -504,11 +484,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     func Make_mesh_obj() {
-        //現在のフレームを獲得
-        //        guard let frame = sceneView.session.currentFrame else {
-        //            fatalError("Couldn't get the current ARFrame")
-        //        }
-        
         
         let realm = try! Realm()
         let results = realm.objects(Navityu.self)
@@ -519,70 +494,55 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let dayString = format.string(from: date)
         print( "現在時刻： ", format.string(from: date) )
         
-        let objName = "NaviModel\(results.count)" //"Scan\(section_num)\(cell_num)-\(results[section_num].cells[cell_num].models.count)"
+        let objName = "NaviModel\(results.count)"
         
-        // DocumentディレクトリのfileURLを取得
-        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
-            // ディレクトリのパスにファイル名をつなげてファイルのフルパスを作る
-            let targetTextFilePath = documentDirectoryFileURL.appendingPathComponent(objName+".scn")
-            
-            //point cloudをtxtファイルで保存
-//            if menu_array[2] == false {
-//                self.pointCloudRenderer.savePointsToFile(failname: objName)
-//            }
-            //sceneをscnファイルで保存
-            if menu_array[1] == false {
-                //self.sceneView.scene.write(to: targetTextFilePath, options: nil, delegate: nil, progressHandler: nil)
-            
-                let realm = try! Realm()
-                let results = realm.objects(Data_parameta.self)
-                try! Realm().write {
-                    results[self.recording_count].mesh_anchor.removeAll()
-                }
-                
-                guard let anchors = sceneView.session.currentFrame?.anchors else { return }
-                let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
-                for (_, anchor) in meshAnchors.enumerated() {
-
-                    guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
-                    else{ return }
-                    let results = realm.objects(Data_parameta.self)
-                    try! realm.write {
-                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
-                    }
-                }
+        if menu_array[1] == false {
+            let realm = try! Realm()
+            let results = realm.objects(Data_parameta.self)
+            try! Realm().write {
+                results[self.recording_count].mesh_anchor.removeAll()
             }
             
-            sceneView.session.getCurrentWorldMap { [self]worldMap, error in
-                if let map = worldMap {
-                    if let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
-                        //UserDefaults.standard.set(data, forKey: "worlddata") //上書きされるから注意
-                        try! realm.write {
-                            realm.add(Navityu(value: ["modelname": objName,
-                                                      "dayString": dayString,
-                                                      "worlddata": data, //current_worlddata!,
-                                                      "worldimage": self.current_imageData,
-                                                      "exit_mesh": self.exit_mesh_num,
-                                                      "exit_point": self.exit_point_num,
-                                                      "exit_parameta": self.exit_parameta]))
-                        }
-                        
-                        self.exit_parameta = 0
-                        self.exit_mesh_num = 0
-                        self.exit_point_num = 0
-                        
-                    } else {
-                        //fatalError("can't encode map")
-                        let alertController = UIAlertController(title: "Failed to save the model1", message: "Try again", preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                        self.present(alertController, animated: true, completion: nil)
+            guard let anchors = sceneView.session.currentFrame?.anchors else { return }
+            let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
+            for (_, anchor) in meshAnchors.enumerated() {
+                
+                guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
+                else{ return }
+                let results = realm.objects(Data_parameta.self)
+                try! realm.write {
+                    results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                }
+            }
+        }
+        
+        sceneView.session.getCurrentWorldMap { [self]worldMap, error in
+            if let map = worldMap {
+                if let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
+                    try! realm.write {
+                        realm.add(Navityu(value: ["modelname": objName,
+                                                  "dayString": dayString,
+                                                  "worlddata": data,
+                                                  "worldimage": self.current_imageData!,
+                                                  "exit_mesh": self.exit_mesh_num,
+                                                  "exit_point": self.exit_point_num,
+                                                  "exit_parameta": self.exit_parameta]))
                     }
+                    
+                    self.exit_parameta = 0
+                    self.exit_mesh_num = 0
+                    self.exit_point_num = 0
+                    
                 } else {
-                    print("Error: \(error!.localizedDescription)")
-                    let alertController = UIAlertController(title: "Failed to save the model2", message: "Try again", preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil)) //{ [self] _ in //okが押されたら //})
+                    let alertController = UIAlertController(title: "Failed to save the model1", message: "Try again", preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alertController, animated: true, completion: nil)
                 }
+            } else {
+                print("Error: \(error!.localizedDescription)")
+                let alertController = UIAlertController(title: "Failed to save the model2", message: "Try again", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alertController, animated: true, completion: nil)
             }
             
             //配置したmeshオブジェクトを削除
@@ -601,12 +561,12 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100() //深度情報
             self.depth_pointCloudRenderer.mapping100() //マッピング支援
-
+            
             if pointCloud_flag == true {
                 //pointCloudRenderer.draw() //点群
             }
         }
-
+        
     }
     
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
@@ -634,7 +594,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             for anchor in anchors {
                 if let node = knownAnchors[anchor.identifier] {
                     if let meshAnchor = anchor as? ARMeshAnchor {
-
+                        
                         meshAnchors.append(meshAnchor) //updateされたメッシュ情報を格納
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
@@ -660,12 +620,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         timer.invalidate()
         let storyboard = UIStoryboard(name: "CheckData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataViewController") as! CheckDataViewController
-        vc.calcuMatrix = depth_pointCloudRenderer.imgPlaceMatrix
-        let depth_result = try! Realm().objects(Data_parameta.self)
-        for i in 0..<depth_result[0].depth.count {
-            let depth_array = (try? JSONDecoder().decode([depthPosition].self, from: depth_result[0].depth[i].depth_data!))!
-            vc.depth.append(contentsOf: depth_array)
-        }
+        guard let anchors = sceneView.session.currentFrame?.anchors else { return }
+        vc.anchors = anchors.compactMap { $0 as? ARMeshAnchor}
+        let realm = try! Realm()
+        let models = realm.objects(Data_parameta.self)[0]
+        let yoko: Float = 17.0
+        let tate: Float = ceil(Float(models.pic.count)/yoko)
+        vc.calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                 W: Int(sceneView.bounds.width),
+                                                 H: Int(sceneView.bounds.height),
+                                                 tate: Int(tate), yoko: Int(yoko),
+                                                 funcString: "calcu50")
+        vc.presentationController?.delegate = self
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -689,4 +655,16 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.dismiss(animated: false, completion: nil)
     }
     
+}
+
+//dismissをを検知
+extension MakeNavigationController: UIAdaptivePresentationControllerDelegate {
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+      print("dismiss")
+      sceneView.session.run(configuration, options: [])
+      
+      self.mapping_flag = true
+      self.parameta_flag = true
+      timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+  }
 }

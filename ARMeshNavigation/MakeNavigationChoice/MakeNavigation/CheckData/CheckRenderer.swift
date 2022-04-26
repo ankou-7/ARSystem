@@ -12,59 +12,42 @@ import SwiftUI
 import RealmSwift
 
 class CheckRenderer {
-    private let device: MTLDevice
+    private let device: MTLDevice!
     private let library: MTLLibrary
     private let commandQueue: MTLCommandQueue
     private var pipeline: MTLComputePipelineState!
     private var viewportSize = CGSize()
     
     private let anchors: [ARMeshAnchor]
-    private let tex_image: UIImage
-    private let tate: Int
-    private let yoko: Int
-    private let screenWidth: Int
-    private let screenHeight: Int
     var face_count: Int!
     
     private let calcuUniforms: [float4x4]
     private let depth: [depthPosition]
+    private let calculateParameta: calculateParameta
+    private let texImage: UIImage
     
-    init(anchor: [ARMeshAnchor], metalDevice device: MTLDevice, calcuUniforms: [float4x4], depth: [depthPosition], tate: Int, yoko: Int, screenWidth: Int, screenHeight: Int, texString: String, tex_image: UIImage) {
-        
-        self.device = device
-        library = device.makeDefaultLibrary()!
-        commandQueue = device.makeCommandQueue()!
-        
-        let function = library.makeFunction(name: texString)!
-        pipeline = try! device.makeComputePipelineState(function: function)
+    private var anchorUniformsBuffer: MetalBuffer<anchorUniforms>
+    
+    init(anchor: [ARMeshAnchor], calcuUniforms: [float4x4], depth: [depthPosition], calculateParameta: calculateParameta, texImage: UIImage) {
         
         self.anchors = anchor
-        self.tex_image = tex_image
-        anchorUniformsBuffer = .init(device: device, count: 1, index: 9)
-        
         self.calcuUniforms = calcuUniforms
         self.depth = depth
-        self.tate = tate
-        self.yoko = yoko
-        self.screenWidth = screenWidth
-        self.screenHeight = screenHeight
+        self.calculateParameta = calculateParameta
+        self.texImage = texImage
+        
+        device = calculateParameta.device
+        library = device.makeDefaultLibrary()!
+        commandQueue = device.makeCommandQueue()!
+        let function = library.makeFunction(name: calculateParameta.funcString)!
+        pipeline = try! device.makeComputePipelineState(function: function)
+        
+        anchorUniformsBuffer = .init(device: device, count: 1, index: 9)
     }
     
     func drawRectResized(size: CGSize) {
         viewportSize = size
     }
-    
-    var texcoords2: [SIMD2<Float>] = []
-    var vertex_array: [SIMD3<Float>] = []
-    var normal_array: [SIMD3<Float>] = []
-    var face_array: [Int32] = []
-    
-    var new_face_array: [Int32] = []
-    var new_vertex_array: [SIMD3<Float>] = []
-    var new_normal_array: [SIMD3<Float>] = []
-    var new_texcoords2: [SIMD2<Float>] = []
-    
-    private var anchorUniformsBuffer: MetalBuffer<anchorUniforms>
     
     func calcu5(num: Int) -> SCNNode {
         let commandBuffer = commandQueue.makeCommandBuffer()!
@@ -72,8 +55,6 @@ class CheckRenderer {
         encoder.setComputePipelineState(pipeline)
         
         face_count = anchors[num].geometry.faces.count
-        print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
-        print("id数(面の数)：\(anchors[num].geometry.faces.count)")
         
         //main処理
         encoder.setBuffer(anchors[num].geometry.vertices.buffer, offset: 0, index: 0)
@@ -102,13 +83,13 @@ class CheckRenderer {
         //計算に必要なその他
         anchorUniformsBuffer[0].transform = anchors[num].transform
         anchorUniformsBuffer[0].calcuCount = Int32(calcuUniforms.count)
-        anchorUniformsBuffer[0].tate = Int32(tate)
-        anchorUniformsBuffer[0].yoko = Int32(yoko)
+        anchorUniformsBuffer[0].tate = Int32(calculateParameta.tate)
+        anchorUniformsBuffer[0].yoko = Int32(calculateParameta.yoko)
         anchorUniformsBuffer[0].maxCount = Int32(anchors[num].geometry.faces.count)
         anchorUniformsBuffer[0].arrayCount = Int32(anchors[num].geometry.faces.count * 3)
         anchorUniformsBuffer[0].depthCount = Int32(128*96)
-        anchorUniformsBuffer[0].screenWidth = Int32(screenWidth)
-        anchorUniformsBuffer[0].screenHeight = Int32(screenHeight)
+        anchorUniformsBuffer[0].screenWidth = Int32(calculateParameta.screenWidth)
+        anchorUniformsBuffer[0].screenHeight = Int32(calculateParameta.screenHeight)
         encoder.setBuffer(anchorUniformsBuffer)
         
         //深度情報
@@ -152,15 +133,6 @@ class CheckRenderer {
             Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
         }
         
-        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<Int>.stride, deallocator: .none)
-        var trys = [Int](repeating: 0, count: 1)
-        trys = tryData.withUnsafeBytes {
-            Array(UnsafeBufferPointer<Int>(start: $0, count: tryData.count/MemoryLayout<Int>.size))
-        }
-        print("描画頂点数：\(trys[0])")
-        
-        //save_model(num: num, vertexs: vertexs, normals: normals, faces: faces, texcoords: texcoords, count: face_count * 3)
-    
         return build_model(vertexs: vertexs, normals: normals, faces: faces, texcoords: texcoords, count: face_count * 3)
     }
     
@@ -196,32 +168,11 @@ class CheckRenderer {
         let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
         
         let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
-        nodeGeometry.firstMaterial?.diffuse.contents = tex_image
+        nodeGeometry.firstMaterial?.diffuse.contents = texImage
         
         let node = SCNNode(geometry: nodeGeometry)
-        //knownAnchors[anchors[i].identifier] = node
-        node.name = "child_tex_node"
-        //tex_node.addChildNode(node)
         
         return node
-    }
-    
-    func save_model(num: Int, vertexs: [SIMD3<Float>], normals: [SIMD3<Float>], faces: [Int32], texcoords: [SIMD2<Float>], count: Int) {
-        
-        let texcoordsData = try! JSONEncoder().encode(texcoords)
-        let facesData = try! JSONEncoder().encode(faces)
-        let vertexData = Data(bytes: vertexs, count: MemoryLayout<SIMD3<Float>>.size * vertexs.count)
-        let normalsData = Data(bytes: normals, count: MemoryLayout<SIMD3<Float>>.size * normals.count)
-        
-        let realm = try! Realm()
-        let results = try! Realm().objects(Data_parameta.self)
-        try! realm.write {
-            results[0].mesh_anchor[num].texcoords = texcoordsData
-            results[0].mesh_anchor[num].vertices = vertexData
-            results[0].mesh_anchor[num].normals = normalsData
-            results[0].mesh_anchor[num].faces = facesData
-            results[0].mesh_anchor[num].vertice_count =  count
-        }
     }
 }
 

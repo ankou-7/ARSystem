@@ -32,6 +32,11 @@
                                         <buttonConfiguration key="configuration" style="tinted" title="オブジェクト検出">
                                             <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
                                         </buttonConfiguration>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="150"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="to_ChoiceModelDataController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="Aot-yd-ZEH"/>
                                         </connections>

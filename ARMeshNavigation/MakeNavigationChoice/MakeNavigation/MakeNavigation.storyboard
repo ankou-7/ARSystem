@@ -130,25 +130,6 @@
                                     <action selector="to_CheckDataViewController:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="w6G-To-rg2"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZYR-BS-s4D">
-                                <rect key="frame" x="140" y="1084" width="90" height="40"/>
-                                <color key="backgroundColor" systemColor="tintColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="90" id="Sz6-ut-mWa"/>
-                                    <constraint firstAttribute="height" constant="40" id="d2w-fB-Dmt"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="再開"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="restart:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="h2J-4w-72c"/>
-                                </connections>
-                            </button>
                             <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WKI-HK-xt4">
                                 <rect key="frame" x="0.0" y="18" width="834" height="50"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
@@ -173,7 +154,6 @@
                         <viewLayoutGuide key="safeArea" id="bcH-QO-ftj"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="bcH-QO-ftj" firstAttribute="bottom" secondItem="ZYR-BS-s4D" secondAttribute="bottom" constant="50" id="3Gm-2U-QOS"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="trailing" secondItem="HRM-v7-R3h" secondAttribute="trailing" constant="10" id="7Gh-Iq-Q6H"/>
                             <constraint firstItem="hZE-Ra-n7c" firstAttribute="centerX" secondItem="ql7-o7-4ku" secondAttribute="centerX" id="9FS-Sa-3xv"/>
                             <constraint firstItem="B50-O0-fH0" firstAttribute="bottom" secondItem="bcH-QO-ftj" secondAttribute="bottom" id="A1I-pJ-yqv"/>
@@ -188,7 +168,6 @@
                             <constraint firstItem="nqi-3n-07i" firstAttribute="top" secondItem="bcH-QO-ftj" secondAttribute="top" constant="25" id="WEO-IY-qOc"/>
                             <constraint firstItem="iYa-QV-zN3" firstAttribute="top" secondItem="HRM-v7-R3h" secondAttribute="bottom" constant="5" id="Wgh-cc-MJo"/>
                             <constraint firstItem="HRM-v7-R3h" firstAttribute="top" secondItem="ncI-bY-CXq" secondAttribute="bottom" constant="915" id="bY9-La-vZs"/>
-                            <constraint firstItem="ZYR-BS-s4D" firstAttribute="leading" secondItem="4Pq-BO-MC7" secondAttribute="trailing" constant="30" id="c07-d1-KHR"/>
                             <constraint firstItem="i6n-Fu-Eel" firstAttribute="top" secondItem="nqi-3n-07i" secondAttribute="bottom" constant="15" id="dOk-mq-n0j"/>
                             <constraint firstItem="ETY-ov-0zr" firstAttribute="top" secondItem="bcH-QO-ftj" secondAttribute="top" id="dsk-t6-jXx"/>
                             <constraint firstItem="B50-O0-fH0" firstAttribute="trailing" secondItem="bcH-QO-ftj" secondAttribute="trailing" id="eh4-Eg-lFU"/>
@@ -228,9 +207,6 @@
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

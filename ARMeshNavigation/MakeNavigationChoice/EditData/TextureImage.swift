@@ -12,15 +12,13 @@ class TextureImage {
     private var height: CGFloat
     private var imageArray: [UIImage]
     private var yoko: Float
-    private var tate: Float
     private var num: CGFloat
     
-    init(W: CGFloat, H: CGFloat, array: [UIImage], yoko: Float, tate: Float, num: CGFloat) {
+    init(W: CGFloat, H: CGFloat, array: [UIImage], yoko: Float, num: CGFloat) {
         self.width = W
         self.height = H
         self.imageArray = array
         self.yoko = yoko
-        self.tate = tate
         self.num = num
     }
     
