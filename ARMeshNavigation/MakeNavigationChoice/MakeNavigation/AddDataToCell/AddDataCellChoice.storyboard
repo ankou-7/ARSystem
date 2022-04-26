@@ -21,35 +21,28 @@
                                 <rect key="frame" x="0.0" y="99" width="834" height="1075"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Save_cell" id="bL5-vG-b9d">
-                                        <rect key="frame" x="0.0" y="44.5" width="834" height="43.5"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Save_cell" textLabel="RBb-ha-tCy" detailTextLabel="Pjb-CU-RL5" style="IBUITableViewCellStyleValue1" id="bL5-vG-b9d">
+                                        <rect key="frame" x="0.0" y="44.5" width="834" height="47.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="bL5-vG-b9d" id="gO3-FT-IBT">
-                                            <rect key="frame" x="0.0" y="0.0" width="834" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="834" height="47.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="cell_title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v02-eb-EmR">
-                                                    <rect key="frame" x="21" y="11.5" width="64" height="20.5"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="RBb-ha-tCy">
+                                                    <rect key="frame" x="16" y="12" width="38" height="24"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Saveday" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i27-Ab-8o6">
-                                                    <rect key="frame" x="628" y="11.5" width="160" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="160" id="z3J-Qc-DVy"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Pjb-CU-RL5">
+                                                    <rect key="frame" x="778.5" y="17" width="39.5" height="18"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <constraints>
-                                                <constraint firstAttribute="trailingMargin" secondItem="i27-Ab-8o6" secondAttribute="trailing" constant="30" id="6Sh-4N-cmN"/>
-                                                <constraint firstItem="v02-eb-EmR" firstAttribute="leading" secondItem="gO3-FT-IBT" secondAttribute="leadingMargin" constant="5" id="Dww-Yv-ZHE"/>
-                                                <constraint firstItem="v02-eb-EmR" firstAttribute="centerY" secondItem="gO3-FT-IBT" secondAttribute="centerY" id="Ush-VR-JWP"/>
-                                                <constraint firstItem="i27-Ab-8o6" firstAttribute="centerY" secondItem="gO3-FT-IBT" secondAttribute="centerY" id="XO0-8J-Q1i"/>
-                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>

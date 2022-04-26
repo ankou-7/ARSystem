@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="TTu-Tq-oeo">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="mbu-ZE-Kl8">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -18,9 +19,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9uf-O0-vE0">
-                                <rect key="frame" x="353.5" y="576" width="127" height="42"/>
+                                <rect key="frame" x="366" y="576" width="102" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="新しく作成"/>
+                                <state key="normal" title="新規作成"/>
                                 <connections>
                                     <action selector="to_MakeNavigationController:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="HWJ-jv-wJJ"/>
                                 </connections>
@@ -33,15 +34,6 @@
                                     <action selector="to_NavigationDataCell1:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="oZG-Sz-opm"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MxC-9t-naL">
-                                <rect key="frame" x="391.5" y="860" width="51" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="共有"/>
-                                <connections>
-                                    <action selector="to_EditColabViewController:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="9cp-YA-MSI"/>
-                                </connections>
-                            </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QnF-0k-LZU">
                                 <rect key="frame" x="353.5" y="1002" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
@@ -50,27 +42,75 @@
                                     <action selector="to_NavigationDataCell1_eturan:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="fsL-RI-jFw"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FyK-zE-6XN">
+                                <rect key="frame" x="315.5" y="860" width="203" height="42"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <menu key="menu" id="pzL-fb-CaA">
+                                    <children>
+                                        <command title="Item 1" id="QGR-bJ-WhE"/>
+                                        <command title="Item 2" id="geL-KN-Jkd"/>
+                                    </children>
+                                </menu>
+                                <state key="normal" title="コラボレーション"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eXi-2l-wof"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="7N4-9T-zgr" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="9Q5-Jr-cKG"/>
-                            <constraint firstItem="MxC-9t-naL" firstAttribute="top" secondItem="7N4-9T-zgr" secondAttribute="bottom" constant="100" id="A7l-34-Jr5"/>
                             <constraint firstItem="7N4-9T-zgr" firstAttribute="top" secondItem="9uf-O0-vE0" secondAttribute="bottom" constant="100" id="GMK-70-VDS"/>
-                            <constraint firstItem="QnF-0k-LZU" firstAttribute="top" secondItem="MxC-9t-naL" secondAttribute="bottom" constant="100" id="N0a-Tv-Dk7"/>
                             <constraint firstItem="9uf-O0-vE0" firstAttribute="centerY" secondItem="Q9m-2u-PHp" secondAttribute="centerY" id="OYI-3N-TQr"/>
                             <constraint firstItem="QnF-0k-LZU" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="Sae-9O-JCI"/>
-                            <constraint firstItem="MxC-9t-naL" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="oxs-NH-Wru"/>
+                            <constraint firstItem="QnF-0k-LZU" firstAttribute="top" secondItem="FyK-zE-6XN" secondAttribute="bottom" constant="100" id="ruU-lv-Neq"/>
                             <constraint firstItem="9uf-O0-vE0" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="sPp-b1-4Tw"/>
+                            <constraint firstItem="FyK-zE-6XN" firstAttribute="top" secondItem="7N4-9T-zgr" secondAttribute="bottom" constant="100" id="xKh-V0-9wn"/>
+                            <constraint firstItem="FyK-zE-6XN" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="xQe-wN-ZMe"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="fh9-Dx-k77">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="XiU-9P-ubd">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="fill" buttonType="system" lineBreakMode="middleTruncation" id="8DI-Tv-RhF">
+                                <rect key="frame" x="20" y="6" width="185" height="38"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="chevron.backward" catalog="system" title="拡張メニュー">
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="20"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="ExpandButtonTapped:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="n0d-1f-2kL"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="button" destination="FyK-zE-6XN" id="6zW-ft-rz9"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vfB-eV-SsK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-390.64748201438852" y="1603.5175879396984"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="fYE-gD-vW4">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mbu-ZE-Kl8" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="tpq-s2-Wo5">
+                        <rect key="frame" x="0.0" y="24" width="834" height="50"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="TTu-Tq-oeo" kind="relationship" relationship="rootViewController" id="2CH-So-Ict"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Oee-MH-Isx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1144.6043165467627" y="1603.5175879396984"/>
         </scene>
     </scenes>
     <resources>
+        <image name="chevron.backward" catalog="system" width="96" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

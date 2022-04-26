@@ -20,9 +20,6 @@ class CPUCalculateTexture {
     private var calcuMatrix: simd_float4x4!
     private var depth = [depthPosition]()
     
-    let decoder = JSONDecoder()
-    
-    //var anchors: [ARMeshAnchor] = []
     var texcoords2: [[SIMD2<Float>]] = []
     var tex_bool: [[Bool]] = []
     var vertex_array: [[SCNVector3]] = []
@@ -46,10 +43,6 @@ class CPUCalculateTexture {
     
     func setupArray() {
         for _ in 0..<models.mesh_anchor.count {
-            //let mesh_data = models.mesh_anchor[i].mesh
-//            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-//                anchors.append(meshAnchor)
-//            }
             texcoords2.append([])
             normal_array.append([])
             tex_bool.append([])
@@ -80,6 +73,8 @@ class CPUCalculateTexture {
     }
     
     func make_calcuParameta(num: Int) {
+        let decoder = JSONDecoder()
+        
         depth = (try? decoder.decode([depthPosition].self, from: models.depth[num].depth_data!))!
         let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[num].json_data!)
         cameraVector = SCNVector3(json_data!.cameraVector.x,
@@ -177,6 +172,7 @@ class CPUCalculateTexture {
     }
     
     func save_model() {
+        
         for (i, _) in anchors.enumerated() {
             let texcoords_data = try! JSONEncoder().encode(new_texcoords2[i])
             let vertices_data = Data(bytes: new_vertex_array[i], count: MemoryLayout<SIMD3<Float>>.size * new_vertex_array[i].count)

@@ -21,8 +21,6 @@ class GPUCalculateTexture {
     private var depth = [depthPosition]()
     private var calculateRenderer: CalculateRenderer!
     
-    let decoder = JSONDecoder()
-    
     init(sceneView: SCNView, anchors: [ARMeshAnchor], picCount: Int, models: Navi_Modelname, calculateParameta: calculateParameta) {
         self.sceneView = sceneView
         self.anchors = anchors
@@ -35,35 +33,28 @@ class GPUCalculateTexture {
     
     func makeGPUTexture(completionHandler: @escaping () -> ()) {
         var flag = 0
+        let start = Date()
+        print("calcu開始")
         
-        //DispatchQueue.global().sync {
-            let start = Date()
-            print("calcu開始")
-            
-            self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
-            self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
-            
-            //DispatchQueue.main.async { [self] in
-                //ActivityView.startAnimating()
-                for i in 0..<anchors.count {
-                    print("---------------------------------------------------------------------------------")
-                    print("\(flag)回目")
-                    flag += self.calculateRenderer.calcu5(num: i)
-                    
-                    if flag == anchors.count {
-                        print("---------------------------------------------------------------------------------")
-                        print("calcu終了")
-                        let elapsed = Date().timeIntervalSince(start)
-                        print("処理時間：\(elapsed)")
-                        completionHandler()
-                    }
-                }
-            //}
-        //}
+        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+        self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
+        
+        for i in 0..<anchors.count {
+            print("-----------------------------------------")
+            print("\(flag)回目")
+            flag += self.calculateRenderer.calcu5(num: i)
+        }
+        print("-----------------------------------------")
+        print("calcu終了")
+        let elapsed = Date().timeIntervalSince(start)
+        print("処理時間：\(elapsed)")
+        completionHandler()
     }
     
     
     func make_calcuParameta() {
+        let decoder = JSONDecoder()
+        
         for i in 0..<picCount {
             let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
             

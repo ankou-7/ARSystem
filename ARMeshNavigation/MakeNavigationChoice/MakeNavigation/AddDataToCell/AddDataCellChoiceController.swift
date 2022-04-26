@@ -75,13 +75,11 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
         let cell = tableview.dequeueReusableCell(withIdentifier: "Save_cell", for: indexPath)
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
-        let cell_title_label = cell.viewWithTag(1) as! UILabel
-        let cell_saveday_label = cell.viewWithTag(2) as! UILabel
-        cell_title_label.text = results[indexPath.section].cells[indexPath.row].cellName
+        cell.textLabel?.text = results[indexPath.section].cells[indexPath.row].cellName
         if results[indexPath.section].cells[indexPath.row].models.count > 0 {
-            cell_saveday_label.text = results[indexPath.section].cells[indexPath.row].models[0].dayString
+            cell.detailTextLabel?.text = results[indexPath.section].cells[indexPath.row].models[0].dayString
         } else {
-            cell_saveday_label.text = "データなし"
+            cell.detailTextLabel?.text = "データなし"
         }
         return cell
     }

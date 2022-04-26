@@ -1,5 +1,5 @@
 //
-//  EditColabViewController.swift
+//  EditColabARViewController.swift
 //  ARMesh
 //
 //  Created by yasue kouki on 2022/02/18.
@@ -11,7 +11,7 @@ import ARKit
 import RealmSwift
 import MultipeerConnectivity
 
-class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
+class ColabARViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate, ARSessionDelegate, ARCoachingOverlayViewDelegate {
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -39,52 +39,38 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
     }
     
     var state = "受信前"
-    var meshCount = 0
-    var dataCount = -1
-    var vertexCount = 0
+    var dataCount = 0
     var DataArray = [Data]()
-    let tex_node = SCNNode()
-    
     var objectStringArray = [String]()
     var choiceObjectName = ""
     
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        //print("受信")
         DispatchQueue.main.async { [self] in
             do {
                 print("state:\(state)")
                 if state == "受信前" {
                     if let stateData = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: data) {
-                        let strArray = stateData.components(separatedBy: ":")
-                        state = strArray[0] as String
-                        meshCount = Int(strArray[1])!
-                        print("state:\(state)")
-                        print("meshCount:\(meshCount)")
+                        state = stateData as String
                     }
-                } else if state == "メッシュ送信開始" {
+                } else if state == "ワールドマップ送信開始" {
                     dataCount += 1
-        
-                    if dataCount == 0 {
-                        texImage = UIImage(data: data)!
-                        //imageView.image = texImage
-                    } else if dataCount == 1 {
-                        vertexCount = 0
-                        DataArray = []
-                        if let count = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: data) {
-                            vertexCount = Int(count as String)!
-                        }
-                    } else {
-                        DataArray.append(data)
-                        if dataCount == 5 {
-                            tex_node.addChildNode(build(count: vertexCount, DataArray: DataArray))
-                            dataCount = 0
-                            meshCount -= 1
-                            print("meshCount:\(meshCount)")
-                            if meshCount == 0 {
-                                sceneView.scene?.rootNode.addChildNode(tex_node)
-                                state = "送信待機中"
+                    self.coachingOverlay.setActive(true, animated: true)
+                    if dataCount == 1 {
+                        let image = UIImage(data: data)!
+                        imageView.image = image
+                    } else if dataCount == 2 {
+                        if let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data) {
+                            DispatchQueue.main.async {
+                                let configuration = ARWorldTrackingConfiguration()
+                                configuration.planeDetection = [.horizontal, .vertical]
+                                configuration.initialWorldMap = worldMap
+                                self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+                                self.coachingOverlay.setActive(false, animated: true)
+                                imageView.isHidden = true
                             }
                         }
+                        dataCount = 0
+                        state = "送信待機中"
                     }
                 } else if state == "送信待機中" {
                     DataArray = []
@@ -139,38 +125,6 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
                 print("can't decode data recieved from \(peerID.displayName)")
             }
         }
-    }
-    
-    func build(count: Int, DataArray: [Data]) -> SCNNode {
-        let verticeSource = SCNGeometrySource(
-            data: DataArray[0],
-            semantic: SCNGeometrySource.Semantic.vertex,
-            vectorCount: count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0,
-            dataStride: MemoryLayout<SIMD3<Float>>.size
-        )
-        let normalSource = SCNGeometrySource(
-            data: DataArray[1],
-            semantic: SCNGeometrySource.Semantic.normal,
-            vectorCount: count,
-            usesFloatComponents: true,
-            componentsPerVector: 3,
-            bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: MemoryLayout<Float>.size * 3,
-            dataStride: MemoryLayout<SIMD3<Float>>.size
-        )
-        let faceSource = SCNGeometryElement(indices: (try? JSONDecoder().decode([Int32].self, from: DataArray[2]))!, primitiveType: .triangles)
-        let textureCoordinates = SCNGeometrySource(textureCoordinates: (try? JSONDecoder().decode([SIMD2<Float>].self, from: DataArray[3]))!)
-        
-        let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
-        nodeGeometry.firstMaterial?.diffuse.contents = texImage
-        
-        let node = SCNNode(geometry: nodeGeometry)
-        
-        return node
     }
     
     //遠隔サポート用の矢印，マーカ配置処理
@@ -235,13 +189,13 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
         }
         
         let distance = sqrt(diffPointCoord.x * diffPointCoord.x + diffPointCoord.y * diffPointCoord.y + diffPointCoord.z * diffPointCoord.z)
-        let num = Int((distance * 100 ) / 20)
-        let s: Float = 1/3
+        let num = Int((distance * 100 ) / 10)
+        let s: Float = 1/8
         
         for i in 1..<num {
-            let posi = SCNVector3((startPoint_node.position.x + Float(i) * diffPointCoord.x * s) - (diffPointCoord.x * 0.2),
-                                  (startPoint_node.position.y + Float(i) * diffPointCoord.y * s) - (diffPointCoord.y * 0.2),
-                                  (startPoint_node.position.z + Float(i) * diffPointCoord.z * s) - (diffPointCoord.z * 0.2))
+            let posi = SCNVector3((startPoint_node.position.x + Float(i) * diffPointCoord.x * s) - (diffPointCoord.x * 0.1),
+                                  (startPoint_node.position.y + Float(i) * diffPointCoord.y * s) - (diffPointCoord.y * 0.1),
+                                  (startPoint_node.position.z + Float(i) * diffPointCoord.z * s) - (diffPointCoord.z * 0.1))
             let scene = SCNScene(named: "art.scnassets/arrow.scn")
             let node = (scene?.rootNode.childNode(withName: "arrow", recursively: false))!
             node.position = posi
@@ -259,7 +213,7 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
             }
         }
         
-        sceneView.scene!.rootNode.addChildNode(arrowNode)
+        sceneView.scene.rootNode.addChildNode(arrowNode)
     }
     
     //オブジェクト配置処理
@@ -280,12 +234,12 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
         node.position = SCNVector3(info.Position.x, info.Position.y, info.Position.z)
         node.eulerAngles = SCNVector3(info.EulerAngles.x, info.EulerAngles.y, info.EulerAngles.z)
         node.name = infoArray[1]
-        sceneView.scene!.rootNode.addChildNode(node)
+        sceneView.scene.rootNode.addChildNode(node)
     }
     
     //配置されたオブジェクトの操作処理
     func ObjectOperate(choiceObject: String, infoData: Data) {
-        if let node = sceneView.scene?.rootNode.childNode(withName: choiceObject, recursively: false) {
+        if let node = sceneView.scene.rootNode.childNode(withName: choiceObject, recursively: false) {
             let info = try! JSONDecoder().decode(ObjectInfo_data.self, from: infoData)
             node.scale = SCNVector3(info.Scale.x, info.Scale.y, info.Scale.z)
             node.position = SCNVector3(info.Position.x, info.Position.y, info.Position.z)
@@ -295,7 +249,7 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
     
     //配置したオブジェクトの削除処理
     func ObjectDelete(choiceObject: String) {
-        if let node = sceneView.scene?.rootNode.childNode(withName: choiceObject, recursively: false) {
+        if let node = sceneView.scene.rootNode.childNode(withName: choiceObject, recursively: false) {
             node.removeFromParentNode()
         }
     }
@@ -312,15 +266,12 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
         
     }
     
-    
-    //MARK: - 通信設定
-    @IBOutlet weak var sceneView: SCNView!
-    let scene = SCNScene()
+    @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var imageView: UIImageView!
-    var texImage = UIImage()
+    
+    let coachingOverlay = ARCoachingOverlayView()
     
     let serviceType = "ar-collab"
-
     var browser : MCBrowserViewController!
     var assistant : MCAdvertiserAssistant!
     var session : MCSession!
@@ -329,19 +280,24 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        sceneView.delegate = self //delegateのセット
+        sceneView.session.delegate = self
+        sceneView.debugOptions = [.showWorldOrigin]
         
-        sceneView.delegate = self
-        sceneView.scene = scene
-        sceneView.allowsCameraControl = true
+        //sceneView.autoenablesDefaultLighting = true
+        
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal, .vertical]
+        sceneView.session.run(configuration)
         
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .ambient //.omni
-        scene.rootNode.addChildNode(lightNode)
+        sceneView.scene.rootNode.addChildNode(lightNode)
         
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
         self.peerID = MCPeerID(displayName: UIDevice.current.name)
         self.session = MCSession(peer: peerID)
         self.session.delegate = self
@@ -353,22 +309,43 @@ class EditColabViewController: UIViewController, ARSCNViewDelegate, MCBrowserVie
                                                discoveryInfo:nil, session:self.session)
 
         self.assistant.start()
-
+        
+        //特徴点を取るためのコーチングの追加
+        coachingOverlay.session = sceneView.session
+        coachingOverlay.delegate = self
+        coachingOverlay.translatesAutoresizingMaskIntoConstraints = false
+        coachingOverlay.activatesAutomatically = false
+        coachingOverlay.goal =  .tracking //horizontalPlane,verticalPlane,anyPlane,tracking
+        self.view.addSubview(coachingOverlay)
+        //ARCoachingOverlayViewを画面の中心に表示させる
+        NSLayoutConstraint.activate([
+            coachingOverlay.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            coachingOverlay.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            coachingOverlay.widthAnchor.constraint(equalTo: view.widthAnchor),
+            coachingOverlay.heightAnchor.constraint(equalTo: view.heightAnchor)
+        ])
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Pause the view's session
+        sceneView.session.pause()
     }
     
     @IBAction func serchBrowser(_ sender: UIButton) {
         self.present(self.browser, animated: true, completion: nil)
     }
     
-    @IBAction func to_ARView(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "EditColabARViewController") as! EditColabARViewController
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true, completion: nil)
-    }
     
     @IBAction func back(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
+        let transition = CATransition()
+        transition.duration = 0.25
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromLeft
+        view.window!.layer.add(transition, forKey: kCATransition)
+        
+        self.dismiss(animated: false, completion: nil)
     }
     
 }

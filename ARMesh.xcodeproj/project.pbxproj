@@ -68,8 +68,8 @@
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
-		CF8804A727BECAD500146230 /* EditColabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A627BECAD500146230 /* EditColabViewController.swift */; };
-		CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A827BF0BC700146230 /* EditColabARViewController.swift */; };
+		CF8804A727BECAD500146230 /* ColabVRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A627BECAD500146230 /* ColabVRViewController.swift */; };
+		CF8804A927BF0BC700146230 /* ColabARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8804A827BF0BC700146230 /* ColabARViewController.swift */; };
 		CF8D977626830FA900D6002A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF8D977426830F3700D6002A /* opencv2.framework */; };
 		CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF8D977A2683106000D6002A /* OpenCVManager.mm */; };
 		CF8D977F2683147100D6002A /* FeatureMatching.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8D977E2683147100D6002A /* FeatureMatching.storyboard */; };
@@ -189,8 +189,8 @@
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
-		CF8804A627BECAD500146230 /* EditColabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColabViewController.swift; sourceTree = "<group>"; };
-		CF8804A827BF0BC700146230 /* EditColabARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColabARViewController.swift; sourceTree = "<group>"; };
+		CF8804A627BECAD500146230 /* ColabVRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColabVRViewController.swift; sourceTree = "<group>"; };
+		CF8804A827BF0BC700146230 /* ColabARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColabARViewController.swift; sourceTree = "<group>"; };
 		CF8D977426830F3700D6002A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		CF8D977A2683106000D6002A /* OpenCVManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVManager.mm; sourceTree = "<group>"; };
 		CF8D977D2683130000D6002A /* OpenCVManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVManager.h; sourceTree = "<group>"; };
@@ -386,7 +386,7 @@
 				26AAA23E2563C997008FE5EB /* NavigationChoiceController.swift */,
 				CF3D807F262B87DC007904E6 /* MakeNavigation */,
 				CF3D809E262B907D007904E6 /* EditData */,
-				CF96614F280DA8A300D4C8BA /* ColabData */,
+				CF96614F280DA8A300D4C8BA /* Collaboration */,
 				CF3D80AD262B9523007904E6 /* CheckAllData */,
 			);
 			path = MakeNavigationChoice;
@@ -400,7 +400,7 @@
 				CF966148280D9F5900D4C8BA /* SCNGeometry+Ext.swift */,
 				CF3D808E262B8C64007904E6 /* Renderer */,
 				260D431227CE3EC90020039E /* CheckData */,
-				CF6BC314262AE43700E9B083 /* AddDataCellChoice */,
+				CF6BC314262AE43700E9B083 /* AddDataToCell */,
 			);
 			path = MakeNavigation;
 			sourceTree = "<group>";
@@ -448,13 +448,13 @@
 			path = CheckAllData;
 			sourceTree = "<group>";
 		};
-		CF6BC314262AE43700E9B083 /* AddDataCellChoice */ = {
+		CF6BC314262AE43700E9B083 /* AddDataToCell */ = {
 			isa = PBXGroup;
 			children = (
 				CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */,
 				CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */,
 			);
-			path = AddDataCellChoice;
+			path = AddDataToCell;
 			sourceTree = "<group>";
 		};
 		CF8D977926830FD900D6002A /* FeatureMatching */ = {
@@ -470,13 +470,13 @@
 			path = FeatureMatching;
 			sourceTree = "<group>";
 		};
-		CF96614F280DA8A300D4C8BA /* ColabData */ = {
+		CF96614F280DA8A300D4C8BA /* Collaboration */ = {
 			isa = PBXGroup;
 			children = (
-				CF8804A627BECAD500146230 /* EditColabViewController.swift */,
-				CF8804A827BF0BC700146230 /* EditColabARViewController.swift */,
+				CF8804A627BECAD500146230 /* ColabVRViewController.swift */,
+				CF8804A827BF0BC700146230 /* ColabARViewController.swift */,
 			);
-			path = ColabData;
+			path = Collaboration;
 			sourceTree = "<group>";
 		};
 		CF966164280F5A7700D4C8BA /* HandTracking */ = {
@@ -718,7 +718,7 @@
 				CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */,
 				26AAA2552563C998008FE5EB /* Information.swift in Sources */,
 				CF30EF60262C9CC000C13B66 /* MenuDataSource.swift in Sources */,
-				CF8804A727BECAD500146230 /* EditColabViewController.swift in Sources */,
+				CF8804A727BECAD500146230 /* ColabVRViewController.swift in Sources */,
 				CF0DBC312691A286006E2E19 /* Matching_OpenCV.mm in Sources */,
 				CF688B942736844A00F863AF /* StructInfo.swift in Sources */,
 				CF0D73FC271CAB9C00A2BB75 /* Diff_PointCloud2Controller.swift in Sources */,
@@ -742,7 +742,7 @@
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				CF96615D280F24B100D4C8BA /* ArrowNode.swift in Sources */,
 				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,
-				CF8804A927BF0BC700146230 /* EditColabARViewController.swift in Sources */,
+				CF8804A927BF0BC700146230 /* ColabARViewController.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
 				CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */,
