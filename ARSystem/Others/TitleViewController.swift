@@ -41,16 +41,6 @@ class TitleViewController: UIViewController {
         self.present(vc, animated: true, completion: nil)
     }
     
-    @IBAction func to_NavigationChoiceController(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "MakeNavigationChoice", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "NavigationChoiceController") as! NavigationChoiceController
-//        vc.view.backgroundColor = UIColor.white
-//        vc.modalPresentationStyle = .fullScreen
-//        self.present(vc, animated: true, completion: nil)
-        self.navigationController?.pushViewController(vc, animated: true)//遷移する
-        
-    }
-    
     @IBAction func to_MapExpansionChoiceController(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "MapExpansionChoice", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "MapExpansionChoiceController") as! MapExpansionChoiceController

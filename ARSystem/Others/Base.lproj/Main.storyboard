@@ -59,26 +59,6 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87T-n3-fz7">
-                                <rect key="frame" x="74.5" y="774" width="300" height="300"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
-                                        <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="300" id="Hdd-9t-7ux"/>
-                                            <constraint firstAttribute="height" constant="300" id="gQ2-Q0-MFZ"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                        <state key="normal" title="マップ拡張"/>
-                                        <buttonConfiguration key="configuration" style="tinted" title="マップ拡張">
-                                            <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="to_MapExpansionChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="d8i-qF-7Nm"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="85" translatesAutoresizingMaskIntoConstraints="NO" id="Fd0-tJ-dhj">
                                 <rect key="frame" x="74.5" y="424" width="685" height="300"/>
                                 <subviews>
@@ -97,19 +77,19 @@
                                             <action selector="to_SceneViewController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="4P3-Q1-118"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PN0-NZ-TUh">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnG-qg-BNN">
                                         <rect key="frame" x="385" y="0.0" width="300" height="300"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="300" id="D8e-q6-AFT"/>
-                                            <constraint firstAttribute="height" constant="300" id="hve-2e-I8d"/>
+                                            <constraint firstAttribute="width" constant="300" id="Hdd-9t-7ux"/>
+                                            <constraint firstAttribute="height" constant="300" id="gQ2-Q0-MFZ"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                        <state key="normal" title="作成"/>
-                                        <buttonConfiguration key="configuration" style="tinted" title="作成">
+                                        <state key="normal" title="マップ拡張"/>
+                                        <buttonConfiguration key="configuration" style="tinted" title="マップ拡張">
                                             <fontDescription key="titleFontDescription" type="system" pointSize="25"/>
                                         </buttonConfiguration>
                                         <connections>
-                                            <action selector="to_NavigationChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="8In-iW-2cj"/>
+                                            <action selector="to_MapExpansionChoiceController:" destination="5Uh-pH-a12" eventType="touchUpInside" id="d8i-qF-7Nm"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -118,9 +98,7 @@
                         <viewLayoutGuide key="safeArea" id="c9j-Hc-jbr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="87T-n3-fz7" firstAttribute="top" secondItem="Fd0-tJ-dhj" secondAttribute="bottom" constant="50" id="019-Yq-CoM"/>
                             <constraint firstItem="8Cg-x5-7h5" firstAttribute="top" secondItem="c9j-Hc-jbr" secondAttribute="top" constant="50" id="8lS-Tj-god"/>
-                            <constraint firstItem="87T-n3-fz7" firstAttribute="leading" secondItem="c9j-Hc-jbr" secondAttribute="leading" constant="74.5" id="Bq9-QD-GLr"/>
                             <constraint firstItem="Fd0-tJ-dhj" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="Ew6-u0-jog"/>
                             <constraint firstItem="Fd0-tJ-dhj" firstAttribute="top" secondItem="8Cg-x5-7h5" secondAttribute="bottom" constant="50" id="Rch-IU-bIS"/>
                             <constraint firstItem="8Cg-x5-7h5" firstAttribute="centerX" secondItem="BYR-2w-BRG" secondAttribute="centerX" id="XVW-1P-qII"/>

@@ -166,7 +166,7 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
             results[section_num].add_cell_count = results[section_num].add_cell_count + 1
         }
         
-        for i in 0...navityu_results.count-1 {
+        for i in 0..<navityu_results.count {
             let objName = "NaviModel\(results[section_num].add_section_count)\(results[section_num].add_cell_count)-\(i)"
             
             let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)

@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Navigation Choice Controller-->
+        <!--Menu Controller-->
         <scene sceneID="stw-lS-oln">
             <objects>
-                <viewController storyboardIdentifier="NavigationChoiceController" id="TTu-Tq-oeo" customClass="NavigationChoiceController" customModule="ARMesh" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MenuController" id="TTu-Tq-oeo" customClass="MenuController" customModule="ARMesh" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Q9m-2u-PHp">
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

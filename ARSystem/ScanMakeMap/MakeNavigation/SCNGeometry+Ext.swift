@@ -9,13 +9,22 @@ import SceneKit
 import ARKit
 
 extension SCNGeometrySource {
-    convenience init(textureCoordinates2 texcoord: [SIMD2<Float>]) {
+    convenience init(textureCoordinates texcoord: [SIMD2<Float>]) {
         let stride = MemoryLayout<SIMD2<Float>>.stride
         let bytePerComponent = MemoryLayout<Float>.stride
         let data = Data(bytes: texcoord, count: stride * texcoord.count)
         self.init(data: data, semantic: SCNGeometrySource.Semantic.texcoord, vectorCount: texcoord.count, usesFloatComponents: true, componentsPerVector: 2, bytesPerComponent: bytePerComponent, dataOffset: 0, dataStride: stride)
     }
+    
+//    convenience init(textureCoordinates texcoord: [vector_float2]) {
+//        let stride = MemoryLayout<vector_float2>.stride
+//        let bytePerComponent = MemoryLayout<Float>.stride
+//        let data = Data(bytes: texcoord, count: stride * texcoord.count)
+//        self.init(data: data, semantic: SCNGeometrySource.Semantic.texcoord, vectorCount: texcoord.count, usesFloatComponents: true, componentsPerVector: 2, bytesPerComponent: bytePerComponent, dataOffset: 0, dataStride: stride)
+//    }
 }
+
+
 
 extension  SCNGeometry {
     public static func fromAnchor(meshAnchor: ARMeshAnchor) -> SCNGeometry {

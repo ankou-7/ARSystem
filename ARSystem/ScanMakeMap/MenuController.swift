@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NavigationChoiceController: UIViewController {
+class MenuController: UIViewController {
     
     @IBOutlet weak var button: UIButton!
     @IBOutlet weak var collabButton: UIButton!
