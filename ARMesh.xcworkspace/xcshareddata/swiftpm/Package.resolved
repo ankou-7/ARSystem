@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "matft",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jjjkkkjjj/Matft",
+      "state" : {
+        "revision" : "75840c173298baa97555cabda6f6f16d5ec67af7",
+        "version" : "0.2.10"
+      }
+    },
+    {
+      "identity" : "realm-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-core",
+      "state" : {
+        "revision" : "472d325a2e844fcb48c400db74e6b9646f92ca93",
+        "version" : "11.15.0"
+      }
+    },
+    {
+      "identity" : "realm-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-swift",
+      "state" : {
+        "branch" : "master",
+        "revision" : "19ff29f9dc35f52d02bd63c6427e98ce0c2fac0e"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections",
+      "state" : {
+        "revision" : "9d8719c8bebdc79740b6969c912ac706eb721d7a",
+        "version" : "0.0.7"
+      }
+    }
+  ],
+  "version" : 2
+}
