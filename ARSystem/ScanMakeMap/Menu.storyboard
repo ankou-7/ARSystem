@@ -13,7 +13,7 @@
         <!--Menu Controller-->
         <scene sceneID="stw-lS-oln">
             <objects>
-                <viewController storyboardIdentifier="MenuController" id="TTu-Tq-oeo" customClass="MenuController" customModule="ARMesh" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MenuController" id="TTu-Tq-oeo" customClass="MenuController" customModule="ARSystem" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Q9m-2u-PHp">
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -52,6 +52,15 @@
                                     </children>
                                 </menu>
                                 <state key="normal" title="コラボレーション"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gzl-1R-M5c">
+                                <rect key="frame" x="218" y="326" width="43" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="VR"/>
+                                <connections>
+                                    <action selector="to_VRView:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="J3i-ST-E3m"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eXi-2l-wof"/>

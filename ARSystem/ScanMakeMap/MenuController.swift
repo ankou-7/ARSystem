@@ -76,6 +76,14 @@ class MenuController: UIViewController {
         self.present(vc, animated: false, completion: nil)
     }
     
+    @IBAction func to_VRView(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "VRView", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "VRViewController") as! VRViewController
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: false, completion: nil)
+    }
+    
+    
     func to_ColabARViewController() {
         let storyboard = UIStoryboard(name: "EditData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ColabARViewController") as! ColabARViewController
