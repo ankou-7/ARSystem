@@ -651,13 +651,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         sceneView.scene?.rootNode.addChildNode(meshNode)
     }
     
-    @IBAction func to_ARView(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "CheckARViewController") as! CheckARViewController
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true, completion: nil)
-    }
-    
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }

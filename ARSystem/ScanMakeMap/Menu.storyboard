@@ -54,10 +54,11 @@
                                 <state key="normal" title="コラボレーション"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gzl-1R-M5c">
-                                <rect key="frame" x="218" y="326" width="43" height="31"/>
+                                <rect key="frame" x="265" y="323" width="77" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="VR"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="VR"/>
                                 <connections>
                                     <action selector="to_VRView:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="J3i-ST-E3m"/>
                                 </connections>
@@ -79,7 +80,7 @@
                     <navigationItem key="navigationItem" id="fh9-Dx-k77">
                         <barButtonItem key="leftBarButtonItem" style="plain" id="XiU-9P-ubd">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="fill" buttonType="system" lineBreakMode="middleTruncation" id="8DI-Tv-RhF">
-                                <rect key="frame" x="20" y="6" width="185" height="38"/>
+                                <rect key="frame" x="20" y="3" width="185" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.backward" catalog="system" title="拡張メニュー">

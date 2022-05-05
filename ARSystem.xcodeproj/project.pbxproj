@@ -45,6 +45,9 @@
 		CF0BB001281C8C95004086C8 /* RTCStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BAFFE281C8C95004086C8 /* RTCStates.swift */; };
 		CF0BB002281C8C95004086C8 /* SessionDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BAFFF281C8C95004086C8 /* SessionDescription.swift */; };
 		CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF0BB003281C8F8D004086C8 /* opencv2.framework */; };
+		CF0BB05F281D4B7A004086C8 /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BB05E281D4B7A004086C8 /* VideoViewController.swift */; };
+		CF0BB064281D763E004086C8 /* VideoView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0BB063281D763E004086C8 /* VideoView.storyboard */; };
+		CF0BB067281D8025004086C8 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BB066281D8025004086C8 /* VideoView.swift */; };
 		CF0D73F3271CA17300A2BB75 /* ChoiceModelData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */; };
 		CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */; };
 		CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0D73F6271CA99200A2BB75 /* ChoiceModelController.swift */; };
@@ -80,8 +83,6 @@
 		CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */; };
 		CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */; };
 		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
-		CF53D254281C159B007F06C2 /* HandTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF53D252281C155A007F06C2 /* HandTracker.framework */; };
-		CF53D255281C159B007F06C2 /* HandTracker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CF53D252281C155A007F06C2 /* HandTracker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
@@ -102,13 +103,6 @@
 		CF966163280F4E9200D4C8BA /* BuildTextureMeshNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966162280F4E9200D4C8BA /* BuildTextureMeshNode.swift */; };
 		CF966169280FD32E00D4C8BA /* GPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966168280FD32E00D4C8BA /* GPUCalculateTexture.swift */; };
 		CF96616B2810021F00D4C8BA /* CPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */; };
-		CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */; };
-		CF98DE9327485DDF0023A1E4 /* CVPixelBuffer+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */; };
-		CF98DE9427485DDF0023A1E4 /* CVReturnError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8E27485DDE0023A1E4 /* CVReturnError.swift */; };
-		CF98DE9527485DDF0023A1E4 /* PlaneIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE8F27485DDE0023A1E4 /* PlaneIndex.swift */; };
-		CF98DE9627485DDF0023A1E4 /* CVMetalTexture+.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE9027485DDF0023A1E4 /* CVMetalTexture+.swift */; };
-		CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE9127485DDF0023A1E4 /* BlueDress.swift */; };
-		CF98DE9927485DE70023A1E4 /* default.metal in Sources */ = {isa = PBXBuildFile; fileRef = CF98DE9827485DE70023A1E4 /* default.metal */; };
 		CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */; };
 		CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */; };
 		CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */; };
@@ -116,18 +110,16 @@
 		CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */; };
 		CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */; };
 		CFD69EA326C7B71000E51949 /* Diff_PointCloudViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */; };
-		CFD96D3E2748222C00083E90 /* CheckARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD96D3D2748222C00083E90 /* CheckARViewController.swift */; };
 		CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE717EA281130C200B55073 /* ViewManagement.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		CF98DE8227484EF90023A1E4 /* Embed Frameworks */ = {
+		CF0BB009281D16DE004086C8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CF53D255281C159B007F06C2 /* HandTracker.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,10 +167,13 @@
 		CF0BAFF2281C8594004086C8 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		CF0BAFF3281C8594004086C8 /* WebRTCClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCClient.swift; sourceTree = "<group>"; };
 		CF0BAFFB281C8626004086C8 /* NativeWebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NativeWebSocket.swift; sourceTree = "<group>"; };
-		CF0BAFFD281C8C95004086C8 /* IceCandidate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = IceCandidate.swift; path = Extensions/IceCandidate.swift; sourceTree = "<group>"; };
-		CF0BAFFE281C8C95004086C8 /* RTCStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RTCStates.swift; path = Extensions/RTCStates.swift; sourceTree = "<group>"; };
-		CF0BAFFF281C8C95004086C8 /* SessionDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SessionDescription.swift; path = Extensions/SessionDescription.swift; sourceTree = "<group>"; };
+		CF0BAFFD281C8C95004086C8 /* IceCandidate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IceCandidate.swift; sourceTree = "<group>"; };
+		CF0BAFFE281C8C95004086C8 /* RTCStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTCStates.swift; sourceTree = "<group>"; };
+		CF0BAFFF281C8C95004086C8 /* SessionDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionDescription.swift; sourceTree = "<group>"; };
 		CF0BB003281C8F8D004086C8 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		CF0BB05E281D4B7A004086C8 /* VideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
+		CF0BB063281D763E004086C8 /* VideoView.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VideoView.storyboard; sourceTree = "<group>"; };
+		CF0BB066281D8025004086C8 /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		CF0D73F2271CA17200A2BB75 /* ChoiceModelData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceModelData.storyboard; sourceTree = "<group>"; };
 		CF0D73F4271CA18E00A2BB75 /* ChoiceModelDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelDataController.swift; sourceTree = "<group>"; };
 		CF0D73F6271CA99200A2BB75 /* ChoiceModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceModelController.swift; sourceTree = "<group>"; };
@@ -212,7 +207,6 @@
 		CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckAllData.storyboard; sourceTree = "<group>"; };
 		CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataChoiceController.swift; sourceTree = "<group>"; };
 		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
-		CF53D252281C155A007F06C2 /* HandTracker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HandTracker.framework; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
@@ -234,13 +228,6 @@
 		CF966162280F4E9200D4C8BA /* BuildTextureMeshNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildTextureMeshNode.swift; sourceTree = "<group>"; };
 		CF966168280FD32E00D4C8BA /* GPUCalculateTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUCalculateTexture.swift; sourceTree = "<group>"; };
 		CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUCalculateTexture.swift; sourceTree = "<group>"; };
-		CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MTLDevice+.swift"; sourceTree = "<group>"; };
-		CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+.swift"; sourceTree = "<group>"; };
-		CF98DE8E27485DDE0023A1E4 /* CVReturnError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVReturnError.swift; sourceTree = "<group>"; };
-		CF98DE8F27485DDE0023A1E4 /* PlaneIndex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaneIndex.swift; sourceTree = "<group>"; };
-		CF98DE9027485DDF0023A1E4 /* CVMetalTexture+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVMetalTexture+.swift"; sourceTree = "<group>"; };
-		CF98DE9127485DDF0023A1E4 /* BlueDress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlueDress.swift; sourceTree = "<group>"; };
-		CF98DE9827485DE70023A1E4 /* default.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = default.metal; sourceTree = "<group>"; };
 		CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimePointCloudController.swift; sourceTree = "<group>"; };
 		CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoicePictureData.storyboard; sourceTree = "<group>"; };
 		CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckPictureChoiceController.swift; sourceTree = "<group>"; };
@@ -248,7 +235,6 @@
 		CFD69E9B26C66D7E00E51949 /* PictureChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureChoiceController.swift; sourceTree = "<group>"; };
 		CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Diff_PointCloud.storyboard; sourceTree = "<group>"; };
 		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
-		CFD96D3D2748222C00083E90 /* CheckARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckARViewController.swift; sourceTree = "<group>"; };
 		CFE717EA281130C200B55073 /* ViewManagement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewManagement.swift; sourceTree = "<group>"; };
 		F8C922BCE7FFBA863E2B4AFA /* Pods-ARMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -259,7 +245,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF3165C4281C39AB0019CE8F /* RealmSwift in Frameworks */,
-				CF53D254281C159B007F06C2 /* HandTracker.framework in Frameworks */,
 				CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */,
 				CF3165BF281C39160019CE8F /* Matft in Frameworks */,
 				CF0BAFE5281C5CD2004086C8 /* WebRTC in Frameworks */,
@@ -322,17 +307,44 @@
 			children = (
 				CF0BAFE7281C739B004086C8 /* VRView.storyboard */,
 				CF0BAFEB281C7C9C004086C8 /* VRViewController.swift */,
+				CF0BB066281D8025004086C8 /* VideoView.swift */,
+				CF0BB065281D7689004086C8 /* Video */,
 				CF0BAFF0281C8593004086C8 /* Config.swift */,
 				CF0BAFF2281C8594004086C8 /* Message.swift */,
 				CF0BAFEE281C8593004086C8 /* SignalingClient.swift */,
 				CF0BAFF3281C8594004086C8 /* WebRTCClient.swift */,
-				CF0BAFED281C8593004086C8 /* WebSocketProvider.swift */,
-				CF0BAFFB281C8626004086C8 /* NativeWebSocket.swift */,
+				CF0BB006281D15F3004086C8 /* WebSocketProvider */,
+				CF0BB005281D1592004086C8 /* Ex */,
+			);
+			path = CollaboWebRTC;
+			sourceTree = "<group>";
+		};
+		CF0BB005281D1592004086C8 /* Ex */ = {
+			isa = PBXGroup;
+			children = (
 				CF0BAFFD281C8C95004086C8 /* IceCandidate.swift */,
 				CF0BAFFE281C8C95004086C8 /* RTCStates.swift */,
 				CF0BAFFF281C8C95004086C8 /* SessionDescription.swift */,
 			);
-			path = CollaboWebRTC;
+			path = Ex;
+			sourceTree = "<group>";
+		};
+		CF0BB006281D15F3004086C8 /* WebSocketProvider */ = {
+			isa = PBXGroup;
+			children = (
+				CF0BAFED281C8593004086C8 /* WebSocketProvider.swift */,
+				CF0BAFFB281C8626004086C8 /* NativeWebSocket.swift */,
+			);
+			path = WebSocketProvider;
+			sourceTree = "<group>";
+		};
+		CF0BB065281D7689004086C8 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				CF0BB063281D763E004086C8 /* VideoView.storyboard */,
+				CF0BB05E281D4B7A004086C8 /* VideoViewController.swift */,
+			);
+			path = Video;
 			sourceTree = "<group>";
 		};
 		CF0D73F1271CA13E00A2BB75 /* ChoiceData2 */ = {
@@ -472,8 +484,6 @@
 				CF966166280F5AE400D4C8BA /* Calculate */,
 				CF966165280F5AA700D4C8BA /* BuildNode */,
 				CF966167280F5B2600D4C8BA /* ObjectOrigin */,
-				CF966164280F5A7700D4C8BA /* HandTracking */,
-				CF98DE8B27485DC60023A1E4 /* Blue */,
 			);
 			path = EditData;
 			sourceTree = "<group>";
@@ -535,14 +545,6 @@
 			path = Collaboration;
 			sourceTree = "<group>";
 		};
-		CF966164280F5A7700D4C8BA /* HandTracking */ = {
-			isa = PBXGroup;
-			children = (
-				CFD96D3D2748222C00083E90 /* CheckARViewController.swift */,
-			);
-			path = HandTracking;
-			sourceTree = "<group>";
-		};
 		CF966165280F5AA700D4C8BA /* BuildNode */ = {
 			isa = PBXGroup;
 			children = (
@@ -572,20 +574,6 @@
 				CF13205727223CD400277339 /* ObjectOrigin.swift */,
 			);
 			path = ObjectOrigin;
-			sourceTree = "<group>";
-		};
-		CF98DE8B27485DC60023A1E4 /* Blue */ = {
-			isa = PBXGroup;
-			children = (
-				CF98DE9127485DDF0023A1E4 /* BlueDress.swift */,
-				CF98DE9027485DDF0023A1E4 /* CVMetalTexture+.swift */,
-				CF98DE8D27485DDE0023A1E4 /* CVPixelBuffer+.swift */,
-				CF98DE8E27485DDE0023A1E4 /* CVReturnError.swift */,
-				CF98DE8C27485DDE0023A1E4 /* MTLDevice+.swift */,
-				CF98DE8F27485DDE0023A1E4 /* PlaneIndex.swift */,
-				CF98DE9827485DE70023A1E4 /* default.metal */,
-			);
-			path = Blue;
 			sourceTree = "<group>";
 		};
 		CFD69E9426C50DA500E51949 /* ChoiceData */ = {
@@ -628,7 +616,6 @@
 			isa = PBXGroup;
 			children = (
 				CF0BB003281C8F8D004086C8 /* opencv2.framework */,
-				CF53D252281C155A007F06C2 /* HandTracker.framework */,
 				A6A1ACF34415CD790884183E /* Pods_ARSystem.framework */,
 			);
 			name = Frameworks;
@@ -645,8 +632,8 @@
 				26AAA1E92563C802008FE5EB /* Sources */,
 				26AAA1EA2563C802008FE5EB /* Frameworks */,
 				26AAA1EB2563C802008FE5EB /* Resources */,
-				CF98DE8227484EF90023A1E4 /* Embed Frameworks */,
 				26D73F3194AFFFA188ECF576 /* [CP] Embed Pods Frameworks */,
+				CF0BB009281D16DE004086C8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -713,6 +700,7 @@
 				CF30EF84262D97EC00C13B66 /* MapExpansionTransmit.storyboard in Resources */,
 				26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */,
 				CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */,
+				CF0BB064281D763E004086C8 /* VideoView.storyboard in Resources */,
 				CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */,
 				CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */,
 				CF0F1669272C62D100E6F9ED /* MakeMap.storyboard in Resources */,
@@ -779,10 +767,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF98DE9627485DDF0023A1E4 /* CVMetalTexture+.swift in Sources */,
 				2632F46225F04482006B7366 /* Helpers.swift in Sources */,
 				CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */,
-				CF98DE9527485DDF0023A1E4 /* PlaneIndex.swift in Sources */,
 				CF8D97812683163300D6002A /* FeatureMatchingController.swift in Sources */,
 				CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */,
 				CF0BAFF9281C8594004086C8 /* Message.swift in Sources */,
@@ -802,20 +788,20 @@
 				260D431627CE3FD80020039E /* CheckDataViewController.swift in Sources */,
 				CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */,
 				CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */,
+				CF0BB067281D8025004086C8 /* VideoView.swift in Sources */,
 				CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */,
 				260D431827CE4D690020039E /* CheckRenderer.swift in Sources */,
 				CF966161280F3DE100D4C8BA /* BuildMeshNode.swift in Sources */,
 				262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */,
 				CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */,
-				CF98DE9727485DDF0023A1E4 /* BlueDress.swift in Sources */,
 				CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */,
 				CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */,
 				CF0BB002281C8C95004086C8 /* SessionDescription.swift in Sources */,
 				CF966155280EB7A200D4C8BA /* OperateObject.swift in Sources */,
+				CF0BB05F281D4B7A004086C8 /* VideoViewController.swift in Sources */,
 				CF966169280FD32E00D4C8BA /* GPUCalculateTexture.swift in Sources */,
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				CF96615D280F24B100D4C8BA /* ArrowNode.swift in Sources */,
-				CF98DE9227485DDF0023A1E4 /* MTLDevice+.swift in Sources */,
 				CF8804A927BF0BC700146230 /* ColabARViewController.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
@@ -832,9 +818,7 @@
 				26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */,
 				CF0D73F5271CA18E00A2BB75 /* ChoiceModelDataController.swift in Sources */,
 				2632F45425F04193006B7366 /* Shaders.metal in Sources */,
-				CF98DE9927485DE70023A1E4 /* default.metal in Sources */,
 				CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */,
-				CFD96D3E2748222C00083E90 /* CheckARViewController.swift in Sources */,
 				CF96615B280F237E00D4C8BA /* LightNode.swift in Sources */,
 				26AAA2562563C998008FE5EB /* MakeNavigationController.swift in Sources */,
 				26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */,
@@ -848,14 +832,12 @@
 				26AAA25F2563C998008FE5EB /* MenuController.swift in Sources */,
 				CF0BAFF7281C8594004086C8 /* Config.swift in Sources */,
 				CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */,
-				CF98DE9327485DDF0023A1E4 /* CVPixelBuffer+.swift in Sources */,
 				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
 				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
 				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,
 				CF0BAFF4281C8594004086C8 /* WebSocketProvider.swift in Sources */,
 				26AAA1F52563C802008FE5EB /* Experience.rcproject in Sources */,
 				CF30EF8E262D982000C13B66 /* MapExpansionTransmitController.swift in Sources */,
-				CF98DE9427485DDF0023A1E4 /* CVReturnError.swift in Sources */,
 				CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */,
 				26AAA2522563C998008FE5EB /* TitleViewController.swift in Sources */,
 				CF96615F280F360800D4C8BA /* TextureImage.swift in Sources */,

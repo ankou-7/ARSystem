@@ -16,12 +16,6 @@ pod update（2回目以降）・・・Podfile.lockを参照せずにインスト
 
 https://github.com/opencv/opencv/releases
 
-3, MediaPipeの追加
-
-https://github.com/noppefoxwolf/HandTracker/releases
-
-インストールしたそれぞれのファイルをプロジェクト内に追加することで使用可能
-
 ## 機能概要
 
 ![Videotogif (1)](https://user-images.githubusercontent.com/61243751/155967371-d2a0f0a2-783c-4988-8cd4-6c43d11269d6.gif)
