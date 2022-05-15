@@ -11,6 +11,8 @@ import ARKit
 import RealmSwift
 import MultipeerConnectivity
 import SVProgressHUD
+import Firebase
+import ZipArchive
 
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
 
@@ -145,7 +147,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-        let num: CGFloat = 3.0 //画像のサイズの縮尺率
+        let num: CGFloat = 5.0 //画像のサイズの縮尺率
         
         for i in 0..<picCount {
             let uiimage = UIImage(data: models.pic[i].pic_data!)
@@ -154,7 +156,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         //16384以下にする必要あり
         new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
         let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.5)
+        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
         let realm = try! Realm()
         try! realm.write {
             models.texture_pic = imageData
@@ -162,11 +164,13 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         for i in 0..<models.mesh_anchor.count {
             let mesh_data = models.mesh_anchor[i].mesh
+            print("meshData\(i) : \(mesh_data)")
             if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
                 anchors.append(meshAnchor)
             }
         }
         
+        print(try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: models.mesh_anchor[0].mesh!)!)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
             if models.texture_bool == 0 {
@@ -180,6 +184,298 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                 SVProgressHUD.dismiss()
             }
         })
+    }
+    
+    @IBAction func TapedSaveButton(_ sender: UIButton) {
+        sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
+        
+        DispatchQueue.main.async {
+            SVProgressHUD.show()
+            self.savePicDocument()
+            self.saveDocument()
+            
+        }
+        
+//            for i in 0..<models.mesh_anchor.count {
+//                saveDocument(num: i) { [self] in
+//                    zipSaveFireStore(num: i)
+//                }
+////                if i == models.mesh_anchor.count - 1 {
+////                    print("書き込み終了")
+////                    SVProgressHUD.dismiss()
+////                }
+//            }
+    }
+    
+    @IBAction func ReadAndBuild(_ sender: UIButton) {
+        SVProgressHUD.show()
+        zipReadFireStore() { [self] in
+            print("build処理開始")
+            buildNode()
+            sceneView.scene?.rootNode.addChildNode(texmeshNode)
+            SVProgressHUD.dismiss()
+        }
+    }
+    
+    func savePicDocument() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            //フォルダ作成
+            let directory = url.appendingPathComponent("pic", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+            
+            let archivePath = url.appendingPathComponent("pic/pic.zip")
+            let targetFilePaths = ["\(url.appendingPathComponent("pic/pic.data").path)"]
+            let data = [models.texture_pic]
+            if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
+                print("zip化失敗")
+            } else {
+                print("zip化成功")
+                let dataStore = Firestore.firestore()
+                dataStore.collection("zip").document("pic").setData([
+                    "data": try! Data(contentsOf: archivePath)
+                ]) { err in
+                    if let err = err {
+                        print("Error writing document: \(err)")
+                    } else {
+                        print("zipPicをFireStoreに書き込み完了")
+                    }
+                }
+            }
+        }
+    }
+    
+    func saveDocument() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            for num in 0..<models.mesh_anchor.count {
+                //フォルダ作成
+                let directory = url.appendingPathComponent("\(num)", isDirectory: true)
+                do {
+                    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    print("失敗した")
+                }
+                
+                let archivePath = url.appendingPathComponent("\(num)/mesh.zip")
+                let targetFilePaths = ["\(url.appendingPathComponent("\(num)/mesh.data").path)",
+                                       "\(url.appendingPathComponent("\(num)/texcoords.data").path)",
+                                       "\(url.appendingPathComponent("\(num)/vertices.data").path)",
+                                       "\(url.appendingPathComponent("\(num)/normals.data").path)",
+                                       "\(url.appendingPathComponent("\(num)/faces.data").path)"]
+                let data = [models.mesh_anchor[num].mesh, models.mesh_anchor[num].texcoords, models.mesh_anchor[num].vertices, models.mesh_anchor[num].normals, models.mesh_anchor[num].faces]
+                
+                if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
+                    print("zip化失敗")
+                } else {
+                    print("zip\(num) : 成功")
+                    zipSaveFireStore(num: num, archivePath: archivePath)
+                }
+            }
+        }
+    }
+    
+    func zipSaveFireStore(num: Int, archivePath: URL) {
+        let dataStore = Firestore.firestore()
+        dataStore.collection("zip").document("data\(num)").setData([
+            "data": try! Data(contentsOf: archivePath)
+        ]) { err in
+            //DispatchQueue.main.async {
+                if let err = err {
+                    print("Error writing document: \(err)")
+                } else {
+                    print("zipをFireStoreに書き込み完了")
+                    if num == self.models.mesh_anchor.count - 1 {
+                        SVProgressHUD.dismiss()
+                        print("書き込み終了")
+                    }
+                }
+            //}
+        }
+    }
+    
+    func zipReadFireStore(completionHandler: @escaping () -> ()) {
+        let dataStore = Firestore.firestore()
+        dataStore.collection("zip").getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                for (i, document) in querySnapshot!.documents.enumerated() {
+                    //print(document)
+                    let data = document.data()["data"]! as! Data
+                    
+                    //保存
+                    guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                        fatalError("フォルダURL取得エラー")
+                    }
+                    let path_file_name = dirURL.appendingPathComponent( "zip\(i).zip" )
+                    let unzipURL = dirURL.appendingPathComponent("unzip\(i)")
+                    
+                    try? data.write(to: path_file_name)
+                    //解凍処理
+                    let unzip = SSZipArchive.unzipFile(atPath: path_file_name.path, toDestination: unzipURL.path)
+                    if unzip {
+                        print("解凍成功")
+                    }
+                    
+                }
+                completionHandler()
+            }
+        }
+    }
+    
+    func buildNode() {
+        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("フォルダURL取得エラー")
+        }
+        
+        let picURL = dirURL.appendingPathComponent("pic/pic.data")
+        let pic = UIImage(data: try! Data(contentsOf: picURL))
+        
+        for i in 0..<models.mesh_anchor.count {
+            let verticesURL = dirURL.appendingPathComponent("unzip\(i)/vertices.data")
+            let normalsURL = dirURL.appendingPathComponent("unzip\(i)/normals.data")
+            let facesURL = dirURL.appendingPathComponent("unzip\(i)/faces.data")
+            let texcoordsURL = dirURL.appendingPathComponent("unzip\(i)/texcoords.data")
+            
+            let vertexData = try! Data(contentsOf: verticesURL)
+            let normalData = try! Data(contentsOf: normalsURL)
+            
+            let faces = (try? decoder.decode([Int32].self, from: try! Data(contentsOf: facesURL)))!
+            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: try! Data(contentsOf: texcoordsURL)))!
+            let count = faces.count
+            
+            let verticeSource = SCNGeometrySource(
+                data: vertexData,
+                semantic: SCNGeometrySource.Semantic.vertex,
+                vectorCount: count,
+                usesFloatComponents: true,
+                componentsPerVector: 3,
+                bytesPerComponent: MemoryLayout<Float>.size,
+                dataOffset: 0,
+                dataStride: MemoryLayout<SIMD3<Float>>.size
+            )
+            let normalSource = SCNGeometrySource(
+                data: normalData,
+                semantic: SCNGeometrySource.Semantic.normal,
+                vectorCount: count,
+                usesFloatComponents: true,
+                componentsPerVector: 3,
+                bytesPerComponent: MemoryLayout<Float>.size,
+                dataOffset: MemoryLayout<Float>.size * 3,
+                dataStride: MemoryLayout<SIMD3<Float>>.size
+            )
+            let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
+            let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
+
+            let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
+            nodeGeometry.firstMaterial?.diffuse.contents = pic
+            
+            let node = SCNNode(geometry: nodeGeometry)
+            texmeshNode.addChildNode(node)
+        }
+    }
+    
+    //複数のファイルのzip化
+    private func toZips(data: [Data?], archivePath: String, targetFilePaths: [String]) -> Bool {
+        for (i,path) in targetFilePaths.enumerated() {
+            FileManager.default.createFile(atPath: path, contents: data[i], attributes: nil)
+        }
+        return SSZipArchive.createZipFile(atPath: archivePath, withFilesAtPaths: targetFilePaths)
+    }
+    
+    //単一ファイルのzip化
+    private func toZip(data: Data, archivePath: String, targetFilePaths: [String]) -> Bool {
+        targetFilePaths.forEach { path in
+            FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
+        }
+        return SSZipArchive.createZipFile(atPath: archivePath, withFilesAtPaths: targetFilePaths)
+    }
+    
+    //FireStoreに書き込み（新規作成，上書き）
+    @IBAction func setFireStore(_ sender: UIButton) {
+        let dataStore = Firestore.firestore()
+        
+        for i in 0..<models.mesh_anchor.count {
+            dataStore.collection("mesh").document("mesh\(i)").setData([//.addDocument(data: [
+                "mesh": models.mesh_anchor[i].mesh,
+                "texcoords": models.mesh_anchor[i].texcoords,
+                "vertices": models.mesh_anchor[i].vertices,
+                "normals": models.mesh_anchor[i].normals,
+                "faces": models.mesh_anchor[i].faces,
+                "count": models.mesh_anchor[i].vertice_count
+            ]) { err in
+                DispatchQueue.main.async {
+                    if let err = err {
+                        print("Error writing document: \(err)")
+                    }
+                }
+            }
+            print("set\(i):書き込み完了")
+        }
+        print("all set完了")
+    }
+    
+    @IBAction func updateFireStore(_ sender: UIButton) {
+        let dataStore = Firestore.firestore()
+        
+        let ref = dataStore.collection("mesh").document("mesh0")
+        ref.updateData([
+            "text100": "aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
+        }
+    }
+    
+    @IBAction func readFireStore(_ sender: UIButton) {
+        let dataStore = Firestore.firestore()
+//        let ref = dataStore.collection("chat").document("T5Jj3iUnDMCxBU0wfdM1")
+//        ref.getDocument { (document, error) in
+//            if let document = document, document.exists {
+//                //print(document.data()!["text"]!)
+//                let data = document.data()!["data"]!
+//                if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: data as! Data) {
+//                    self.sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
+//                    print(meshAnchor)
+//
+//                    self.anchors = []
+//                    self.anchors.append(meshAnchor)
+//                    let meshNode = BuildMeshNode(anchors: self.anchors)
+//                    meshNode.name = "meshNode"
+//                    self.sceneView.scene?.rootNode.addChildNode(meshNode)
+//                }
+//                //let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+//                //print("Document data: \(dataDescription)")
+//            } else {
+//                print("Document does not exist")
+//            }
+//        }
+        
+        dataStore.collection("mesh").getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                self.anchors = []
+                for document in querySnapshot!.documents {
+                    let data = document.data()["data"]!
+                    if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: data as! Data) {
+                        self.sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
+                        print(meshAnchor)
+                        
+                        self.anchors.append(meshAnchor)
+                        let meshNode = BuildMeshNode(anchors: self.anchors)
+                        meshNode.name = "meshNode"
+                        self.sceneView.scene?.rootNode.addChildNode(meshNode)
+                    }
+                }
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

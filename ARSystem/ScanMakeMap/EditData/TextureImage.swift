@@ -26,6 +26,9 @@ class TextureImage {
         // 指定された画像の大きさのコンテキストを用意
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         
+//        let context = UIGraphicsGetCurrentContext()
+//        context!.setFillColor(UIColor.white.cgColor)
+        
         var tate_count = -1
         for (i,image) in imageArray.enumerated() {
             if i % Int(yoko) == 0 {

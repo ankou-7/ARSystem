@@ -393,7 +393,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     //RGB画像
                     let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
                     let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                    let imageData = uiImage.jpegData(compressionQuality: 0.5) //toJPEGData()
+                    let imageData = uiImage.jpegData(compressionQuality: 0.25) //toJPEGData()
                     
                     let entity = MakeMap_parameta(cameraPosition:
                                                     Vector3Entity(x: cameraPosition.x,

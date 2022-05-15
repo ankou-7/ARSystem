@@ -123,6 +123,9 @@ class CalculateRenderer {
             Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
         }
         
+        print("BufferData : \(vertexData)")
+        print("Data : \(vertexData)")
+        
         let normalsData = Data(bytesNoCopy: new_normalsBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count! * 3, deallocator: .none)
         normals = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
         normals = normalsData.withUnsafeBytes {
@@ -161,6 +164,5 @@ class CalculateRenderer {
             models.mesh_anchor[num].vertice_count = face_count * 3
             models.texture_bool = 3
         }
-
     }
 }
