@@ -11,3 +11,12 @@ class ViewManagement {
     static var cellID: Int!
     
 }
+
+
+class ExViewManagement {
+        
+    static var sectionID: Int!
+    static var cellID: Int!
+    
+}
+

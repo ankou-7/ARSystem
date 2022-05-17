@@ -35,10 +35,10 @@ class BuildTextureMeshNode: SCNNode {
             let faces = (try? decoder.decode([Int32].self, from: result[i].faces))!
             let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: result[i].texcoords))!
             
-            print("vertexData\(i) : \(vertexData)")
-            print("normalData\(i) : \(normalData)")
-            print("faceData\(i) : \(result[i].faces!)")
-            print("texData\(i) : \(result[i].texcoords!)")
+//            print("vertexData\(i) : \(vertexData)")
+//            print("normalData\(i) : \(normalData)")
+//            print("faceData\(i) : \(result[i].faces!)")
+//            print("texData\(i) : \(result[i].texcoords!)")
             
             let verticeSource = SCNGeometrySource(
                 data: vertexData,

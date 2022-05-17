@@ -48,7 +48,41 @@ class GPUCalculateTexture {
         print("calcu終了")
         let elapsed = Date().timeIntervalSince(start)
         print("処理時間：\(elapsed)")
+        print("総ポリゴン数：\(calculateRenderer.sumPolygon)")
+        print("割り当てられたポリゴン数：\(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3)")
+        print("テクスチャ割り当て割合：\(Double(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3) / Double(calculateRenderer.sumPolygon))")
+        print("割り当てられなかったポリゴン数：\(calculateRenderer.texCount / 3)")
+        let st = """
+                    総ポリゴン数：\(calculateRenderer.sumPolygon)
+                    割り当てられたポリゴン数：\(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3)
+                    テクスチャ割り当て割合：\(Double(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3) / Double(calculateRenderer.sumPolygon))
+                    割り当てられなかったポリゴン数：\(calculateRenderer.texCount / 3)
+                  """
+        saveDocument(text: st)
+        
         completionHandler()
+    }
+    
+    func saveDocument(text: String) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            //フォルダ作成
+            let section_num = ViewManagement.sectionID!
+            let cell_num = ViewManagement.cellID!
+            let results = try! Realm().objects(Navi_SectionTitle.self)
+            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+            
+            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)/rate.txt")
+            do {
+                try text.write(to: archivePath, atomically: false, encoding: .utf8)
+            } catch {
+                print("Error: \(error)")
+            }
+        }
     }
     
     

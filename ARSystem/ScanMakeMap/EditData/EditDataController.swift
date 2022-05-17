@@ -22,6 +22,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var cell_num: Int!
     var models: Navi_Modelname!
     
+    var Ex_section_num: Int?
+    var Ex_cell_num: Int?
+    @IBOutlet weak var ExChangeButton: UIButton!
+    var cameraNode = SCNNode()
+    
+    let num: CGFloat = 5.0 //画像のサイズの縮尺率
     var current_model_num = 0 //現在表示しているモデルの番号を格納
     var database_model_num = 1 //読み込んだcellの中に格納されているモデル数
 
@@ -43,7 +49,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     var objectName_array: [String] = []
     
-    var cameraNode = SCNNode()
     var lastGestureScale: Float = 1.0
     
     @IBOutlet var left_modelbutton: UIButton!
@@ -83,6 +88,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         section_num = ViewManagement.sectionID!
         cell_num = ViewManagement.cellID!
         models = results[section_num].cells[cell_num].models[current_model_num]
+        database_model_num = results[section_num].cells[cell_num].models.count
+        
+        print(results[section_num].cells[cell_num].models)
         
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Loading･･･")
@@ -91,6 +99,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         sceneView.scene = scene
         //sceneView.allowsCameraControl = true
         sceneView.scene?.rootNode.addChildNode(LightNode())
+        cameraNode = CameraNode()
+        sceneView.scene?.rootNode.addChildNode(cameraNode)
         
         if results[section_num].cells[cell_num].models.count < 2 {
             right_modelbutton.isHidden = true
@@ -122,6 +132,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         self.colabStopButton.isHidden = true
         self.makeArrowButton.isHidden = true
         
+        print(results[section_num].cells[cell_num].models.count)
+        if results[section_num].cells[cell_num].models.count < 2 {
+            self.ExChangeButton.isHidden = true
+        }
+        
         //通信用設定
         self.peerID = MCPeerID(displayName: UIDevice.current.name)
         self.session = MCSession(peer: peerID)
@@ -147,8 +162,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-        let num: CGFloat = 5.0 //画像のサイズの縮尺率
-        
         for i in 0..<picCount {
             let uiimage = UIImage(data: models.pic[i].pic_data!)
             uiimage_array.append(uiimage!)
@@ -164,13 +177,34 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         for i in 0..<models.mesh_anchor.count {
             let mesh_data = models.mesh_anchor[i].mesh
-            print("meshData\(i) : \(mesh_data)")
+            //print("meshData\(i) : \(mesh_data)")
             if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
                 anchors.append(meshAnchor)
             }
         }
         
         print(try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: models.mesh_anchor[0].mesh!)!)
+        
+        //firestoreを監視
+//        let dataStore = Firestore.firestore()
+//        dataStore.collection("\(section_num!)\(cell_num!)").addSnapshotListener { querySnapshot, error in
+//                guard let snapshot = querySnapshot else {
+//                    print("Error fetching snapshots: \(error!)")
+//                    return
+//                }
+//                snapshot.documentChanges.forEach { diff in
+//                    if (diff.type == .added) {
+//                        print("add: ")//\(diff.document.data())")
+//                    }
+//                    if (diff.type == .modified) {
+//                        print("modified: ")//\(diff.document.data())")
+//                    }
+//                    if (diff.type == .removed) {
+//                        print("removed: ")//\(diff.document.data())")
+//                    }
+//                }
+//            }
+
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
             if models.texture_bool == 0 {
@@ -186,25 +220,22 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         })
     }
     
+    @IBAction func tappedExButton(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "ChoiceExperience", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceExperienceViewController") as! ChoiceExperienceViewController
+        vc.presentationController?.delegate = self
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    
     @IBAction func TapedSaveButton(_ sender: UIButton) {
         sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
-        
         DispatchQueue.main.async {
             SVProgressHUD.show()
             self.savePicDocument()
+            //self.saveWorldDataDocument()
             self.saveDocument()
-            
         }
-        
-//            for i in 0..<models.mesh_anchor.count {
-//                saveDocument(num: i) { [self] in
-//                    zipSaveFireStore(num: i)
-//                }
-////                if i == models.mesh_anchor.count - 1 {
-////                    print("書き込み終了")
-////                    SVProgressHUD.dismiss()
-////                }
-//            }
     }
     
     @IBAction func ReadAndBuild(_ sender: UIButton) {
@@ -235,13 +266,44 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             } else {
                 print("zip化成功")
                 let dataStore = Firestore.firestore()
-                dataStore.collection("zip").document("pic").setData([
+                dataStore.collection("\(section_num!)\(cell_num!)").document("pic").setData([
                     "data": try! Data(contentsOf: archivePath)
                 ]) { err in
                     if let err = err {
                         print("Error writing document: \(err)")
                     } else {
-                        print("zipPicをFireStoreに書き込み完了")
+                        //print("zipPicをFireStoreに書き込み完了")
+                    }
+                }
+            }
+        }
+    }
+    
+    func saveWorldDataDocument() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            //フォルダ作成
+            let directory = url.appendingPathComponent("world", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+            
+            let archivePath = url.appendingPathComponent("world/world.zip")
+            let targetFilePaths = ["\(url.appendingPathComponent("world/world.data").path)"]
+            let data = [models.worlddata]
+            if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
+                print("zip化失敗")
+            } else {
+                print("zip化成功")
+                let dataStore = Firestore.firestore()
+                dataStore.collection("\(section_num!)\(cell_num!)").document("world").setData([
+                    "data": try! Data(contentsOf: archivePath)
+                ]) { err in
+                    if let err = err {
+                        print("Error writing document: \(err)")
+                    } else {
+                        //print("zipPicをFireStoreに書き込み完了")
                     }
                 }
             }
@@ -270,7 +332,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                 if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
                     print("zip化失敗")
                 } else {
-                    print("zip\(num) : 成功")
+                    //print("zip\(num) : 成功")
                     zipSaveFireStore(num: num, archivePath: archivePath)
                 }
             }
@@ -279,14 +341,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     func zipSaveFireStore(num: Int, archivePath: URL) {
         let dataStore = Firestore.firestore()
-        dataStore.collection("zip").document("data\(num)").setData([
+        dataStore.collection("\(section_num!)\(cell_num!)").document("data\(num)").setData([
             "data": try! Data(contentsOf: archivePath)
         ]) { err in
             //DispatchQueue.main.async {
                 if let err = err {
                     print("Error writing document: \(err)")
                 } else {
-                    print("zipをFireStoreに書き込み完了")
+                    //print("zipをFireStoreに書き込み完了")
                     if num == self.models.mesh_anchor.count - 1 {
                         SVProgressHUD.dismiss()
                         print("書き込み終了")
@@ -298,7 +360,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     func zipReadFireStore(completionHandler: @escaping () -> ()) {
         let dataStore = Firestore.firestore()
-        dataStore.collection("zip").getDocuments() { (querySnapshot, err) in
+        dataStore.collection("\(section_num!)\(cell_num!)").getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
@@ -317,7 +379,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                     //解凍処理
                     let unzip = SSZipArchive.unzipFile(atPath: path_file_name.path, toDestination: unzipURL.path)
                     if unzip {
-                        print("解凍成功")
+                        //print("解凍成功")
                     }
                     
                 }
@@ -331,8 +393,20 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             fatalError("フォルダURL取得エラー")
         }
         
-        let picURL = dirURL.appendingPathComponent("pic/pic.data")
-        let pic = UIImage(data: try! Data(contentsOf: picURL))
+        //let picURL = dirURL.appendingPathComponent("pic/pic.data")
+        //let pic = UIImage(data: try! Data(contentsOf: picURL))
+        
+        var pic: UIImage!
+        let docRef = Firestore.firestore().collection("\(section_num!)\(cell_num!)").document("pic")
+        docRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let data = document.get("data") as! Data //data()!["data"]! as! Data
+                pic = UIImage(data: data)
+                print("pic読み込み")
+            } else {
+                print("Document does not exist")
+            }
+        }
         
         for i in 0..<models.mesh_anchor.count {
             let verticesURL = dirURL.appendingPathComponent("unzip\(i)/vertices.data")
@@ -392,90 +466,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
         }
         return SSZipArchive.createZipFile(atPath: archivePath, withFilesAtPaths: targetFilePaths)
-    }
-    
-    //FireStoreに書き込み（新規作成，上書き）
-    @IBAction func setFireStore(_ sender: UIButton) {
-        let dataStore = Firestore.firestore()
-        
-        for i in 0..<models.mesh_anchor.count {
-            dataStore.collection("mesh").document("mesh\(i)").setData([//.addDocument(data: [
-                "mesh": models.mesh_anchor[i].mesh,
-                "texcoords": models.mesh_anchor[i].texcoords,
-                "vertices": models.mesh_anchor[i].vertices,
-                "normals": models.mesh_anchor[i].normals,
-                "faces": models.mesh_anchor[i].faces,
-                "count": models.mesh_anchor[i].vertice_count
-            ]) { err in
-                DispatchQueue.main.async {
-                    if let err = err {
-                        print("Error writing document: \(err)")
-                    }
-                }
-            }
-            print("set\(i):書き込み完了")
-        }
-        print("all set完了")
-    }
-    
-    @IBAction func updateFireStore(_ sender: UIButton) {
-        let dataStore = Firestore.firestore()
-        
-        let ref = dataStore.collection("mesh").document("mesh0")
-        ref.updateData([
-            "text100": "aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        ]) { err in
-            if let err = err {
-                print("Error updating document: \(err)")
-            } else {
-                print("Document successfully updated")
-            }
-        }
-    }
-    
-    @IBAction func readFireStore(_ sender: UIButton) {
-        let dataStore = Firestore.firestore()
-//        let ref = dataStore.collection("chat").document("T5Jj3iUnDMCxBU0wfdM1")
-//        ref.getDocument { (document, error) in
-//            if let document = document, document.exists {
-//                //print(document.data()!["text"]!)
-//                let data = document.data()!["data"]!
-//                if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: data as! Data) {
-//                    self.sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
-//                    print(meshAnchor)
-//
-//                    self.anchors = []
-//                    self.anchors.append(meshAnchor)
-//                    let meshNode = BuildMeshNode(anchors: self.anchors)
-//                    meshNode.name = "meshNode"
-//                    self.sceneView.scene?.rootNode.addChildNode(meshNode)
-//                }
-//                //let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
-//                //print("Document data: \(dataDescription)")
-//            } else {
-//                print("Document does not exist")
-//            }
-//        }
-        
-        dataStore.collection("mesh").getDocuments() { (querySnapshot, err) in
-            if let err = err {
-                print("Error getting documents: \(err)")
-            } else {
-                self.anchors = []
-                for document in querySnapshot!.documents {
-                    let data = document.data()["data"]!
-                    if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: data as! Data) {
-                        self.sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
-                        print(meshAnchor)
-                        
-                        self.anchors.append(meshAnchor)
-                        let meshNode = BuildMeshNode(anchors: self.anchors)
-                        meshNode.name = "meshNode"
-                        self.sceneView.scene?.rootNode.addChildNode(meshNode)
-                    }
-                }
-            }
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -604,10 +594,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.sceneView)
         let hitResults = sceneView.hitTest(location, options: [:])
-        if !hitResults.isEmpty {
-            print("0:\(String(describing: hitResults[0].node.name))")
-            print("1:\(String(describing: hitResults[0].node.parent?.name))")
-        }
+//        if !hitResults.isEmpty {
+//            print("0:\(String(describing: hitResults[0].node.name))")
+//            print("1:\(String(describing: hitResults[0].node.parent?.name))")
+//        }
         for result in hitResults {
             if result.node.parent?.name == "axis" {
                 sceneView.allowsCameraControl = false
@@ -927,27 +917,119 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     //MARK: - その他
     @IBAction func right_Change(_ sender: UIButton) {
         if current_model_num < database_model_num - 1 {
+            //print("切り替え")
             current_model_num += 1
+            models = results[section_num].cells[cell_num].models[current_model_num]
             model_kirikae_hyouji()
         }
     }
     
     @IBAction func left_change(_ sender: UIButton) {
         if current_model_num > 0 {
+            //print("切り替え")
             current_model_num -= 1
+            models = results[section_num].cells[cell_num].models[current_model_num]
             model_kirikae_hyouji()
         }
     }
     
     func model_kirikae_hyouji() {
         delete_mesh()
-        //load_anchor()
-        let meshNode = BuildMeshNode(anchors: anchors)
-        meshNode.name = "meshNode"
-        sceneView.scene?.rootNode.addChildNode(meshNode)
+        
+        picCount = models.pic.count
+        yoko = 17.0
+        tate = ceil(Float(picCount)/yoko)
+        
+        uiimage_array = []
+        for i in 0..<picCount {
+            let uiimage = UIImage(data: models.pic[i].pic_data!)
+            uiimage_array.append(uiimage!)
+        }
+        //16384以下にする必要あり
+        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+        let uiImage = new_uiimage
+        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_pic = imageData
+        }
+        
+        anchors = []
+        for i in 0..<models.mesh_anchor.count {
+            let mesh_data = models.mesh_anchor[i].mesh
+            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+                anchors.append(meshAnchor)
+            }
+        }
+        
+        if models.texture_bool == 0 {
+            let meshNode = BuildMeshNode(anchors: anchors)
+            meshNode.name = "meshNode"
+            sceneView.scene?.rootNode.addChildNode(meshNode)
+            SVProgressHUD.dismiss()
+        } else if models.texture_bool != 0 {
+            texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+            sceneView.scene?.rootNode.addChildNode(texmeshNode)
+            SVProgressHUD.dismiss()
+        }
     }
     
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
+    
+    var Tapped_ExButtonCount = -1
+    @IBAction func changeImage_model(_ sender: UIButton) {
+        let ExModels = results[section_num!].cells[cell_num!].models[1]
+        
+        Tapped_ExButtonCount += 1
+        if Tapped_ExButtonCount == ExModels.pic.count {
+            Tapped_ExButtonCount = 0
+//            let move = SCNAction.move(to: SCNVector3(0,0,0), duration: 0)
+//            let rotation = SCNAction.rotateBy(x: CGFloat(0), y: CGFloat(0), z: CGFloat(0), duration: 0)
+//            cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
+//                print("camera移動")
+//            })
+        }
+        print(Tapped_ExButtonCount)
+        
+        imageView.image = UIImage(data: ExModels.pic[Tapped_ExButtonCount].pic_data)
+        
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from: ExModels.json[Tapped_ExButtonCount].json_data!)
+        print(json_data)
+        
+        let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+                                        json_data!.cameraPosition.y,
+                                        json_data!.cameraPosition.z)
+        let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+                                           json_data!.cameraEulerAngles.y,
+                                            json_data!.cameraEulerAngles.z)
+        let move = SCNAction.move(to: cameraPosition, duration: 0)
+        let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+        cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
+            print("camera移動")
+        })
+        
+    }
+    
+}
+
+//dismissをを検知
+extension EditDataController: UIAdaptivePresentationControllerDelegate {
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+      print("dismiss")
+      
+      if (ExViewManagement.sectionID != nil) {
+          Ex_section_num = ExViewManagement.sectionID
+          Ex_cell_num = ExViewManagement.cellID
+          print(Ex_section_num!, Ex_cell_num!)
+          
+          ExChangeButton.isHidden = false
+          
+          
+      }
+      
+  }
+    
+    
 }

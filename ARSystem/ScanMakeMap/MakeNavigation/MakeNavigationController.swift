@@ -97,6 +97,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         for _ in 1...viewModel.count {
             menu_array.append(false)
         }
+        self.menu_array[0] = true
         
         numGridPoints_slider.value = Float(numGridPoints / 100)
         numGridPoints_label.text = "\(numGridPoints)個/frame"

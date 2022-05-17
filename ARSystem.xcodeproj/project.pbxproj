@@ -84,6 +84,9 @@
 		CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */; };
 		CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */; };
 		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
+		CF66630528344A1D0012F0DB /* ChoiceExperience.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF66630428344A1D0012F0DB /* ChoiceExperience.storyboard */; };
+		CF66630728344A360012F0DB /* ChoiceExperienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF66630628344A360012F0DB /* ChoiceExperienceViewController.swift */; };
+		CF666309283457CA0012F0DB /* CameraNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF666308283457CA0012F0DB /* CameraNode.swift */; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
 		CF6BC321262AE7D900E9B083 /* AddDataCellChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */; };
@@ -212,6 +215,9 @@
 		CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckAllData.storyboard; sourceTree = "<group>"; };
 		CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataChoiceController.swift; sourceTree = "<group>"; };
 		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
+		CF66630428344A1D0012F0DB /* ChoiceExperience.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceExperience.storyboard; sourceTree = "<group>"; };
+		CF66630628344A360012F0DB /* ChoiceExperienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceExperienceViewController.swift; sourceTree = "<group>"; };
+		CF666308283457CA0012F0DB /* CameraNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraNode.swift; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
 		CF6BC320262AE7D900E9B083 /* AddDataCellChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataCellChoiceController.swift; sourceTree = "<group>"; };
@@ -300,6 +306,7 @@
 				26AAA1F02563C802008FE5EB /* AppDelegate.swift */,
 				26AAA2342563C996008FE5EB /* Information.swift */,
 				CF688B932736844A00F863AF /* StructInfo.swift */,
+				CFE717EA281130C200B55073 /* ViewManagement.swift */,
 				CF3D805F262B50B7007904E6 /* ScanMakeMap */,
 				CF30EF46262BAF0A00C13B66 /* AllPopOver */,
 				CF53D259281C2A38007F06C2 /* Others */,
@@ -489,6 +496,7 @@
 				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
+				CF66630328344A000012F0DB /* Experience */,
 				CF96615E280F360800D4C8BA /* TextureImage.swift */,
 				CF966154280EB7A200D4C8BA /* OperateObject.swift */,
 				CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */,
@@ -515,13 +523,21 @@
 			children = (
 				26AAA1F62563C802008FE5EB /* Main.storyboard */,
 				26AAA2312563C996008FE5EB /* TitleViewController.swift */,
-				CFE717EA281130C200B55073 /* ViewManagement.swift */,
 				CF0F1667272C62A700E6F9ED /* MakeMap */,
 				CFD69E9426C50DA500E51949 /* ChoiceData */,
 				CF0D73F1271CA13E00A2BB75 /* ChoiceData2 */,
 				CF30EF6F262D959300C13B66 /* MapExpansion */,
 			);
 			path = Others;
+			sourceTree = "<group>";
+		};
+		CF66630328344A000012F0DB /* Experience */ = {
+			isa = PBXGroup;
+			children = (
+				CF66630428344A1D0012F0DB /* ChoiceExperience.storyboard */,
+				CF66630628344A360012F0DB /* ChoiceExperienceViewController.swift */,
+			);
+			path = Experience;
 			sourceTree = "<group>";
 		};
 		CF6BC314262AE43700E9B083 /* AddDataToCell */ = {
@@ -560,6 +576,7 @@
 			isa = PBXGroup;
 			children = (
 				CF96615A280F237E00D4C8BA /* LightNode.swift */,
+				CF666308283457CA0012F0DB /* CameraNode.swift */,
 				CF966160280F3DE100D4C8BA /* BuildMeshNode.swift */,
 				CF966162280F4E9200D4C8BA /* BuildTextureMeshNode.swift */,
 				CF96615C280F24B100D4C8BA /* ArrowNode.swift */,
@@ -716,6 +733,7 @@
 				26AAA1FD2563C804008FE5EB /* LaunchScreen.storyboard in Resources */,
 				CF30EF84262D97EC00C13B66 /* MapExpansionTransmit.storyboard in Resources */,
 				26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */,
+				CF66630528344A1D0012F0DB /* ChoiceExperience.storyboard in Resources */,
 				CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */,
 				CF0BB064281D763E004086C8 /* VideoView.storyboard in Resources */,
 				CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */,
@@ -821,6 +839,7 @@
 				CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */,
 				CF96615D280F24B100D4C8BA /* ArrowNode.swift in Sources */,
 				CF8804A927BF0BC700146230 /* ColabARViewController.swift in Sources */,
+				CF666309283457CA0012F0DB /* CameraNode.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
 				CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */,
@@ -850,6 +869,7 @@
 				26AAA25F2563C998008FE5EB /* MenuController.swift in Sources */,
 				CF0BAFF7281C8594004086C8 /* Config.swift in Sources */,
 				CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */,
+				CF66630728344A360012F0DB /* ChoiceExperienceViewController.swift in Sources */,
 				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
 				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
 				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,

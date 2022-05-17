@@ -496,6 +496,7 @@ kernel void calcu4(constant float3 *vertices [[ buffer(0) ]],
     //meshUniforms[id].normals = normals[faces[int(id)]];
 }
 
+//テクスチャ割り当て不可能なメッシュも含める
 kernel void calcu5(constant float *vertices [[ buffer(0) ]],
                    constant float *normals [[ buffer(1) ]],
                    constant int *faces [[ buffer(2) ]],
@@ -558,11 +559,12 @@ kernel void calcu5(constant float *vertices [[ buffer(0) ]],
             texcoords[id*3 + 1] = facecoord[id*3 + 1];
             texcoords[id*3 + 2] = facecoord[id*3 + 2];
             
-            trys[0] += 3;
+            trys[0] += 1;
         }
     }
 }
 
+//テクスチャ割り当て可能なメッシュだけ含める
 kernel void calcu50(constant float *vertices [[ buffer(0) ]],
                    constant float *normals [[ buffer(1) ]],
                    constant int *faces [[ buffer(2) ]],
@@ -644,7 +646,7 @@ kernel void calcu50(constant float *vertices [[ buffer(0) ]],
             new_faces[id*3 + 1] = id*3 + 1;
             new_faces[id*3 + 2] = id*3 + 2;
             
-            trys[0] += 3;
+            trys[0] += 1;
             break;
         }
     }

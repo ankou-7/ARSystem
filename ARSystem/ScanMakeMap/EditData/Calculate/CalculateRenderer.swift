@@ -34,6 +34,10 @@ class CalculateRenderer {
     
     private var anchorUniformsBuffer: MetalBuffer<anchorUniforms>
     
+    //ポリゴン数の合計
+    var sumPolygon = 0
+    var texCount = 0
+    
     init(models: Navi_Modelname, anchor: [ARMeshAnchor], calcuUniforms: [float4x4], depth: [depthPosition], calculateParameta: calculateParameta) {
         
         self.models = models
@@ -62,7 +66,8 @@ class CalculateRenderer {
         
         face_count = anchors[num].geometry.faces.count
         print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
-        print("id数(面の数)：\(anchors[num].geometry.faces.count)")
+        print("id数(面の数:ポリゴン数)：\(anchors[num].geometry.faces.count)")
+        sumPolygon += anchors[num].geometry.faces.count
         
         //main処理
         encoder.setBuffer(anchors[num].geometry.vertices.buffer, offset: 0, index: 0)
@@ -123,8 +128,7 @@ class CalculateRenderer {
             Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
         }
         
-        print("BufferData : \(vertexData)")
-        print("Data : \(vertexData)")
+        //print("Data : \(vertexData)")
         
         let normalsData = Data(bytesNoCopy: new_normalsBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count! * 3, deallocator: .none)
         normals = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
@@ -142,6 +146,20 @@ class CalculateRenderer {
         texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count! * 3)
         texcoords = texcoordsData.withUnsafeBytes {
             Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
+        }
+        
+//        let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<Int>.stride, deallocator: .none)
+//        var tryCount = [0]
+//        tryCount = tryData.withUnsafeBytes{
+//            Array(UnsafeBufferPointer<Int>(start: $0, count: tryData.count/MemoryLayout<Int>.size))}
+//        print("count：\(tryCount)")
+        //print(texcoords)
+        
+        
+        for t in texcoords {
+            if t == SIMD2<Float>(0.0, 0.0) {
+                texCount += 1
+            }
         }
         
         save_model(num: num)

@@ -543,6 +543,28 @@
                                     <action selector="makeArrow:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="CJ4-ca-4sK"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5ID-4j-M1J">
+                                <rect key="frame" x="114" y="1119" width="90" height="40"/>
+                                <color key="backgroundColor" systemColor="systemTealColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="2Jd-ny-yNF"/>
+                                    <constraint firstAttribute="width" constant="90" id="ZaJ-fq-Hb0"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <color key="tintColor" systemColor="systemBlueColor"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Ex">
+                                    <color key="titleColor" systemColor="systemBackgroundColor"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="tappedExButton:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="Mfh-Op-IDW"/>
+                                </connections>
+                            </button>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chc-Fk-Ce6">
                                 <rect key="frame" x="509" y="49" width="240" height="40"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="8K8-Nq-RGy">
@@ -648,49 +670,33 @@
                                     <action selector="tap_remoteSupport:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="vgD-29-1bt"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bXi-q1-hZ9">
-                                <rect key="frame" x="88" y="1040" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="40K-ct-aPI">
+                                <rect key="frame" x="20" y="1128" width="57" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="V8t-Iz-sD7"/>
+                                    <constraint firstAttribute="width" constant="57" id="gRB-xq-Afk"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="setFireStore:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="wWZ-dm-2eO"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Yv-9E-sCy">
-                                <rect key="frame" x="88" y="1079" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="updateFireStore:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="kOI-DU-aTi"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B0o-ap-CyQ">
-                                <rect key="frame" x="88" y="1128" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="readFireStore:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="sEk-wN-fsJ"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="40K-ct-aPI">
-                                <rect key="frame" x="88" y="772" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Build"/>
                                 <connections>
                                     <action selector="ReadAndBuild:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="N0p-m3-NsK"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8OB-sL-DCU">
-                                <rect key="frame" x="88" y="697" width="67" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8OB-sL-DCU">
+                                <rect key="frame" x="20" y="1103" width="55.5" height="31"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Save"/>
                                 <connections>
                                     <action selector="TapedSaveButton:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="J5c-KJ-gM5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGs-8z-h4T">
+                                <rect key="frame" x="20" y="914" width="99" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="切り替え"/>
+                                <connections>
+                                    <action selector="changeImage_model:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="KdM-kc-gLw"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -702,11 +708,13 @@
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" id="1Rz-aP-jUL"/>
                             <constraint firstItem="chc-Fk-Ce6" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="2R8-1Y-deP"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="fVa-9P-J8W" secondAttribute="trailing" constant="30" id="403-cW-zvu"/>
+                            <constraint firstItem="8OB-sL-DCU" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="20" id="47p-5f-dEi"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="HS4-Ar-sRK" secondAttribute="bottom" constant="15" id="5T4-k3-CFg"/>
                             <constraint firstItem="ZSf-9a-1Nf" firstAttribute="leading" secondItem="HS4-Ar-sRK" secondAttribute="trailing" constant="25" id="6NR-Lt-2xG"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="bg8-nC-QUg" secondAttribute="bottom" constant="103" id="7FW-UI-9pc"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="gAr-g0-QhN" secondAttribute="trailing" constant="30" id="9Xd-5X-IFh"/>
                             <constraint firstItem="gvt-cA-fnd" firstAttribute="top" secondItem="FPe-9M-JqV" secondAttribute="bottom" constant="20" id="ARb-KS-iDX"/>
+                            <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="8OB-sL-DCU" secondAttribute="bottom" constant="40" id="EfE-a1-Uek"/>
                             <constraint firstItem="peU-gA-goK" firstAttribute="top" secondItem="Fjr-no-xHa" secondAttribute="bottom" constant="20" id="FLJ-gN-hCC"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="gvt-cA-fnd" secondAttribute="trailing" constant="30" id="Fue-mz-3Na"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="Amz-lM-Q8r" secondAttribute="bottom" constant="15" id="HZT-LV-phH"/>
@@ -718,8 +726,11 @@
                             <constraint firstItem="LDa-i1-7Tp" firstAttribute="top" secondItem="peU-gA-goK" secondAttribute="bottom" constant="30" id="Nh8-xS-VV8"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="W9t-4u-SvZ" secondAttribute="bottom" constant="103" id="O0H-8b-0Sa"/>
                             <constraint firstItem="hEE-xb-3P0" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="Oen-Vd-eV5"/>
+                            <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="5ID-4j-M1J" secondAttribute="bottom" constant="15" id="RzG-9g-A1T"/>
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="jZi-Ii-d2G" secondAttribute="top" id="V2N-wu-pTu"/>
+                            <constraint firstItem="Amz-lM-Q8r" firstAttribute="leading" secondItem="5ID-4j-M1J" secondAttribute="trailing" constant="40" id="WIc-WG-jXc"/>
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="bottom" secondItem="uxY-IE-l79" secondAttribute="bottom" id="XUr-2E-Srh"/>
+                            <constraint firstItem="40K-ct-aPI" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="20" id="XV4-xs-dpw"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" id="ZgC-Za-6SF"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="YBp-Mr-SRK" secondAttribute="trailing" constant="30" id="aoD-T7-WLF"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="ZSf-9a-1Nf" secondAttribute="bottom" constant="15" id="bsV-YP-hbQ"/>
@@ -730,6 +741,7 @@
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="jZi-Ii-d2G" secondAttribute="trailing" constant="30" id="eDc-0T-DUz"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="Fjr-no-xHa" secondAttribute="trailing" constant="30" id="gqU-r0-gOV"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="ZSf-9a-1Nf" secondAttribute="trailing" constant="30" id="hfU-gP-ESP"/>
+                            <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="40K-ct-aPI" secondAttribute="bottom" constant="15" id="ivW-NL-7lf"/>
                             <constraint firstItem="gsO-eN-2KE" firstAttribute="top" secondItem="hEE-xb-3P0" secondAttribute="bottom" constant="80" id="jNO-j4-8Z0"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="ZSf-9a-1Nf" secondAttribute="bottom" constant="15" id="ly2-7j-zgV"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" id="msP-xp-aAQ"/>
@@ -738,6 +750,7 @@
                             <constraint firstItem="jZi-Ii-d2G" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="ppL-UQ-9dG"/>
                             <constraint firstItem="Hco-Fc-Ets" firstAttribute="leading" secondItem="Amz-lM-Q8r" secondAttribute="trailing" constant="30" id="qxb-0K-K8q"/>
                             <constraint firstItem="gsO-eN-2KE" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="1008" id="s1e-Uj-Reh"/>
+                            <constraint firstItem="8OB-sL-DCU" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="20" id="tPU-YO-Suf"/>
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" id="uIJ-o6-2HG"/>
                             <constraint firstItem="gsO-eN-2KE" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="uLE-NJ-L1c"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="Hco-Fc-Ets" secondAttribute="bottom" constant="15" id="wpp-pb-Gvj"/>
@@ -746,6 +759,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="ExChangeButton" destination="WGs-8z-h4T" id="36a-uk-uOE"/>
                         <outlet property="browserButton" destination="gAr-g0-QhN" id="uVh-RA-ydY"/>
                         <outlet property="colabInfoLabel" destination="PTE-O2-UKJ" id="YcD-8k-cvZ"/>
                         <outlet property="colabStopButton" destination="jZi-Ii-d2G" id="U4p-8c-zKR"/>
@@ -764,7 +778,7 @@
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="109" y="2354"/>
+            <point key="canvasLocation" x="108.63309352517986" y="2353.7688442211056"/>
         </scene>
         <!--CheckAR View Controller-->
         <scene sceneID="olE-fQ-YXY">
