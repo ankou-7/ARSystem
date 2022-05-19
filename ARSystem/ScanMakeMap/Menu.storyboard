@@ -18,69 +18,69 @@
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9uf-O0-vE0">
-                                <rect key="frame" x="366" y="576" width="102" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="新規作成"/>
-                                <connections>
-                                    <action selector="to_MakeNavigationController:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="HWJ-jv-wJJ"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7N4-9T-zgr">
-                                <rect key="frame" x="391.5" y="718" width="51" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <state key="normal" title="編集"/>
-                                <connections>
-                                    <action selector="to_NavigationDataCell1:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="oZG-Sz-opm"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="74" translatesAutoresizingMaskIntoConstraints="NO" id="ZrF-Vp-10b">
+                                <rect key="frame" x="315.5" y="402" width="203" height="390"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9uf-O0-vE0">
+                                        <rect key="frame" x="0.0" y="0.0" width="203" height="42"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <state key="normal" title="新規作成"/>
+                                        <connections>
+                                            <action selector="to_MakeNavigationController:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="HWJ-jv-wJJ"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7N4-9T-zgr">
+                                        <rect key="frame" x="0.0" y="116" width="203" height="42"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <state key="normal" title="編集"/>
+                                        <connections>
+                                            <action selector="to_NavigationDataCell1:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="oZG-Sz-opm"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FyK-zE-6XN">
+                                        <rect key="frame" x="0.0" y="232" width="203" height="42"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <menu key="menu" id="pzL-fb-CaA">
+                                            <children>
+                                                <command title="Item 1" id="QGR-bJ-WhE"/>
+                                                <command title="Item 2" id="geL-KN-Jkd"/>
+                                            </children>
+                                        </menu>
+                                        <state key="normal" title="コラボレーション"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gzl-1R-M5c">
+                                        <rect key="frame" x="0.0" y="348" width="203" height="42"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="WebRTC"/>
+                                        <connections>
+                                            <action selector="to_VRView:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="J3i-ST-E3m"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QnF-0k-LZU">
-                                <rect key="frame" x="353.5" y="1002" width="127" height="42"/>
+                                <rect key="frame" x="353.5" y="994" width="127" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="データ閲覧"/>
                                 <connections>
                                     <action selector="to_NavigationDataCell1_eturan:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="fsL-RI-jFw"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FyK-zE-6XN">
-                                <rect key="frame" x="315.5" y="860" width="203" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <menu key="menu" id="pzL-fb-CaA">
-                                    <children>
-                                        <command title="Item 1" id="QGR-bJ-WhE"/>
-                                        <command title="Item 2" id="geL-KN-Jkd"/>
-                                    </children>
-                                </menu>
-                                <state key="normal" title="コラボレーション"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gzl-1R-M5c">
-                                <rect key="frame" x="265" y="323" width="77" height="44"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="VR"/>
-                                <connections>
-                                    <action selector="to_VRView:" destination="TTu-Tq-oeo" eventType="touchUpInside" id="J3i-ST-E3m"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eXi-2l-wof"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="7N4-9T-zgr" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="9Q5-Jr-cKG"/>
-                            <constraint firstItem="7N4-9T-zgr" firstAttribute="top" secondItem="9uf-O0-vE0" secondAttribute="bottom" constant="100" id="GMK-70-VDS"/>
-                            <constraint firstItem="9uf-O0-vE0" firstAttribute="centerY" secondItem="Q9m-2u-PHp" secondAttribute="centerY" id="OYI-3N-TQr"/>
-                            <constraint firstItem="QnF-0k-LZU" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="Sae-9O-JCI"/>
-                            <constraint firstItem="QnF-0k-LZU" firstAttribute="top" secondItem="FyK-zE-6XN" secondAttribute="bottom" constant="100" id="ruU-lv-Neq"/>
-                            <constraint firstItem="9uf-O0-vE0" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="sPp-b1-4Tw"/>
-                            <constraint firstItem="FyK-zE-6XN" firstAttribute="top" secondItem="7N4-9T-zgr" secondAttribute="bottom" constant="100" id="xKh-V0-9wn"/>
-                            <constraint firstItem="FyK-zE-6XN" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="xQe-wN-ZMe"/>
+                            <constraint firstItem="ZrF-Vp-10b" firstAttribute="centerY" secondItem="Q9m-2u-PHp" secondAttribute="centerY" id="Apj-U3-dcV"/>
+                            <constraint firstItem="QnF-0k-LZU" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="Gdk-JQ-i6V"/>
+                            <constraint firstItem="ZrF-Vp-10b" firstAttribute="centerX" secondItem="Q9m-2u-PHp" secondAttribute="centerX" id="Zke-6C-oZJ"/>
+                            <constraint firstItem="QnF-0k-LZU" firstAttribute="centerY" secondItem="Q9m-2u-PHp" secondAttribute="centerY" multiplier="1.7" id="ka6-TW-4aw"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="fh9-Dx-k77">
                         <barButtonItem key="leftBarButtonItem" style="plain" id="XiU-9P-ubd">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="fill" buttonType="system" lineBreakMode="middleTruncation" id="8DI-Tv-RhF">
-                                <rect key="frame" x="20" y="3" width="185" height="38"/>
+                                <rect key="frame" x="20" y="6" width="185" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.backward" catalog="system" title="拡張メニュー">

@@ -143,6 +143,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         contentVC.modalPresentationStyle = .popover
         contentVC.preferredContentSize = CGSize(width: 300, height: 400)
         contentVC.menu_array = menu_array
+        print(menu_array)
         
         guard let popoverPresentationController = contentVC.popoverPresentationController else { return }
         
@@ -240,8 +241,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 else if self.menu_array[3] == true {
                     self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
                 }
-                
-                //self.parameta_flag.toggle()
+
                 
                 //内部パラメータ保存用
                 let realm = try! Realm()
@@ -617,7 +617,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         }
     }
     
+    var check_flag = false
+    
     func to_CheckDataViewController() {
+        check_flag = true
         timer.invalidate()
         let storyboard = UIStoryboard(name: "CheckData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataViewController") as! CheckDataViewController
@@ -662,10 +665,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 extension MakeNavigationController: UIAdaptivePresentationControllerDelegate {
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
       print("dismiss")
-      sceneView.session.run(configuration, options: [])
       
-      self.mapping_flag = true
-      self.parameta_flag = true
-      timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+      if check_flag == true {
+          sceneView.session.run(configuration, options: [])
+          
+          self.mapping_flag = true
+          self.parameta_flag = true
+          timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+          self.check_flag = false
+      }
   }
 }

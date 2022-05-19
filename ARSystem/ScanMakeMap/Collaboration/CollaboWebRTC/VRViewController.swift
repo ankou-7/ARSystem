@@ -182,7 +182,7 @@ class VRViewController: UIViewController {
         sceneView.scene = scene
         
         if results.count > 0 {
-            let models = results[0].cells[1].models[0]
+            let models = results[0].cells[0].models[0]
             for i in 0..<models.mesh_anchor.count {
                 let mesh_data = models.mesh_anchor[i].mesh
                 if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
@@ -197,7 +197,7 @@ class VRViewController: UIViewController {
     
     @IBAction func sendDidTap(_ sender: UIButton) {
         print("sendDidTap")
-        let models = results[0].cells[1].models[0]
+        let models = results[0].cells[0].models[0]
         
         guard let typeData = try? NSKeyedArchiver.archivedData(withRootObject: "メッシュ送信開始:\(anchors.count)" as NSString, requiringSecureCoding: true) else {
             return
