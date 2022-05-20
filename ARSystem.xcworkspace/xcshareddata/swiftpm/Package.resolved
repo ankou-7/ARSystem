@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jjjkkkjjj/Matft",
       "state" : {
-        "branch" : "master",
-        "revision" : "64d549408a68c3b75b6234471138e3ae6d868e95"
+        "revision" : "75840c173298baa97555cabda6f6f16d5ec67af7",
+        "version" : "0.2.10"
       }
     },
     {

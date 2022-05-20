@@ -69,19 +69,32 @@ class GPUCalculateTexture {
             let section_num = ViewManagement.sectionID!
             let cell_num = ViewManagement.cellID!
             let results = try! Realm().objects(Navi_SectionTitle.self)
-            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)", isDirectory: true)
+            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)", isDirectory: true)
             do {
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
             } catch {
                 print("失敗した")
             }
             
-            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)/rate.txt")
+            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/rate.txt")
             do {
                 try text.write(to: archivePath, atomically: false, encoding: .utf8)
             } catch {
                 print("Error: \(error)")
             }
+            
+            var posiString = ""
+            for json in results[section_num].cells[cell_num].models[ModelManagement.modelID].json {
+                let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
+                posiString += "\(json_data!.cameraPosition.x) \(json_data!.cameraPosition.y) \(json_data!.cameraPosition.z)\n"
+            }
+            let posiPath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/position.txt")
+            do {
+                try posiString.write(to: posiPath, atomically: false, encoding: .utf8)
+            } catch {
+                print("Error: \(error)")
+            }
+            
         }
     }
     

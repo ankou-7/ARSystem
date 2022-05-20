@@ -10,11 +10,14 @@
 		260D431427CE3F160020039E /* CheckData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 260D431327CE3F160020039E /* CheckData.storyboard */; };
 		260D431627CE3FD80020039E /* CheckDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260D431527CE3FD80020039E /* CheckDataViewController.swift */; };
 		260D431827CE4D690020039E /* CheckRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260D431727CE4D690020039E /* CheckRenderer.swift */; };
+		261334F5283770A900947DEB /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 261334F4283770A900947DEB /* Realm */; };
+		261334F7283770A900947DEB /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 261334F6283770A900947DEB /* RealmSwift */; };
 		262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */; };
 		2632F45425F04193006B7366 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45325F04193006B7366 /* Shaders.metal */; };
 		2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45925F0420A006B7366 /* MetalBuffer.swift */; };
 		2632F46225F04482006B7366 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F46125F04482006B7366 /* Helpers.swift */; };
 		2632F47D25F05BC8006B7366 /* EditDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F47C25F05BC8006B7366 /* EditDataController.swift */; };
+		263B9F602837485E0012929C /* Matft in Frameworks */ = {isa = PBXBuildFile; productRef = 263B9F5F2837485E0012929C /* Matft */; };
 		26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */; };
 		2682062F25C3F7BC00519E42 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2682062E25C3F7BC00519E42 /* Renderer.swift */; };
 		26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA1F02563C802008FE5EB /* AppDelegate.swift */; };
@@ -75,17 +78,12 @@
 		CF30EF89262D980200C13B66 /* MapExpansionReceive.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF88262D980200C13B66 /* MapExpansionReceive.storyboard */; };
 		CF30EF8E262D982000C13B66 /* MapExpansionTransmitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF8D262D982000C13B66 /* MapExpansionTransmitController.swift */; };
 		CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF92262D983900C13B66 /* MapExpansionReceiveController.swift */; };
-		CF3165BF281C39160019CE8F /* Matft in Frameworks */ = {isa = PBXBuildFile; productRef = CF3165BE281C39160019CE8F /* Matft */; };
-		CF3165C2281C39AB0019CE8F /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = CF3165C1281C39AB0019CE8F /* Realm */; };
-		CF3165C4281C39AB0019CE8F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF3165C3281C39AB0019CE8F /* RealmSwift */; };
 		CF3D8061262B518F007904E6 /* Menu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8060262B518F007904E6 /* Menu.storyboard */; };
 		CF3D8081262B8803007904E6 /* MakeNavigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */; };
 		CF3D80A3262B90F2007904E6 /* EditData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80A2262B90F2007904E6 /* EditData.storyboard */; };
 		CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */; };
 		CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */; };
 		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
-		CF66630528344A1D0012F0DB /* ChoiceExperience.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF66630428344A1D0012F0DB /* ChoiceExperience.storyboard */; };
-		CF66630728344A360012F0DB /* ChoiceExperienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF66630628344A360012F0DB /* ChoiceExperienceViewController.swift */; };
 		CF666309283457CA0012F0DB /* CameraNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF666308283457CA0012F0DB /* CameraNode.swift */; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
@@ -163,7 +161,6 @@
 		26AAA2432563C998008FE5EB /* ChoiceDataAllCheckController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceDataAllCheckController.swift; sourceTree = "<group>"; };
 		26AAA26B2563CAC9008FE5EB /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		851C3C7C92CEC202D1EAE04E /* Pods-ARSystem.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARSystem.release.xcconfig"; path = "Target Support Files/Pods-ARSystem/Pods-ARSystem.release.xcconfig"; sourceTree = "<group>"; };
-		8D8F8FF2921A2020F637D05D /* Pods-ARMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.release.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.release.xcconfig"; sourceTree = "<group>"; };
 		A6A1ACF34415CD790884183E /* Pods_ARSystem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARSystem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2651401475C7DF9B4A3C39D /* Pods-ARSystem.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARSystem.debug.xcconfig"; path = "Target Support Files/Pods-ARSystem/Pods-ARSystem.debug.xcconfig"; sourceTree = "<group>"; };
 		CF0250D926380953003790E8 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
@@ -215,8 +212,6 @@
 		CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckAllData.storyboard; sourceTree = "<group>"; };
 		CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataChoiceController.swift; sourceTree = "<group>"; };
 		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
-		CF66630428344A1D0012F0DB /* ChoiceExperience.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceExperience.storyboard; sourceTree = "<group>"; };
-		CF66630628344A360012F0DB /* ChoiceExperienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceExperienceViewController.swift; sourceTree = "<group>"; };
 		CF666308283457CA0012F0DB /* CameraNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraNode.swift; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
@@ -248,7 +243,6 @@
 		CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff_PointCloudViewController.swift; sourceTree = "<group>"; };
 		CFD8ADAF282CABD000B51766 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CFE717EA281130C200B55073 /* ViewManagement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewManagement.swift; sourceTree = "<group>"; };
-		F8C922BCE7FFBA863E2B4AFA /* Pods-ARMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARMesh.debug.xcconfig"; path = "Target Support Files/Pods-ARMesh/Pods-ARMesh.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,16 +250,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				263B9F602837485E0012929C /* Matft in Frameworks */,
 				CFD8ADBE282CCE0C00B51766 /* FirebaseAnalytics in Frameworks */,
-				CF3165C4281C39AB0019CE8F /* RealmSwift in Frameworks */,
 				CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */,
-				CF3165BF281C39160019CE8F /* Matft in Frameworks */,
 				CF0BAFE5281C5CD2004086C8 /* WebRTC in Frameworks */,
 				CF2E4D6C282F96BF004CCA41 /* ZipArchive in Frameworks */,
 				CFD8ADC2282CCE0C00B51766 /* FirebaseFirestore in Frameworks */,
+				261334F5283770A900947DEB /* Realm in Frameworks */,
 				B2CB6E1E43D96243E8AB06DB /* Pods_ARSystem.framework in Frameworks */,
+				261334F7283770A900947DEB /* RealmSwift in Frameworks */,
 				CFD8ADC0282CCE0C00B51766 /* FirebaseDatabase in Frameworks */,
-				CF3165C2281C39AB0019CE8F /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -496,7 +490,6 @@
 				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
-				CF66630328344A000012F0DB /* Experience */,
 				CF96615E280F360800D4C8BA /* TextureImage.swift */,
 				CF966154280EB7A200D4C8BA /* OperateObject.swift */,
 				CF96614C280DA44500D4C8BA /* Multipeer+Ext.swift */,
@@ -529,15 +522,6 @@
 				CF30EF6F262D959300C13B66 /* MapExpansion */,
 			);
 			path = Others;
-			sourceTree = "<group>";
-		};
-		CF66630328344A000012F0DB /* Experience */ = {
-			isa = PBXGroup;
-			children = (
-				CF66630428344A1D0012F0DB /* ChoiceExperience.storyboard */,
-				CF66630628344A360012F0DB /* ChoiceExperienceViewController.swift */,
-			);
-			path = Experience;
 			sourceTree = "<group>";
 		};
 		CF6BC314262AE43700E9B083 /* AddDataToCell */ = {
@@ -632,8 +616,6 @@
 		E914FFD664097DFA55085E20 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F8C922BCE7FFBA863E2B4AFA /* Pods-ARMesh.debug.xcconfig */,
-				8D8F8FF2921A2020F637D05D /* Pods-ARMesh.release.xcconfig */,
 				C2651401475C7DF9B4A3C39D /* Pods-ARSystem.debug.xcconfig */,
 				851C3C7C92CEC202D1EAE04E /* Pods-ARSystem.release.xcconfig */,
 			);
@@ -669,14 +651,14 @@
 			);
 			name = ARSystem;
 			packageProductDependencies = (
-				CF3165BE281C39160019CE8F /* Matft */,
-				CF3165C1281C39AB0019CE8F /* Realm */,
-				CF3165C3281C39AB0019CE8F /* RealmSwift */,
 				CF0BAFE4281C5CD2004086C8 /* WebRTC */,
 				CFD8ADBD282CCE0C00B51766 /* FirebaseAnalytics */,
 				CFD8ADBF282CCE0C00B51766 /* FirebaseDatabase */,
 				CFD8ADC1282CCE0C00B51766 /* FirebaseFirestore */,
 				CF2E4D6B282F96BF004CCA41 /* ZipArchive */,
+				263B9F5F2837485E0012929C /* Matft */,
+				261334F4283770A900947DEB /* Realm */,
+				261334F6283770A900947DEB /* RealmSwift */,
 			);
 			productName = ARMeshNavigation;
 			productReference = 26AAA1ED2563C802008FE5EB /* ARSystem.app */;
@@ -706,11 +688,11 @@
 			);
 			mainGroup = 26AAA1E42563C802008FE5EB;
 			packageReferences = (
-				CF3165BD281C39160019CE8F /* XCRemoteSwiftPackageReference "Matft" */,
-				CF3165C0281C39AB0019CE8F /* XCRemoteSwiftPackageReference "realm-swift" */,
 				CF0BAFE3281C5CD2004086C8 /* XCRemoteSwiftPackageReference "WebRTC" */,
 				CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				CF2E4D6A282F96BF004CCA41 /* XCRemoteSwiftPackageReference "ZipArchive" */,
+				263B9F5E2837485B0012929C /* XCRemoteSwiftPackageReference "Matft" */,
+				261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 26AAA1EE2563C802008FE5EB /* Products */;
 			projectDirPath = "";
@@ -733,7 +715,6 @@
 				26AAA1FD2563C804008FE5EB /* LaunchScreen.storyboard in Resources */,
 				CF30EF84262D97EC00C13B66 /* MapExpansionTransmit.storyboard in Resources */,
 				26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */,
-				CF66630528344A1D0012F0DB /* ChoiceExperience.storyboard in Resources */,
 				CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */,
 				CF0BB064281D763E004086C8 /* VideoView.storyboard in Resources */,
 				CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */,
@@ -869,7 +850,6 @@
 				26AAA25F2563C998008FE5EB /* MenuController.swift in Sources */,
 				CF0BAFF7281C8594004086C8 /* Config.swift in Sources */,
 				CF0D73F7271CA99200A2BB75 /* ChoiceModelController.swift in Sources */,
-				CF66630728344A360012F0DB /* ChoiceExperienceViewController.swift in Sources */,
 				CF30EF93262D983900C13B66 /* MapExpansionReceiveController.swift in Sources */,
 				CF0F166B272C62F400E6F9ED /* MakeMapViewController.swift in Sources */,
 				CF0DBC3626923BE4006E2E19 /* Make3DModelController.swift in Sources */,
@@ -1101,6 +1081,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		263B9F5E2837485B0012929C /* XCRemoteSwiftPackageReference "Matft" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jjjkkkjjj/Matft";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.9;
+			};
+		};
 		CF0BAFE3281C5CD2004086C8 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/stasel/WebRTC";
@@ -1117,22 +1113,6 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		CF3165BD281C39160019CE8F /* XCRemoteSwiftPackageReference "Matft" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jjjkkkjjj/Matft";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		CF3165C0281C39AB0019CE8F /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -1144,6 +1124,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		261334F4283770A900947DEB /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		261334F6283770A900947DEB /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		263B9F5F2837485E0012929C /* Matft */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 263B9F5E2837485B0012929C /* XCRemoteSwiftPackageReference "Matft" */;
+			productName = Matft;
+		};
 		CF0BAFE4281C5CD2004086C8 /* WebRTC */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CF0BAFE3281C5CD2004086C8 /* XCRemoteSwiftPackageReference "WebRTC" */;
@@ -1153,21 +1148,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CF2E4D6A282F96BF004CCA41 /* XCRemoteSwiftPackageReference "ZipArchive" */;
 			productName = ZipArchive;
-		};
-		CF3165BE281C39160019CE8F /* Matft */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CF3165BD281C39160019CE8F /* XCRemoteSwiftPackageReference "Matft" */;
-			productName = Matft;
-		};
-		CF3165C1281C39AB0019CE8F /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CF3165C0281C39AB0019CE8F /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		CF3165C3281C39AB0019CE8F /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CF3165C0281C39AB0019CE8F /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
 		};
 		CFD8ADBD282CCE0C00B51766 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

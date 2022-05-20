@@ -87,6 +87,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         section_num = ViewManagement.sectionID!
         cell_num = ViewManagement.cellID!
+        ModelManagement.modelID = current_model_num
         models = results[section_num].cells[cell_num].models[current_model_num]
         database_model_num = results[section_num].cells[cell_num].models.count
         
@@ -219,14 +220,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             }
         })
     }
-    
-    @IBAction func tappedExButton(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "ChoiceExperience", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceExperienceViewController") as! ChoiceExperienceViewController
-        vc.presentationController?.delegate = self
-        self.present(vc, animated: true, completion: nil)
-    }
-    
     
     @IBAction func TapedSaveButton(_ sender: UIButton) {
         sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
@@ -919,6 +912,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         if current_model_num < database_model_num - 1 {
             //print("切り替え")
             current_model_num += 1
+            ModelManagement.modelID = current_model_num
             models = results[section_num].cells[cell_num].models[current_model_num]
             model_kirikae_hyouji()
         }
@@ -928,6 +922,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         if current_model_num > 0 {
             //print("切り替え")
             current_model_num -= 1
+            ModelManagement.modelID = current_model_num
             models = results[section_num].cells[cell_num].models[current_model_num]
             model_kirikae_hyouji()
         }
@@ -980,23 +975,19 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     var Tapped_ExButtonCount = -1
     @IBAction func changeImage_model(_ sender: UIButton) {
-        let ExModels = results[section_num!].cells[cell_num!].models[1]
+        print("modelNum : \(ModelManagement.modelID)")
+        let ExModels = results[section_num!].cells[cell_num!].models[0]
         
         Tapped_ExButtonCount += 1
         if Tapped_ExButtonCount == ExModels.pic.count {
             Tapped_ExButtonCount = 0
-//            let move = SCNAction.move(to: SCNVector3(0,0,0), duration: 0)
-//            let rotation = SCNAction.rotateBy(x: CGFloat(0), y: CGFloat(0), z: CGFloat(0), duration: 0)
-//            cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
-//                print("camera移動")
-//            })
         }
-        print(Tapped_ExButtonCount)
+        print("Tapped_ExButtonCount : \(Tapped_ExButtonCount)")
         
         imageView.image = UIImage(data: ExModels.pic[Tapped_ExButtonCount].pic_data)
         
         let json_data = try? decoder.decode(MakeMap_parameta.self, from: ExModels.json[Tapped_ExButtonCount].json_data!)
-        print(json_data)
+        //print(json_data)
         
         let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
                                         json_data!.cameraPosition.y,
@@ -1005,31 +996,37 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                                            json_data!.cameraEulerAngles.y,
                                             json_data!.cameraEulerAngles.z)
         let move = SCNAction.move(to: cameraPosition, duration: 0)
-        let rotation = SCNAction.rotateBy(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+        let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
         cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
-            print("camera移動")
+            DispatchQueue.main.async {
+                self.savePic_toDocument(num: self.Tapped_ExButtonCount)
+                print("camera移動")
+            }
         })
         
     }
     
-}
+    func savePic_toDocument(num: Int) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/pic\(num).jpg")
 
-//dismissをを検知
-extension EditDataController: UIAdaptivePresentationControllerDelegate {
-  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-      print("dismiss")
-      
-      if (ExViewManagement.sectionID != nil) {
-          Ex_section_num = ExViewManagement.sectionID
-          Ex_cell_num = ExViewManagement.cellID
-          print(Ex_section_num!, Ex_cell_num!)
-          
-          ExChangeButton.isHidden = false
-          
-          
-      }
-      
-  }
-    
+            let imageData = results[section_num!].cells[cell_num!].models[ModelManagement.modelID].pic[num].pic_data
+            do {
+                try imageData!.write(to: archivePath)
+            } catch {
+                print("Failed to save the image:", error)
+            }
+
+            let uiImage = sceneView.snapshot()
+            let screenimageData = uiImage.jpegData(compressionQuality: 1.0)
+
+            let scarchivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/scpic\(num).jpeg")
+            do {
+                try screenimageData!.write(to: scarchivePath)
+            } catch {
+                print("Failed to save the image:", error)
+            }
+        }
+    }
     
 }

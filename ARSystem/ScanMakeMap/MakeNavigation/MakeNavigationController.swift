@@ -366,8 +366,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 if let camera = self.sceneView.pointOfView {
                     let cameraPosition = camera.position
-                    //let cameraEulerAngles = camera.eulerAngles
-                    let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
+                    let cameraEulerAngles = camera.eulerAngles
+                    //let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
                     pre_eulerAngles = camera.eulerAngles
                     
                     let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上

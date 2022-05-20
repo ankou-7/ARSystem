@@ -13,10 +13,9 @@ class ViewManagement {
 }
 
 
-class ExViewManagement {
+class ModelManagement {
         
-    static var sectionID: Int!
-    static var cellID: Int!
-    
+    static var modelID = 0
+
 }
 
