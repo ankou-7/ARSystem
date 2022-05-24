@@ -30,6 +30,10 @@ class MenuViewModel {
             title: "原点の更新",
             description: "マップ作成毎に原点を更新する"
         ),
+        MenuItem (
+            title: "マッピングの支援の停止",
+            description: "マッピングの可視化を停止するか"
+        ),
     ]
     
     var count: Int {

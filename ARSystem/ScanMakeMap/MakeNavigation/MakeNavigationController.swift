@@ -78,6 +78,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var mapping_label: UILabel!
     var mapping_flag = true
     
+    var mappingSupportFlag = false
+    @IBOutlet weak var takeParametaCountLabel: UILabel!
+    var parametaCount: Int!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -151,6 +155,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         popoverPresentationController.permittedArrowDirections = .any
         popoverPresentationController.delegate = self
         
+        //menuの更新
+        contentVC.closure = { (cell_num: Int, bool: Bool) -> Void in
+            self.menu_array[cell_num] = bool
+        }
+        
         present(contentVC, animated: true, completion: nil)
     }
     
@@ -179,6 +188,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     self.sceneView.debugOptions.remove([.showWorldOrigin])
                 }
                 self.make_modelButton_Tapped_count += 1
+                self.parametaCount = 0
                 
                 self.pointCloudRenderer = Renderer(
                     session: self.sceneView.session,
@@ -240,7 +250,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 else if self.menu_array[3] == true {
                     self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
                 }
-
+                
+                //マッピング支援の停止
+                if self.menu_array[4] == true {
+                    self.mappingSupportFlag = true
+                } else {
+                    self.mappingSupportFlag = false
+                }
                 
                 //内部パラメータ保存用
                 let realm = try! Realm()
@@ -337,7 +353,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @objc func update() {
         
         if parameta_flag == true {
-            print("update")
+            //print("update")
             guard let frame = self.sceneView.session.currentFrame else {
                 fatalError("Couldn't get the current ARFrame")
             }
@@ -394,7 +410,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
 //                    let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!)) //(1440.0, 1920.0)
                     let uiImage = sceneView.snapshot() //(1668.0, 2300.0)
-                    print(uiImage.size)
+                    //print(uiImage.size)
+                    
                     let imageData = uiImage.jpegData(compressionQuality: 0.5)//0.25) //toJPEGData()
                     
                     let entity = MakeMap_parameta(cameraPosition:
@@ -438,6 +455,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         
                         DispatchQueue.global().async { [self] in
                             save_jpeg(filename: "try_\(jpeg_count)", jpegData: imageData!, jsonData: json_data, depthData: depthData)
+                            
+                            DispatchQueue.main.async {
+                                self.parametaCount += 1
+                                self.takeParametaCountLabel.text = "取得パラメータ数：\(self.parametaCount!)"
+                            }
                         }
                     }
                     
@@ -562,7 +584,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100() //深度情報
-            //self.depth_pointCloudRenderer.mapping100() //マッピング支援
+            
+            if mappingSupportFlag == false {
+                self.depth_pointCloudRenderer.mapping100() //マッピング支援
+            }
             
             if pointCloud_flag == true {
                 //pointCloudRenderer.draw() //点群

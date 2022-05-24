@@ -96,6 +96,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         models = results[section_num].cells[cell_num].models[current_model_num]
         database_model_num = results[section_num].cells[cell_num].models.count
         
+        //print(results[section_num].cells)
+        
         parametaCount_label.text = "パラメータ数：\(models.pic.count)個"
          
         SVProgressHUD.show()
@@ -954,6 +956,22 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var except_parametacount = 0
     var filenameNum = 1
     
+    
+    @IBOutlet weak var exceptStateLabel: UILabel!
+    var exceptflag = false
+    var radius = 0
+    @IBOutlet weak var radiusLabel: UILabel!
+    
+    @IBAction func exceptStateSwitch(_ sender: UISwitch) {
+        if sender.isOn {
+            exceptflag = true
+            exceptStateLabel.text = "近傍"
+        } else {
+            exceptflag = false
+            exceptStateLabel.text = "ランダム"
+        }
+    }
+    
     @IBAction func decideParameta(_ sender: UISlider) {
         let value = Int(round(sender.value))
         except_parametacount = value
@@ -966,24 +984,64 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         filenameLabel.text = "ファイル番号：\(value)個"
     }
     
-    @IBAction func reBuild(_ sender: UIButton) {
-        
+    @IBAction func decideRadiusSlider(_ sender: UISlider) {
+        let value = Int(round(sender.value))
+        radius = value
+        radiusLabel.text = "半径r = \(value)cm"
+    }
+    
+    func makeRemoveArray() -> [Int] {
         var remove: [Int] = []
-        while(true) {
-            if remove.count == except_parametacount {
-                break
+        
+        if exceptflag == false {
+            print("ランダム")
+            while(true) {
+                if remove.count == except_parametacount {
+                    break
+                }
+                
+                let n = Int.random(in: 0..<models.pic.count)
+                if remove.firstIndex(of: n) == nil {
+                    remove.append(n)
+                }
             }
-            
+        } else {
+            print("近傍")
+            //ランダムにパラメータを１つ選択
             let n = Int.random(in: 0..<models.pic.count)
-            if remove.firstIndex(of: n) == nil {
-                remove.append(n)
+            remove.append(n)
+            let json = models.json[n].json_data
+            let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json!)
+            let posi = json_data!.cameraPosition
+            
+            //選択したパラメータから半径r内のパラメータを探索
+            for (i, json) in models.json.enumerated() {
+                if i != n {
+                    let data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
+                    let posi2 = data!.cameraPosition
+                    let distance = sqrt((posi.x - posi2.x)*(posi.x - posi2.x) +
+                                        (posi.y - posi2.y)*(posi.y - posi2.y) +
+                                        (posi.z - posi2.z)*(posi.z - posi2.z))
+                    //print(distance)
+                    if distance < Float(radius)/100.0 {
+                        remove.append(i)
+                    }
+                }
             }
         }
+        
         print(remove)
+        
+        return remove
+    }
+    
+    @IBAction func reBuild(_ sender: UIButton) {
+        //除外するパラメータのインデックスが格納された配列
+        let remove = makeRemoveArray()
         
         //全てのパラメータ画像をoriginディレクトリに保存
         saveOriginPic_toDocument()
-        
+
         picCount = models.pic.count - remove.count
         let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
         yoko = Float(floor(16384.0 / width)) //17.0
