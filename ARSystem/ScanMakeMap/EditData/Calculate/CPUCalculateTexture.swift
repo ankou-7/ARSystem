@@ -16,9 +16,9 @@ class CPUCalculateTexture {
     private var picCount: Int
     private var calculateParameta: calculateParameta
     
-    private var cameraVector: SCNVector3!
-    private var calcuMatrix: simd_float4x4!
-    private var depth = [depthPosition]()
+//    private var cameraVector: SCNVector3!
+//    private var calcuMatrix: simd_float4x4!
+//    private var depth = [depthPosition]()
     
     var texcoords2: [[SIMD2<Float>]] = []
     var tex_bool: [[Bool]] = []
@@ -61,8 +61,10 @@ class CPUCalculateTexture {
         let start = Date()
         print("calcu開始")
         for i in 0..<picCount {
-            make_calcuParameta(num: i)
-            calcTextureCoordinates(num: i, cameraVector: cameraVector, depthArray: depth, matrix: calcuMatrix)
+            make_calcuParameta(num: i) { (dep, mat, vec) in
+                self.calcTextureCoordinates(num: i, cameraVector: vec, depthArray: dep, matrix: mat)
+            }
+            
         }
         save_model()
         
@@ -72,12 +74,12 @@ class CPUCalculateTexture {
         completionHandler()
     }
     
-    func make_calcuParameta(num: Int) {
+    func make_calcuParameta(num: Int, completionHandler: @escaping ([depthPosition], simd_float4x4, SCNVector3) -> ()) {
         let decoder = JSONDecoder()
         
-        depth = (try? decoder.decode([depthPosition].self, from: models.depth[num].depth_data!))!
+        let depth = (try? decoder.decode([depthPosition].self, from: models.depth[num].depth_data!))!
         let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[num].json_data!)
-        cameraVector = SCNVector3(json_data!.cameraVector.x,
+        let cameraVector = SCNVector3(json_data!.cameraVector.x,
                                       json_data!.cameraVector.y,
                                       json_data!.cameraVector.z)
         let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
@@ -88,7 +90,9 @@ class CPUCalculateTexture {
                                              json_data!.projectionMatrix.y,
                                              json_data!.projectionMatrix.z,
                                              json_data!.projectionMatrix.w)
-        calcuMatrix = projectionMatrix * viewMatrix
+        let calcuMatrix = projectionMatrix * viewMatrix
+        
+        completionHandler(depth, calcuMatrix, cameraVector)
     }
     
     func calcTextureCoordinates(num: Int, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
@@ -129,12 +133,17 @@ class CPUCalculateTexture {
                                             1 - (-CGFloat(normalizedDeviceCoordinate.z) + 1))
                         
                         //var pt = sceneView.projectPoint(world_vector3)
-                        //print("projectPoint = \(pt), projection = \(projection)")
+                        //print("projectPoint = \(pt)")
                         
                         //if thita <= 135 {
                         if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
                             let du = Int(round((1 - pt.x / 834) * 95))
                             let dv = Int(round((pt.y / 1150) * 127))
+                            if du * 128 + dv >= 12288 || du * 128 + dv < 0 {
+                                print(du, dv)
+                                print(du * 128 + dv)
+                            }
+                            //print(depthArray)
                             let depthPosi = depthArray[du * 128 + dv]
                             let diff = sqrt((world_vector3.x - depthPosi.x)*(world_vector3.x - depthPosi.x) + (world_vector3.y - depthPosi.y)*(world_vector3.y - depthPosi.y) + (world_vector3.z - depthPosi.z)*(world_vector3.z - depthPosi.z))
                             if diff < 0.2 {

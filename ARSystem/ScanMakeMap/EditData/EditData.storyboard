@@ -648,35 +648,76 @@
                                     <action selector="tap_remoteSupport:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="vgD-29-1bt"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="40K-ct-aPI">
-                                <rect key="frame" x="20" y="1128" width="57" height="31"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="31" id="V8t-Iz-sD7"/>
-                                    <constraint firstAttribute="width" constant="57" id="gRB-xq-Afk"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Build"/>
-                                <connections>
-                                    <action selector="ReadAndBuild:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="N0p-m3-NsK"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8OB-sL-DCU">
-                                <rect key="frame" x="20" y="1103" width="55.5" height="31"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Save"/>
-                                <connections>
-                                    <action selector="TapedSaveButton:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="J5c-KJ-gM5"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGs-8z-h4T">
-                                <rect key="frame" x="20" y="914" width="99" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="切り替え"/>
-                                <connections>
-                                    <action selector="changeImage_model:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="KdM-kc-gLw"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GBW-KI-quR">
+                                <rect key="frame" x="50" y="1097" width="56.5" height="62"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8OB-sL-DCU">
+                                        <rect key="frame" x="0.0" y="0.0" width="56.5" height="31"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Save"/>
+                                        <connections>
+                                            <action selector="TapedSaveButton:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="J5c-KJ-gM5"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="40K-ct-aPI">
+                                        <rect key="frame" x="0.0" y="31" width="56.5" height="31"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Build"/>
+                                        <connections>
+                                            <action selector="ReadAndBuild:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="N0p-m3-NsK"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="OKf-AN-is0">
+                                <rect key="frame" x="5" y="815.5" width="239" height="241.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="パラメータ数：? 個" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5eJ-1k-h7W">
+                                        <rect key="frame" x="0.0" y="0.0" width="239" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGs-8z-h4T">
+                                        <rect key="frame" x="0.0" y="28.5" width="239" height="36"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="切り替え"/>
+                                        <connections>
+                                            <action selector="changeImage_model:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="KdM-kc-gLw"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uZM-Pe-Qeu">
+                                        <rect key="frame" x="0.0" y="72.5" width="239" height="36"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="テクスチャ省き"/>
+                                        <connections>
+                                            <action selector="reBuild:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="DCT-83-11C"/>
+                                        </connections>
+                                    </button>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Z5z-L4-hfw">
+                                        <rect key="frame" x="-2" y="116.5" width="243" height="31"/>
+                                        <connections>
+                                            <action selector="decideParameta:" destination="OtV-2Q-EG5" eventType="valueChanged" id="uLV-Wo-FQ9"/>
+                                        </connections>
+                                    </slider>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="除外パラメータ：0個" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nqd-mF-Uo0">
+                                        <rect key="frame" x="0.0" y="154.5" width="239" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="1" maxValue="5" translatesAutoresizingMaskIntoConstraints="NO" id="4Ml-5X-UW7">
+                                        <rect key="frame" x="-2" y="183" width="243" height="31"/>
+                                    </slider>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ファイル番号：1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="piB-Dd-WHF">
+                                        <rect key="frame" x="0.0" y="221" width="239" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uxY-IE-l79"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -686,19 +727,19 @@
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" id="1Rz-aP-jUL"/>
                             <constraint firstItem="chc-Fk-Ce6" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="2R8-1Y-deP"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="fVa-9P-J8W" secondAttribute="trailing" constant="30" id="403-cW-zvu"/>
-                            <constraint firstItem="8OB-sL-DCU" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="20" id="47p-5f-dEi"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="HS4-Ar-sRK" secondAttribute="bottom" constant="15" id="5T4-k3-CFg"/>
                             <constraint firstItem="ZSf-9a-1Nf" firstAttribute="leading" secondItem="HS4-Ar-sRK" secondAttribute="trailing" constant="25" id="6NR-Lt-2xG"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="bg8-nC-QUg" secondAttribute="bottom" constant="103" id="7FW-UI-9pc"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="gAr-g0-QhN" secondAttribute="trailing" constant="30" id="9Xd-5X-IFh"/>
                             <constraint firstItem="gvt-cA-fnd" firstAttribute="top" secondItem="FPe-9M-JqV" secondAttribute="bottom" constant="20" id="ARb-KS-iDX"/>
-                            <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="8OB-sL-DCU" secondAttribute="bottom" constant="40" id="EfE-a1-Uek"/>
                             <constraint firstItem="peU-gA-goK" firstAttribute="top" secondItem="Fjr-no-xHa" secondAttribute="bottom" constant="20" id="FLJ-gN-hCC"/>
+                            <constraint firstItem="GBW-KI-quR" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="50" id="Fot-NO-iEN"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="gvt-cA-fnd" secondAttribute="trailing" constant="30" id="Fue-mz-3Na"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="Amz-lM-Q8r" secondAttribute="bottom" constant="15" id="HZT-LV-phH"/>
                             <constraint firstItem="Fjr-no-xHa" firstAttribute="top" secondItem="gvt-cA-fnd" secondAttribute="bottom" constant="30" id="HiF-01-elT"/>
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="LY7-2D-xhj"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="TTx-dK-m6l" secondAttribute="bottom" constant="15" id="M9M-qC-Nac"/>
+                            <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="GBW-KI-quR" secondAttribute="bottom" constant="15" id="Mbf-dC-rdX"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="peU-gA-goK" secondAttribute="trailing" constant="30" id="Mex-wT-gRo"/>
                             <constraint firstItem="HS4-Ar-sRK" firstAttribute="leading" secondItem="TTx-dK-m6l" secondAttribute="trailing" constant="25" id="MnJ-di-pVD"/>
                             <constraint firstItem="LDa-i1-7Tp" firstAttribute="top" secondItem="peU-gA-goK" secondAttribute="bottom" constant="30" id="Nh8-xS-VV8"/>
@@ -706,18 +747,17 @@
                             <constraint firstItem="hEE-xb-3P0" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="Oen-Vd-eV5"/>
                             <constraint firstItem="gAr-g0-QhN" firstAttribute="top" secondItem="jZi-Ii-d2G" secondAttribute="top" id="V2N-wu-pTu"/>
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="bottom" secondItem="uxY-IE-l79" secondAttribute="bottom" id="XUr-2E-Srh"/>
-                            <constraint firstItem="40K-ct-aPI" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="20" id="XV4-xs-dpw"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" id="ZgC-Za-6SF"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="YBp-Mr-SRK" secondAttribute="trailing" constant="30" id="aoD-T7-WLF"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="ZSf-9a-1Nf" secondAttribute="bottom" constant="15" id="bsV-YP-hbQ"/>
                             <constraint firstItem="bg8-nC-QUg" firstAttribute="leading" secondItem="gsO-eN-2KE" secondAttribute="trailing" constant="15" id="cOS-6D-PrF"/>
                             <constraint firstItem="TTx-dK-m6l" firstAttribute="leading" secondItem="Hco-Fc-Ets" secondAttribute="trailing" constant="30" id="cOw-de-GxZ"/>
                             <constraint firstItem="fVa-9P-J8W" firstAttribute="top" secondItem="YBp-Mr-SRK" secondAttribute="bottom" constant="30" id="cPg-yF-H2D"/>
+                            <constraint firstItem="GBW-KI-quR" firstAttribute="top" secondItem="OKf-AN-is0" secondAttribute="bottom" constant="40" id="cW0-cR-UUg"/>
                             <constraint firstItem="fVa-9P-J8W" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="150" id="d5d-jS-9mV"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="jZi-Ii-d2G" secondAttribute="trailing" constant="30" id="eDc-0T-DUz"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="Fjr-no-xHa" secondAttribute="trailing" constant="30" id="gqU-r0-gOV"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="trailing" secondItem="ZSf-9a-1Nf" secondAttribute="trailing" constant="30" id="hfU-gP-ESP"/>
-                            <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="40K-ct-aPI" secondAttribute="bottom" constant="15" id="ivW-NL-7lf"/>
                             <constraint firstItem="gsO-eN-2KE" firstAttribute="top" secondItem="hEE-xb-3P0" secondAttribute="bottom" constant="80" id="jNO-j4-8Z0"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="ZSf-9a-1Nf" secondAttribute="bottom" constant="15" id="ly2-7j-zgV"/>
                             <constraint firstItem="GUf-Wq-mFJ" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" id="msP-xp-aAQ"/>
@@ -726,7 +766,7 @@
                             <constraint firstItem="jZi-Ii-d2G" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="25" id="ppL-UQ-9dG"/>
                             <constraint firstItem="Hco-Fc-Ets" firstAttribute="leading" secondItem="Amz-lM-Q8r" secondAttribute="trailing" constant="30" id="qxb-0K-K8q"/>
                             <constraint firstItem="gsO-eN-2KE" firstAttribute="top" secondItem="uxY-IE-l79" secondAttribute="top" constant="1008" id="s1e-Uj-Reh"/>
-                            <constraint firstItem="8OB-sL-DCU" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="20" id="tPU-YO-Suf"/>
+                            <constraint firstItem="OKf-AN-is0" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" constant="5" id="ty1-9b-qzd"/>
                             <constraint firstItem="sZd-tj-z5g" firstAttribute="leading" secondItem="uxY-IE-l79" secondAttribute="leading" id="uIJ-o6-2HG"/>
                             <constraint firstItem="gsO-eN-2KE" firstAttribute="centerX" secondItem="pVR-0h-4Jw" secondAttribute="centerX" id="uLE-NJ-L1c"/>
                             <constraint firstItem="uxY-IE-l79" firstAttribute="bottom" secondItem="Hco-Fc-Ets" secondAttribute="bottom" constant="15" id="wpp-pb-Gvj"/>
@@ -743,6 +783,8 @@
                         <outlet property="left_modelbutton" destination="W9t-4u-SvZ" id="jSM-Of-xA2"/>
                         <outlet property="makeArrowButton" destination="hEE-xb-3P0" id="xXM-Z5-vfk"/>
                         <outlet property="modelname_label" destination="gsO-eN-2KE" id="SXv-f1-dE8"/>
+                        <outlet property="parametaCount_label" destination="5eJ-1k-h7W" id="n0i-Aa-RAc"/>
+                        <outlet property="parametaLabel" destination="Nqd-mF-Uo0" id="hkh-hB-qM9"/>
                         <outlet property="right_modelbutton" destination="bg8-nC-QUg" id="C75-LY-MIT"/>
                         <outlet property="sceneView" destination="sZd-tj-z5g" id="9Zb-Pq-rsS"/>
                     </connections>
@@ -815,16 +857,16 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrowtriangle.left.fill" catalog="system" width="32" height="32"/>
-        <image name="arrowtriangle.right.fill" catalog="system" width="32" height="32"/>
+        <image name="arrowtriangle.left.fill" catalog="system" width="128" height="113"/>
+        <image name="arrowtriangle.right.fill" catalog="system" width="128" height="113"/>
         <image name="back2" width="240" height="240"/>
-        <image name="chevron.backward" catalog="system" width="32" height="32"/>
+        <image name="chevron.backward" catalog="system" width="96" height="128"/>
         <image name="color" width="783" height="783"/>
         <image name="device_plus" width="314" height="316"/>
         <image name="mesh" width="815" height="815"/>
         <image name="point" width="834" height="815"/>
         <image name="riset" width="24" height="24"/>
-        <image name="xmark" catalog="system" width="32" height="32"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <image name="ロボット" width="237" height="233"/>
         <image name="遠隔支援" width="264" height="264"/>
         <namedColor name="AccentColor">

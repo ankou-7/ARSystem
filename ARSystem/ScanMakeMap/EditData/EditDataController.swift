@@ -22,12 +22,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var cell_num: Int!
     var models: Navi_Modelname!
     
+    @IBOutlet weak var parametaCount_label: UILabel!
+    
     var Ex_section_num: Int?
     var Ex_cell_num: Int?
     @IBOutlet weak var ExChangeButton: UIButton!
     var cameraNode = SCNNode()
     
-    let num: CGFloat = 5.0 //画像のサイズの縮尺率
+    let num: CGFloat = 2.0 //画像のサイズの縮尺率
     var current_model_num = 0 //現在表示しているモデルの番号を格納
     var database_model_num = 1 //読み込んだcellの中に格納されているモデル数
 
@@ -40,6 +42,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var picCount: Int!
     var yoko: Float!
     var tate: Float!
+    
+    var imageWidth: CGFloat!
+    var imageHeight: CGFloat!
     
     var anchors: [ARMeshAnchor] = []
     
@@ -91,8 +96,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         models = results[section_num].cells[cell_num].models[current_model_num]
         database_model_num = results[section_num].cells[cell_num].models.count
         
-        print(results[section_num].cells[cell_num].models)
-        
+        parametaCount_label.text = "パラメータ数：\(models.pic.count)個"
+         
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Loading･･･")
         
@@ -108,10 +113,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             left_modelbutton.isHidden = true
             modelname_label.isHidden = true
         }
-        
-        picCount = models.pic.count
-        yoko = 17.0
-        tate = ceil(Float(picCount)/yoko)
         
         //pinch gesuture
         let pinch = UIPinchGestureRecognizer(
@@ -132,11 +133,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         self.colabStopButton.isHidden = true
         self.makeArrowButton.isHidden = true
-        
-        print(results[section_num].cells[cell_num].models.count)
-        if results[section_num].cells[cell_num].models.count < 2 {
-            self.ExChangeButton.isHidden = true
-        }
         
         //通信用設定
         self.peerID = MCPeerID(displayName: UIDevice.current.name)
@@ -163,28 +159,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-        for i in 0..<picCount {
-            let uiimage = UIImage(data: models.pic[i].pic_data!)
-            uiimage_array.append(uiimage!)
-        }
-        //16384以下にする必要あり
-        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_pic = imageData
-        }
-        
-        for i in 0..<models.mesh_anchor.count {
-            let mesh_data = models.mesh_anchor[i].mesh
-            //print("meshData\(i) : \(mesh_data)")
-            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                anchors.append(meshAnchor)
-            }
-        }
-        
-        print(try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: models.mesh_anchor[0].mesh!)!)
+        //モデルを表示
+        buildSetup()
         
         //firestoreを監視
 //        let dataStore = Firestore.firestore()
@@ -205,20 +181,54 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //                    }
 //                }
 //            }
-
+    }
+    
+    func buildSetup() {
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
-            if models.texture_bool == 0 {
-                let meshNode = BuildMeshNode(anchors: anchors)
-                meshNode.name = "meshNode"
-                sceneView.scene?.rootNode.addChildNode(meshNode)
-                SVProgressHUD.dismiss()
-            } else if models.texture_bool != 0 {
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
-                sceneView.scene?.rootNode.addChildNode(texmeshNode)
-                SVProgressHUD.dismiss()
+        picCount = models.pic.count
+        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+        yoko = Float(floor(16384.0 / width)) //17.0
+        tate = ceil(Float(picCount)/yoko)
+        
+        uiimage_array = []
+        for i in 0..<picCount {
+            let uiimage = UIImage(data: models.pic[i].pic_data!)
+            uiimage_array.append(uiimage!)
+        }
+        
+        //16384以下にする必要あり
+        imageWidth = UIImage(data: models.pic[0].pic_data!)?.size.width
+        imageHeight = UIImage(data: models.pic[0].pic_data!)?.size.height
+        print(imageWidth!, imageHeight!)
+        print(sceneView.bounds)
+//        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+        new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+        imageView.image = new_uiimage
+        let uiImage = new_uiimage
+        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_pic = imageData
+        }
+        
+        anchors = []
+        for i in 0..<models.mesh_anchor.count {
+            let mesh_data = models.mesh_anchor[i].mesh
+            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+                anchors.append(meshAnchor)
             }
-        })
+        }
+        
+        if models.texture_bool == 0 {
+            let meshNode = BuildMeshNode(anchors: anchors)
+            meshNode.name = "meshNode"
+            sceneView.scene?.rootNode.addChildNode(meshNode)
+            SVProgressHUD.dismiss()
+        } else if models.texture_bool != 0 {
+            texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+            sceneView.scene?.rootNode.addChildNode(texmeshNode)
+            SVProgressHUD.dismiss()
+        }
     }
     
     @IBAction func TapedSaveButton(_ sender: UIButton) {
@@ -848,7 +858,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
     }
     
-    //Metalを用いたテクスチャ割り当て
+    //GPU(Metal)を用いたテクスチャ割り当て
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Calculating")
@@ -858,7 +868,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                                                       H: Int(sceneView.bounds.height),
                                                       tate: Int(tate), yoko: Int(yoko),
                                                       funcString: texString)
-            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, picCount: models.pic.count, models: models, calculateParameta: calculateParameta)
+            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: [])
             GPUCalculateTexture.makeGPUTexture() { [self] in
                 delete_mesh()
                 texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
@@ -930,97 +940,180 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     func model_kirikae_hyouji() {
         delete_mesh()
-        
-        picCount = models.pic.count
-        yoko = 17.0
-        tate = ceil(Float(picCount)/yoko)
-        
-        uiimage_array = []
-        for i in 0..<picCount {
-            let uiimage = UIImage(data: models.pic[i].pic_data!)
-            uiimage_array.append(uiimage!)
-        }
-        //16384以下にする必要あり
-        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_pic = imageData
-        }
-        
-        anchors = []
-        for i in 0..<models.mesh_anchor.count {
-            let mesh_data = models.mesh_anchor[i].mesh
-            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                anchors.append(meshAnchor)
-            }
-        }
-        
-        if models.texture_bool == 0 {
-            let meshNode = BuildMeshNode(anchors: anchors)
-            meshNode.name = "meshNode"
-            sceneView.scene?.rootNode.addChildNode(meshNode)
-            SVProgressHUD.dismiss()
-        } else if models.texture_bool != 0 {
-            texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
-            sceneView.scene?.rootNode.addChildNode(texmeshNode)
-            SVProgressHUD.dismiss()
-        }
+        buildSetup()
     }
     
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    var Tapped_ExButtonCount = -1
-    @IBAction func changeImage_model(_ sender: UIButton) {
-        print("modelNum : \(ModelManagement.modelID)")
-        let ExModels = results[section_num!].cells[cell_num!].models[0]
+    //MARK: - 評価実験用
+    
+    @IBOutlet weak var parametaLabel: UILabel!
+    @IBOutlet weak var filenameLabel: UILabel!
+    var except_parametacount = 0
+    var filenameNum = 1
+    
+    @IBAction func decideParameta(_ sender: UISlider) {
+        let value = Int(round(sender.value))
+        except_parametacount = value
+        parametaLabel.text = "除外パラメータ：\(value)個"
+    }
+    
+    @IBAction func filenameSlider(_ sender: UISlider) {
+        let value = Int(round(sender.value))
+        filenameNum = value
+        filenameLabel.text = "ファイル番号：\(value)個"
+    }
+    
+    @IBAction func reBuild(_ sender: UIButton) {
         
-        Tapped_ExButtonCount += 1
-        if Tapped_ExButtonCount == ExModels.pic.count {
-            Tapped_ExButtonCount = 0
+        var remove: [Int] = []
+        while(true) {
+            if remove.count == except_parametacount {
+                break
+            }
+            
+            let n = Int.random(in: 0..<models.pic.count)
+            if remove.firstIndex(of: n) == nil {
+                remove.append(n)
+            }
         }
-        print("Tapped_ExButtonCount : \(Tapped_ExButtonCount)")
+        print(remove)
         
-        imageView.image = UIImage(data: ExModels.pic[Tapped_ExButtonCount].pic_data)
+        //全てのパラメータ画像をoriginディレクトリに保存
+        saveOriginPic_toDocument()
         
-        let json_data = try? decoder.decode(MakeMap_parameta.self, from: ExModels.json[Tapped_ExButtonCount].json_data!)
-        //print(json_data)
-        
-        let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
-                                        json_data!.cameraPosition.y,
-                                        json_data!.cameraPosition.z)
-        let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
-                                           json_data!.cameraEulerAngles.y,
-                                            json_data!.cameraEulerAngles.z)
-        let move = SCNAction.move(to: cameraPosition, duration: 0)
-        let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
-        cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
-            DispatchQueue.main.async {
-                self.savePic_toDocument(num: self.Tapped_ExButtonCount)
-                print("camera移動")
+        picCount = models.pic.count - remove.count
+        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+        yoko = Float(floor(16384.0 / width)) //17.0
+        tate = ceil(Float(picCount)/yoko)
+
+        uiimage_array = []
+        for i in 0..<models.pic.count {
+            if remove.firstIndex(of: i) == nil {
+                let uiimage = UIImage(data: models.pic[i].pic_data!)
+                uiimage_array.append(uiimage!)
+            }
+        }
+
+        //16384以下にする必要あり
+        imageWidth = UIImage(data: models.pic[0].pic_data!)?.size.width
+        imageHeight = UIImage(data: models.pic[0].pic_data!)?.size.height
+        new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+        imageView.image = new_uiimage
+        let uiImage = new_uiimage
+        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_pic = imageData
+        }
+
+        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "Calculating")
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                      W: Int(sceneView.bounds.width),
+                                                      H: Int(sceneView.bounds.height),
+                                                      tate: Int(tate), yoko: Int(yoko),
+                                                      funcString: texString)
+            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: remove)
+            GPUCalculateTexture.noLog_makeGPUTexture() { [self] in
+                delete_mesh()
+                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+                SVProgressHUD.dismiss()
             }
         })
+    }
+    
+    var Tapped_ExButtonCount = -1
+    
+    @IBAction func changeImage_model(_ sender: UIButton) {
+        //print("modelNum : \(ModelManagement.modelID)")
+        let ExModels = results[section_num!].cells[cell_num!].models[0]
         
+        //for _ in ExModels.pic {
+        ChangeCamera(ExModels: ExModels)
+        //}
+    }
+    
+    func ChangeCamera(ExModels: Navi_Modelname) {
+        
+        DispatchQueue.global().sync { [self] in
+        //DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            //for _ in ExModels.pic {
+                Tapped_ExButtonCount += 1
+                if Tapped_ExButtonCount == ExModels.pic.count {
+                    print("終了")
+                    Tapped_ExButtonCount = 0
+                }
+                print("Tapped_ExButtonCount : \(Tapped_ExButtonCount)")
+                
+                imageView.image = UIImage(data: ExModels.pic[Tapped_ExButtonCount].pic_data)
+                
+                let json_data = try? decoder.decode(MakeMap_parameta.self, from: ExModels.json[Tapped_ExButtonCount].json_data!)
+                //print(json_data)
+                
+                let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+                                                json_data!.cameraPosition.y,
+                                                json_data!.cameraPosition.z)
+                let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+                                                   json_data!.cameraEulerAngles.y,
+                                                    json_data!.cameraEulerAngles.z)
+                let move = SCNAction.move(to: cameraPosition, duration: 0)
+                let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+                
+                    self.cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
+                        DispatchQueue.main.async {
+                        //DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: { [] in
+                            //カメラ視点のモデル画像を保存
+                            self.savePic_toDocument(num: self.Tapped_ExButtonCount)
+                            print("camera移動")
+                        }
+                    })
+            //}
+        }
+    }
+    
+    func saveOriginPic_toDocument() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/origin", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+            
+            for num in 0..<models.pic.count {
+                let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/origin/pic\(num).jpg")
+
+                let imageData = results[section_num!].cells[cell_num!].models[ModelManagement.modelID].pic[num].pic_data
+                do {
+                    try imageData!.write(to: archivePath)
+                } catch {
+                    print("Failed to save the image:", error)
+                }
+            }
+        }
     }
     
     func savePic_toDocument(num: Int) {
+        let saveFileName = "\(except_parametacount)枚省き-\(filenameNum)"
+        
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/pic\(num).jpg")
-
-            let imageData = results[section_num!].cells[cell_num!].models[ModelManagement.modelID].pic[num].pic_data
+            
+            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/\(saveFileName)", isDirectory: true)
             do {
-                try imageData!.write(to: archivePath)
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
             } catch {
-                print("Failed to save the image:", error)
+                print("失敗した")
             }
 
             let uiImage = sceneView.snapshot()
-            let screenimageData = uiImage.jpegData(compressionQuality: 1.0)
+            let screenimageData = uiImage.jpegData(compressionQuality: 0.5)
 
-            let scarchivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/scpic\(num).jpeg")
+            let scarchivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/\(saveFileName)/scpic\(num).jpeg")
             do {
                 try screenimageData!.write(to: scarchivePath)
             } catch {

@@ -97,7 +97,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         for _ in 1...viewModel.count {
             menu_array.append(false)
         }
-        self.menu_array[0] = true
         
         numGridPoints_slider.value = Float(numGridPoints / 100)
         numGridPoints_label.text = "\(numGridPoints)個/frame"
@@ -299,18 +298,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var pre_eulerAngles = SCNVector3(0,0,0)
     
-    func snapshot() {
-        //コンテキスト開始
-        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
-        //viewを書き出す
-        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
-        // imageにコンテキストの内容を書き出す
-        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-        //コンテキストを閉じる
-        UIGraphicsEndImageContext()
-        // imageをカメラロールに保存
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-    }
+//    func snapshot() {
+//        //コンテキスト開始
+//        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+//        //viewを書き出す
+//        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
+//        // imageにコンテキストの内容を書き出す
+//        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+//        //コンテキストを閉じる
+//        UIGraphicsEndImageContext()
+//        // imageをカメラロールに保存
+//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+//    }
     
     //    var snap_flag = false
     //    var snap_count = 0
@@ -392,9 +391,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     //90の時にメッシュと垂直
                     
                     //RGB画像
-                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
-                    let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                    let imageData = uiImage.jpegData(compressionQuality: 0.25) //toJPEGData()
+//                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
+//                    let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!)) //(1440.0, 1920.0)
+                    let uiImage = sceneView.snapshot() //(1668.0, 2300.0)
+                    print(uiImage.size)
+                    let imageData = uiImage.jpegData(compressionQuality: 0.5)//0.25) //toJPEGData()
                     
                     let entity = MakeMap_parameta(cameraPosition:
                                                     Vector3Entity(x: cameraPosition.x,
@@ -561,7 +562,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100() //深度情報
-            self.depth_pointCloudRenderer.mapping100() //マッピング支援
+            //self.depth_pointCloudRenderer.mapping100() //マッピング支援
             
             if pointCloud_flag == true {
                 //pointCloudRenderer.draw() //点群

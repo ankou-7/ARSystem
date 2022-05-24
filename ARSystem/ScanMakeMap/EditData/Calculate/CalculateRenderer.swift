@@ -65,8 +65,8 @@ class CalculateRenderer {
         encoder.setComputePipelineState(pipeline)
         
         face_count = anchors[num].geometry.faces.count
-        print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
-        print("id数(面の数:ポリゴン数)：\(anchors[num].geometry.faces.count)")
+//        print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
+//        print("id数(面の数:ポリゴン数)：\(anchors[num].geometry.faces.count)")
         sumPolygon += anchors[num].geometry.faces.count
         
         //main処理
