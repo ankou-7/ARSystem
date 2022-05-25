@@ -23,6 +23,8 @@ class GPUCalculateTexture {
     
     var removeCount: [Int]
     
+    var st = ""
+    
     // 使用者が単位を把握できるようにするため
     typealias MegaByte = UInt64
     
@@ -59,12 +61,12 @@ class GPUCalculateTexture {
         print("割り当てられたポリゴン数：\(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3)")
         print("テクスチャ割り当て割合：\(Double(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3) / Double(calculateRenderer.sumPolygon))")
         print("割り当てられなかったポリゴン数：\(calculateRenderer.texCount / 3)")
-        let st = """
+        st += """
                     総ポリゴン数：\(calculateRenderer.sumPolygon)
                     割り当てられたポリゴン数：\(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3)
                     テクスチャ割り当て割合：\(Double(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3) / Double(calculateRenderer.sumPolygon))
                     割り当てられなかったポリゴン数：\(calculateRenderer.texCount / 3)
-                  """
+                """
         saveDocument(text: st)
         
         completionHandler()

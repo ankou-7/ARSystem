@@ -155,7 +155,6 @@ class CalculateRenderer {
 //        print("count：\(tryCount)")
         //print(texcoords)
         
-        
         for t in texcoords {
             if t == SIMD2<Float>(0.0, 0.0) {
                 texCount += 1

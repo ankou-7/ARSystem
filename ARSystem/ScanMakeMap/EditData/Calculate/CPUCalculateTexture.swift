@@ -32,6 +32,11 @@ class CPUCalculateTexture {
     var new_normal_array: [[SIMD3<Float>]] = []
     var new_texcoords2: [[SIMD2<Float>]] = []
     
+    //ポリゴン数の合計
+    var sumPolygon = 0
+    var texCount = 0
+    var st = ""
+    
     init(anchors: [ARMeshAnchor], models: Navi_Modelname, picCount: Int, calculateParameta: calculateParameta) {
         self.anchors = anchors
         self.models = models
@@ -63,15 +68,48 @@ class CPUCalculateTexture {
         for i in 0..<picCount {
             make_calcuParameta(num: i) { (dep, mat, vec) in
                 self.calcTextureCoordinates(num: i, cameraVector: vec, depthArray: dep, matrix: mat)
+                if i == 0 {
+                    print("総ポリゴン数\(self.sumPolygon)")
+                    self.st +=  """
+                                総ポリゴン数
+                                \(self.sumPolygon)
+                                各パラメータでのテクスチャが割り当てられたポリゴン数\n
+                                """
+                }
+                print("割り当てられたポリゴン数\(self.texCount)")
+                self.st += "\(self.texCount)\n"
             }
             
         }
+        saveDocument(text: st)
         save_model()
         
         print("calcu終了")
         let elapsed = Date().timeIntervalSince(start)
         print("処理時間：\(elapsed)")
         completionHandler()
+    }
+    
+    func saveDocument(text: String) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            //フォルダ作成
+            let section_num = ViewManagement.sectionID!
+            let cell_num = ViewManagement.cellID!
+            let results = try! Realm().objects(Navi_SectionTitle.self)
+            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+            
+            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/テクスチャ割り当て率.txt")
+            do {
+                try text.write(to: archivePath, atomically: false, encoding: .utf8)
+            } catch {
+                print("Error: \(error)")
+            }
+        }
     }
     
     func make_calcuParameta(num: Int, completionHandler: @escaping ([depthPosition], simd_float4x4, SCNVector3) -> ()) {
@@ -96,6 +134,7 @@ class CPUCalculateTexture {
     }
     
     func calcTextureCoordinates(num: Int, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
+        sumPolygon = 0
         for (i, mesh_anchor) in anchors.enumerated() {
             let tate = Float(calculateParameta.tate)
             let yoko = Float(calculateParameta.yoko)
@@ -107,6 +146,8 @@ class CPUCalculateTexture {
             let verticles = mesh_anchor.geometry.vertices
             let normals = mesh_anchor.geometry.normals
             let faces = mesh_anchor.geometry.faces
+            sumPolygon += faces.count
+            
             for j in 0..<faces.count {
                 if num == 0 {
                     face_bool[i].append(-1)
@@ -156,7 +197,8 @@ class CPUCalculateTexture {
                     }
                     
                     if points_index.count == 3 {
-                        //face_bool[i][j] = i
+                        texCount += 1
+                        face_bool[i][j] = i
                         //print("----------------------------")
                         for (k, p) in points.enumerated() {
                             //print(perNormals[k])

@@ -15,7 +15,7 @@ import Photos
 import AssetsLibrary
 import SVProgressHUD
 
-class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ARCoachingOverlayViewDelegate {
     
     //    //画面遷移した際のsectionとcellの番号を格納
     //    var section_num = Int()
@@ -82,6 +82,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var takeParametaCountLabel: UILabel!
     var parametaCount: Int!
     
+    var remap_flag = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -116,6 +118,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //        configuration.sceneReconstruction = .meshWithClassification
         //        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
         sceneView.session.run(configuration)
+        
+        //特徴点を取るためのコーチングの追加
+        coachingOverlay.session = sceneView.session
+        coachingOverlay.delegate = self
+        coachingOverlay.translatesAutoresizingMaskIntoConstraints = false
+        coachingOverlay.activatesAutomatically = false
+        coachingOverlay.goal =  .tracking //horizontalPlane,verticalPlane,anyPlane,tracking
+        self.view.addSubview(coachingOverlay)
+        //ARCoachingOverlayViewを画面の中心に表示させる
+        NSLayoutConstraint.activate([
+            coachingOverlay.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            coachingOverlay.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            coachingOverlay.widthAnchor.constraint(equalTo: view.widthAnchor),
+            coachingOverlay.heightAnchor.constraint(equalTo: view.heightAnchor)
+        ])
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -175,27 +192,86 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.depth_flag = false
                 
                 self.Alert() //モデル作成部分
-                
-                let realm = try! Realm()
-                let results = realm.objects(Data_parameta.self)
-                print(results[0].pic.count)
             }
             //スキャン開始時
         } else {
             UIView.animate(withDuration: 0.2) {
-                if self.make_modelButton_Tapped_count == 0 {
-                    self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
+                
+                if self.remap_flag == false {
+                    
+                    if self.make_modelButton_Tapped_count == 0 {
+                        self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
+                        self.sceneView.debugOptions.remove([.showWorldOrigin])
+                    }
+                    self.make_modelButton_Tapped_count += 1
+                    
+                    self.pointCloudRenderer = Renderer(
+                        session: self.sceneView.session,
+                        metalDevice: self.sceneView.device!,
+                        sceneView: self.sceneView)
+                    self.pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
+                    self.pointCloudRenderer.numGridPoints = self.numGridPoints
+                    
+                    //点群の表示
+                    //                if self.menu_array[2] == false {
+                    //                    self.exit_point_num = 1
+                    //                    self.pointCloud_flag = true
+                    //                }
+                    
+                    self.recording_count += 1
+                    
+                    guard let frame = self.sceneView.session.currentFrame else {
+                        fatalError("Couldn't get the current ARFrame")
+                    }
+                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
+                    let cgImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+                    self.current_imageData = cgImage.jpegData(compressionQuality: 0.1)
+                    
+                    if self.menu_array[0] == true {
+                        self.sceneView.debugOptions = .showWorldOrigin
+                    }
+                    
+                    //メッシュの表示
+                    if self.menu_array[1] == false {
+                        self.exit_mesh_num = 1
+                        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+                            self.configuration.sceneReconstruction = .meshWithClassification
+                        }
+                    }
+                    
+                    //self.configuration.environmentTexturing = .automatic
+                    self.configuration.planeDetection = [.horizontal, .vertical]
+                    self.configuration.frameSemantics =  .sceneDepth //.smoothedSceneDepth
+                    //configuration.isLightEstimationEnabled = false
+                    self.configuration.environmentTexturing = .none
+                    
+                    //原点の更新
+                    if self.menu_array[3] == false {
+                        self.sceneView.session.run(self.configuration, options: [.removeExistingAnchors, .resetSceneReconstruction])
+                    }
+                    else if self.menu_array[3] == true {
+                        self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
+                    }
+                
+                    //内部パラメータ保存用
+                    let realm = try! Realm()
+                    let results = realm.objects(Data_parameta.self)
+                    let objName = "NaviModel\(results.count)"
+                    try! realm.write {
+                        realm.add(Data_parameta(value: ["modelname": objName]))
+                    }
+                    self.exit_parameta = 1
+                    
+                } else {
                     self.sceneView.debugOptions.remove([.showWorldOrigin])
                 }
-                self.make_modelButton_Tapped_count += 1
-                self.parametaCount = 0
+
+                self.make_out_modelButton.layer.cornerRadius = 3.0
+                self.make_modelButton.layer.cornerRadius = 3.0
                 
-                self.pointCloudRenderer = Renderer(
-                    session: self.sceneView.session,
-                    metalDevice: self.sceneView.device!,
-                    sceneView: self.sceneView)
-                self.pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
-                self.pointCloudRenderer.numGridPoints = self.numGridPoints
+                self.mesh_flag = true
+                self.parameta_flag = true
+                self.parametaCount = 0
                 
                 self.depth_pointCloudRenderer = depth_Renderer(
                     session: self.sceneView.session,
@@ -205,52 +281,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 self.lastCameraTransform = self.sceneView.session.currentFrame?.camera.transform
                 
-                //点群の表示
-                //                if self.menu_array[2] == false {
-                //                    self.exit_point_num = 1
-                //                    self.pointCloud_flag = true
-                //                }
-                
-                self.recording_count += 1
-                self.make_out_modelButton.layer.cornerRadius = 3.0
-                self.make_modelButton.layer.cornerRadius = 3.0
-                
-                guard let frame = self.sceneView.session.currentFrame else {
-                    fatalError("Couldn't get the current ARFrame")
-                }
-                let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
-                let cgImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
-                self.current_imageData = cgImage.jpegData(compressionQuality: 0.1)
-                
-                self.mesh_flag = true
-                self.parameta_flag = true
-                
-                if self.menu_array[0] == true {
-                    self.sceneView.debugOptions = .showWorldOrigin
-                }
-                
-                //メッシュの表示
-                if self.menu_array[1] == false {
-                    self.exit_mesh_num = 1
-                    if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
-                        self.configuration.sceneReconstruction = .meshWithClassification
-                    }
-                }
-                
-                //self.configuration.environmentTexturing = .automatic
-                self.configuration.planeDetection = [.horizontal, .vertical]
-                self.configuration.frameSemantics =  .sceneDepth //.smoothedSceneDepth
-                //configuration.isLightEstimationEnabled = false
-                self.configuration.environmentTexturing = .none
-                
-                //原点の更新
-                if self.menu_array[3] == false {
-                    self.sceneView.session.run(self.configuration, options: [.removeExistingAnchors, .resetSceneReconstruction])
-                }
-                else if self.menu_array[3] == true {
-                    self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
-                }
-                
                 //マッピング支援の停止
                 if self.menu_array[4] == true {
                     self.mappingSupportFlag = true
@@ -258,14 +288,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     self.mappingSupportFlag = false
                 }
                 
-                //内部パラメータ保存用
-                let realm = try! Realm()
-                let results = realm.objects(Data_parameta.self)
-                let objName = "NaviModel\(results.count)"
-                try! realm.write {
-                    realm.add(Data_parameta(value: ["modelname": objName]))
-                }
-                self.exit_parameta = 1
+                
             }
         }
         isRecording = !isRecording
@@ -279,17 +302,24 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                       """
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
-            self.Make_mesh_obj() //モデルを一時保存
-            self.mesh_flag = false
-        })
-        
-        alertController.addAction(UIAlertAction(title: "終了", style: .default) { [self] _ in
-            self.Make_mesh_obj() //モデルを一時保存
-            self.mesh_flag = false
+        if remap_flag == false {
+            alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
+                self.Make_mesh_obj() //モデルを一時保存
+                self.mesh_flag = false
+            })
             
-            finish_mapping()
-        })
+            alertController.addAction(UIAlertAction(title: "終了", style: .default) { [self] _ in
+                self.Make_mesh_obj() //モデルを一時保存
+                self.mesh_flag = false
+                
+                finish_mapping()
+            })
+        } else {
+            alertController.addAction(UIAlertAction(title: "ReMap終了", style: .default) { [self] _ in
+                self.mesh_flag = false
+                self.remap_flag = false
+            })
+        }
         
         self.present(alertController, animated: true, completion: nil)
     }
@@ -303,6 +333,42 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 
         self.to_CheckDataViewController()
     }
+    
+    var choice_section: Int!
+    var choice_cell: Int!
+    
+    @IBAction func Tapped_to_ReMap(_ sender: UIButton) {
+        self.remap_flag = true
+        
+        choice_section = 0
+        choice_cell = 5
+        
+        //データベースからcell削除
+        let results = try! Realm().objects(Navi_SectionTitle.self)
+        print(results[choice_section].cells[choice_cell].models[0])
+        try! Realm().write {
+            results[choice_section].cells[choice_cell].models[0].json.removeAll()
+            results[choice_section].cells[choice_cell].models[0].pic.removeAll()
+            results[choice_section].cells[choice_cell].models[0].depth.removeAll()
+        }
+        print(results[choice_section].cells[choice_cell].models[0])
+        
+        //ARWorldMapの復元
+        self.coachingOverlay.setActive(true, animated: true)
+        let data = results[self.choice_section].cells[self.choice_cell].models[0].worlddata
+        let worldMap = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data!)
+        DispatchQueue.main.async {
+            let configuration = ARWorldTrackingConfiguration()
+            configuration.planeDetection = [.horizontal, .vertical]
+            configuration.initialWorldMap = worldMap
+            configuration.sceneReconstruction = .meshWithClassification
+            configuration.frameSemantics =  .sceneDepth //.smoothedSceneDepth
+            configuration.environmentTexturing = .none
+            self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+            self.coachingOverlay.setActive(false, animated: true)
+        }
+    }
+    
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         
@@ -448,9 +514,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     
                     json_data = try! JSONEncoder().encode(entity)
                     
-                    let depthData = depth_pointCloudRenderer.depthData()
+                    //深度情報のデータを取得（データがない時はfalseを返す）
+                    let (depthData, bool) = depth_pointCloudRenderer.depthData()
                     
-                    if mapping_flag == true {
+                    if mapping_flag == true && bool == true {
                         depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
                         
                         DispatchQueue.global().async { [self] in
@@ -492,16 +559,29 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     func save_jpeg(filename: String, jpegData: Data, jsonData: Data, depthData: Data) {
         //print("save")
         let realm = try! Realm()
-        let results = realm.objects(Data_parameta.self)
-        try! realm.write {
-            results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
-                                                                      "pic_data": jpegData]))
-            
-            results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
-                                                                        "json_data": jsonData]))
-            
-            results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
-                                                                          "depth_data": depthData]))
+        
+        if remap_flag == false {
+            let results = realm.objects(Data_parameta.self)
+            try! realm.write {
+                results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
+                                                                          "pic_data": jpegData]))
+                
+                results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
+                                                                            "json_data": jsonData]))
+                
+                results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
+                                                                              "depth_data": depthData]))
+            }
+        } else {
+            let results = realm.objects(Navi_SectionTitle.self)
+            try! realm.write {
+                results[choice_section].cells[choice_cell].models[0].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
+                                                                                                 "pic_data": jpegData]))
+                results[choice_section].cells[choice_cell].models[0].json.append(json_data(value: ["json_name": "\(filename)",
+                                                                                                   "json_data": jsonData]))
+                results[choice_section].cells[choice_cell].models[0].depth.append(depth_data(value: ["depth_name": "\(filename)",
+                                                                                                    "depth_data": depthData]))
+            }
         }
         
         lastCameraTransform = sceneView.session.currentFrame?.camera.transform
@@ -699,6 +779,10 @@ extension MakeNavigationController: UIAdaptivePresentationControllerDelegate {
           self.parameta_flag = true
           timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
           self.check_flag = false
+      }
+      
+      if remap_flag == true {
+          print("remap")
       }
   }
 }

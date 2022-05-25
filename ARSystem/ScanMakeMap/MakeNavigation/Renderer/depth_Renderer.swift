@@ -264,7 +264,7 @@ final class depth_Renderer {
     }
     
     //depthデータ取得用
-    func depthData() -> Data {
+    func depthData() -> (Data, Bool) {
 //        print(particlesDepthBuffer.count)
         //print(particlesDepthBuffer[100])
 //        print(particlesDepthBuffer[100].confidence)
@@ -278,6 +278,11 @@ final class depth_Renderer {
             //depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
             depth_array.append(depthPosition(x: point.position.x, y: point.position.y, z: point.position.z))
         }
+        print(depth_array.count)
+        var result = false
+        if depth_array.count > 0 {
+            result = true
+        }
 
         let depthData = try! JSONEncoder().encode(depth_array)
         
@@ -288,7 +293,7 @@ final class depth_Renderer {
 //        }
 //        let depthData = Data(bytes: depth_array, count: MemoryLayout<SCNVector3>.size * depth_array.count)
         
-        return depthData
+        return (depthData, result)
     }
     
     func depth_point() -> [SCNVector3] {

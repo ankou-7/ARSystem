@@ -65,6 +65,8 @@
 		CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */; };
 		CF0F166F272C835900E6F9ED /* SCNGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166E272C835900E6F9ED /* SCNGeometry.swift */; };
 		CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF13205727223CD400277339 /* ObjectOrigin.swift */; };
+		CF2210A8283D41EF00AA5C83 /* ReMap.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF2210A7283D41EF00AA5C83 /* ReMap.storyboard */; };
+		CF2210AA283D42C200AA5C83 /* ChoiceReMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2210A9283D42C200AA5C83 /* ChoiceReMap.swift */; };
 		CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */; };
 		CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */; };
 		CF2E4D6C282F96BF004CCA41 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = CF2E4D6B282F96BF004CCA41 /* ZipArchive */; };
@@ -194,6 +196,8 @@
 		CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTextureModelController.swift; sourceTree = "<group>"; };
 		CF0F166E272C835900E6F9ED /* SCNGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNGeometry.swift; sourceTree = "<group>"; };
 		CF13205727223CD400277339 /* ObjectOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOrigin.swift; sourceTree = "<group>"; };
+		CF2210A7283D41EF00AA5C83 /* ReMap.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ReMap.storyboard; sourceTree = "<group>"; };
+		CF2210A9283D42C200AA5C83 /* ChoiceReMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceReMap.swift; sourceTree = "<group>"; };
 		CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Utils.swift"; sourceTree = "<group>"; };
 		CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeModePopOver.swift; sourceTree = "<group>"; };
 		CF30EF47262BAF5000C13B66 /* PopOver.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopOver.storyboard; sourceTree = "<group>"; };
@@ -402,6 +406,15 @@
 			path = MakeMap;
 			sourceTree = "<group>";
 		};
+		CF2210A6283D41C900AA5C83 /* ReMap */ = {
+			isa = PBXGroup;
+			children = (
+				CF2210A7283D41EF00AA5C83 /* ReMap.storyboard */,
+				CF2210A9283D42C200AA5C83 /* ChoiceReMap.swift */,
+			);
+			path = ReMap;
+			sourceTree = "<group>";
+		};
 		CF30EF46262BAF0A00C13B66 /* AllPopOver */ = {
 			isa = PBXGroup;
 			children = (
@@ -465,6 +478,7 @@
 				CF966148280D9F5900D4C8BA /* SCNGeometry+Ext.swift */,
 				CF3D808E262B8C64007904E6 /* Renderer */,
 				260D431227CE3EC90020039E /* CheckData */,
+				CF2210A6283D41C900AA5C83 /* ReMap */,
 				CF6BC314262AE43700E9B083 /* AddDataToCell */,
 			);
 			path = MakeNavigation;
@@ -720,6 +734,7 @@
 				CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */,
 				CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */,
 				CF0F1669272C62D100E6F9ED /* MakeMap.storyboard in Resources */,
+				CF2210A8283D41EF00AA5C83 /* ReMap.storyboard in Resources */,
 				CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */,
 				CF30EF89262D980200C13B66 /* MapExpansionReceive.storyboard in Resources */,
 				26AAA1FA2563C804008FE5EB /* Assets.xcassets in Resources */,
@@ -823,6 +838,7 @@
 				CF666309283457CA0012F0DB /* CameraNode.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
+				CF2210AA283D42C200AA5C83 /* ChoiceReMap.swift in Sources */,
 				CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */,
 				CF966163280F4E9200D4C8BA /* BuildTextureMeshNode.swift in Sources */,
 				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,

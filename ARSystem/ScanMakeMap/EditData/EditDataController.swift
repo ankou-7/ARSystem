@@ -12,6 +12,7 @@ import RealmSwift
 import MultipeerConnectivity
 import SVProgressHUD
 import Firebase
+import FirebaseFirestore
 import ZipArchive
 
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
@@ -161,6 +162,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_bool = 0
+        }
+        
         //モデルを表示
         buildSetup()
         
@@ -202,16 +208,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         imageWidth = UIImage(data: models.pic[0].pic_data!)?.size.width
         imageHeight = UIImage(data: models.pic[0].pic_data!)?.size.height
         print(imageWidth!, imageHeight!)
-        print(sceneView.bounds)
+        
 //        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
         new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
         imageView.image = new_uiimage
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_pic = imageData
-        }
+//        let uiImage = new_uiimage
+//        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+//        let realm = try! Realm()
+//        try! realm.write {
+//            models.texture_pic = imageData
+//        }
         
         anchors = []
         for i in 0..<models.mesh_anchor.count {
@@ -1036,6 +1042,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     }
     
     @IBAction func reBuild(_ sender: UIButton) {
+        Tapped_ExButtonCount = -1
+        
         //除外するパラメータのインデックスが格納された配列
         let remove = makeRemoveArray()
         
@@ -1157,7 +1165,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     }
     
     func savePic_toDocument(num: Int) {
-        let saveFileName = "\(except_parametacount)枚省き-\(filenameNum)"
+        var saveFileName = ""
+        if exceptflag == false {
+            saveFileName = "\(except_parametacount)枚省き-\(filenameNum)"
+        } else {
+            saveFileName = "近傍\(radius)cm内省き-\(filenameNum)"
+        }
         
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             
