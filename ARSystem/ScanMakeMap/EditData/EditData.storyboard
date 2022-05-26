@@ -748,6 +748,15 @@
                                     <constraint firstAttribute="width" constant="255" id="D83-o4-aJo"/>
                                 </constraints>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Lf-G7-gqs">
+                                <rect key="frame" x="156" y="1124" width="67" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="tap_makeTexture_hittest:" destination="OtV-2Q-EG5" eventType="touchUpInside" id="PER-U3-DCX"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uxY-IE-l79"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -890,16 +899,16 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrowtriangle.left.fill" catalog="system" width="32" height="32"/>
-        <image name="arrowtriangle.right.fill" catalog="system" width="32" height="32"/>
+        <image name="arrowtriangle.left.fill" catalog="system" width="128" height="113"/>
+        <image name="arrowtriangle.right.fill" catalog="system" width="128" height="113"/>
         <image name="back2" width="240" height="240"/>
-        <image name="chevron.backward" catalog="system" width="32" height="32"/>
+        <image name="chevron.backward" catalog="system" width="96" height="128"/>
         <image name="color" width="783" height="783"/>
         <image name="device_plus" width="314" height="316"/>
         <image name="mesh" width="815" height="815"/>
         <image name="point" width="834" height="815"/>
         <image name="riset" width="24" height="24"/>
-        <image name="xmark" catalog="system" width="32" height="32"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <image name="ロボット" width="237" height="233"/>
         <image name="遠隔支援" width="264" height="264"/>
         <namedColor name="AccentColor">

@@ -896,8 +896,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                                                       H: Int(sceneView.bounds.height),
                                                       tate: Int(tate), yoko: Int(yoko),
                                                       funcString: texString)
-            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta)
-            CPUCalculateTexture.makeCPUTexture() { [self] in
+            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta, cameraNode: cameraNode, sceneView: sceneView)
+            CPUCalculateTexture.makeCPUTexture2() { [self] in
                 delete_mesh()
                 texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
@@ -905,6 +905,27 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             }
         })
     }
+    
+    //hittest
+    @IBAction func tap_makeTexture_hittest(_ sender: UIButton) {
+        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "Calculating")
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                      W: Int(sceneView.bounds.width),
+                                                      H: Int(sceneView.bounds.height),
+                                                      tate: Int(tate), yoko: Int(yoko),
+                                                      funcString: texString)
+            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta, cameraNode: cameraNode, sceneView: sceneView)
+            CPUCalculateTexture.makeCPUTexture3() { [self] in
+                delete_mesh()
+                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+                SVProgressHUD.dismiss()
+            }
+        })
+    }
+    
     
     //MARK: - コラボレーション用
     @IBAction func serchBrowser(_ sender: UIButton) {

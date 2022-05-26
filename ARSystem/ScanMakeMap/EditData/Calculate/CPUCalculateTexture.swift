@@ -16,6 +16,9 @@ class CPUCalculateTexture {
     private var picCount: Int
     private var calculateParameta: calculateParameta
     
+    private var sceneView: SCNView
+    private var cameraNode: SCNNode
+    
 //    private var cameraVector: SCNVector3!
 //    private var calcuMatrix: simd_float4x4!
 //    private var depth = [depthPosition]()
@@ -37,11 +40,14 @@ class CPUCalculateTexture {
     var texCount = 0
     var st = ""
     
-    init(anchors: [ARMeshAnchor], models: Navi_Modelname, picCount: Int, calculateParameta: calculateParameta) {
+    init(anchors: [ARMeshAnchor], models: Navi_Modelname, picCount: Int, calculateParameta: calculateParameta, cameraNode: SCNNode, sceneView: SCNView) {
         self.anchors = anchors
         self.models = models
         self.picCount = picCount
         self.calculateParameta = calculateParameta
+        
+        self.cameraNode = cameraNode
+        self.sceneView = sceneView
         
         setupArray()
     }
@@ -64,6 +70,7 @@ class CPUCalculateTexture {
     
     func makeCPUTexture(completionHandler: @escaping () -> ()) {
         let start = Date()
+        var time = ""
         print("calcu開始")
         for i in 0..<picCount {
             make_calcuParameta(num: i) { (dep, mat, vec) in
@@ -78,19 +85,20 @@ class CPUCalculateTexture {
                 }
                 print("割り当てられたポリゴン数\(self.texCount)")
                 self.st += "\(self.texCount)\n"
+                time += "\(Date().timeIntervalSince(start))\n"
             }
             
         }
-        saveDocument(text: st)
+        st += time
+        saveDocument(text: st, filename: "CPU")
         save_model()
         
         print("calcu終了")
-        let elapsed = Date().timeIntervalSince(start)
-        print("処理時間：\(elapsed)")
+        print("処理時間：\(Date().timeIntervalSince(start))")
         completionHandler()
     }
     
-    func saveDocument(text: String) {
+    func saveDocument(text: String, filename: String) {
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             //フォルダ作成
             let section_num = ViewManagement.sectionID!
@@ -103,7 +111,7 @@ class CPUCalculateTexture {
                 print("失敗した")
             }
             
-            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/テクスチャ割り当て率.txt")
+            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/\(filename).txt")
             do {
                 try text.write(to: archivePath, atomically: false, encoding: .utf8)
             } catch {
@@ -134,6 +142,7 @@ class CPUCalculateTexture {
     }
     
     func calcTextureCoordinates(num: Int, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
+        
         sumPolygon = 0
         for (i, mesh_anchor) in anchors.enumerated() {
             let tate = Float(calculateParameta.tate)
@@ -177,21 +186,19 @@ class CPUCalculateTexture {
                         //print("projectPoint = \(pt)")
                         
                         //if thita <= 135 {
-                        if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
-                            let du = Int(round((1 - pt.x / 834) * 95))
-                            let dv = Int(round((pt.y / 1150) * 127))
-                            if du * 128 + dv >= 12288 || du * 128 + dv < 0 {
-                                print(du, dv)
-                                print(du * 128 + dv)
-                            }
-                            //print(depthArray)
-                            let depthPosi = depthArray[du * 128 + dv]
-                            let diff = sqrt((world_vector3.x - depthPosi.x)*(world_vector3.x - depthPosi.x) + (world_vector3.y - depthPosi.y)*(world_vector3.y - depthPosi.y) + (world_vector3.z - depthPosi.z)*(world_vector3.z - depthPosi.z))
-                            if diff < 0.2 {
-                                points.append(pt)
-                                points_index.append(Int(per_face_index))
-                                perVerticles.append(world_vector3)
-                                perNormals.append(normal)
+                        if depthArray.count > 0 {
+                            if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                                let du = Int(round((1 - pt.x / 834) * 95))
+                                let dv = Int(round((pt.y / 1150) * 127))
+                                //print(depthArray)
+                                let depthPosi = depthArray[du * 128 + dv]
+                                let diff = sqrt((world_vector3.x - depthPosi.x)*(world_vector3.x - depthPosi.x) + (world_vector3.y - depthPosi.y)*(world_vector3.y - depthPosi.y) + (world_vector3.z - depthPosi.z)*(world_vector3.z - depthPosi.z))
+                                if diff < 0.2 {
+                                    points.append(pt)
+                                    points_index.append(Int(per_face_index))
+                                    perVerticles.append(world_vector3)
+                                    perNormals.append(normal)
+                                }
                             }
                         }
                     }
@@ -199,9 +206,7 @@ class CPUCalculateTexture {
                     if points_index.count == 3 {
                         texCount += 1
                         face_bool[i][j] = i
-                        //print("----------------------------")
                         for (k, p) in points.enumerated() {
-                            //print(perNormals[k])
                             face_count += 1
                             let u = p.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
                             let v = p.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
@@ -222,6 +227,271 @@ class CPUCalculateTexture {
         print("calculate\(num)完了")
     }
     
+    //MARK: - アンカー毎に全てのパラメータを処理
+    func makeCPUTexture2(completionHandler: @escaping () -> ()) {
+        let start = Date()
+        var poly = ""
+        var time = ""
+        print("calcu開始")
+        make_calcuParameta2() { (dep, mat) in
+            for (i, anchor) in self.anchors.enumerated() {
+                //処理
+                self.calcTextureCoordinates2(num: i, anchor: anchor, depthArray: dep, matrixs: mat)
+                poly += "\(self.sumPolygon)\n"
+                time += "\(Date().timeIntervalSince(start))\n"
+                print("calculate\(i)完了")
+            }
+        }
+        
+        st += poly + time
+        saveDocument(text: st, filename: "バージョン2")
+        save_model()
+        
+        print("calcu終了")
+        print("処理時間：\(Date().timeIntervalSince(start))")
+        completionHandler()
+    }
+    
+    func make_calcuParameta2(completionHandler: @escaping ([depthPosition], [simd_float4x4]) -> ()) {
+        let decoder = JSONDecoder()
+        var calcuMatrix = [simd_float4x4]()
+        var depth = [depthPosition]()
+        
+        for i in 0..<models.pic.count {
+            let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
+            
+            let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
+                                           json_data!.viewMatrix.y,
+                                           json_data!.viewMatrix.z,
+                                           json_data!.viewMatrix.w)
+            let projectionMatrix = simd_float4x4(json_data!.projectionMatrix.x,
+                                                 json_data!.projectionMatrix.y,
+                                                 json_data!.projectionMatrix.z,
+                                                 json_data!.projectionMatrix.w)
+            let matrix = projectionMatrix * viewMatrix
+            calcuMatrix.append(matrix)
+            
+            let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
+            depth.append(contentsOf: depth_array)
+        }
+        
+        completionHandler(depth, calcuMatrix)
+    }
+    
+    //１つのアンカーに対して全てのパラメータを処理
+    func calcTextureCoordinates2(num: Int, anchor: ARMeshAnchor, depthArray: [depthPosition], matrixs: [simd_float4x4]){
+        let tate = Float(calculateParameta.tate)
+        let yoko = Float(calculateParameta.yoko)
+        let scWidth = Float(calculateParameta.screenWidth)
+        let scHeight = Float(calculateParameta.screenHeight)
+        
+        var face_count = new_face_array[num].count - 1 //新しく構成する頂点のインデックス番号（-1から）
+        
+        //アンカー情報
+        let verticles = anchor.geometry.vertices
+        let normals = anchor.geometry.normals
+        let faces = anchor.geometry.faces
+        sumPolygon += faces.count
+        
+        //全パラメータで処理
+        for (i, matrix) in matrixs.enumerated() {
+            for j in 0..<faces.count {
+                if i == 0 {
+                    face_bool[num].append(-1) //１番目のパラメータ処理時にポリゴン数だけ-1を格納（-1ならそのポリゴンはまだ処理してない）
+                }
+                if face_bool[num][j] == -1 {
+                    //各ポリゴン毎に処理
+                    var points: [SCNVector3] = [] //UV計算された頂点のスクリーン座標を格納
+                    var perVerticles: [SCNVector3] = []
+                    var perNormals: [SCNVector3] = []
+                    
+                    for offset in 0..<faces.indexCountPerPrimitive {
+                        let vertexIndexAddress = faces.buffer.contents().advanced(by: (j * faces.indexCountPerPrimitive + offset) * MemoryLayout<UInt32>.size)
+                        let per_face_index = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+                        
+                        let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * Int(per_face_index)))
+                        let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                        let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+                        let world_vertex4 = simd_mul(anchor.transform, vertex4)
+                        let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+                        let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * Int(per_face_index)))
+                        let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
+                        
+                        //ポリゴンの頂点座標（3次元）をスクリーン座標（2次元）に変換
+                        let clipSpacePosition = matrix * world_vertex4
+                        let normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w
+                        let pt = SCNVector3((CGFloat(normalizedDeviceCoordinate.x) + 1) * CGFloat(834 / 2),
+                                            (-CGFloat(normalizedDeviceCoordinate.y) + 1) * CGFloat(1150 / 2),
+                                            1 - (-CGFloat(normalizedDeviceCoordinate.z) + 1))
+                        
+                        if depthArray.count > 0 {
+                            if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= scHeight && pt.z < 1.0 {
+                                let du = Int(round((1 - pt.x / 834) * 95))
+                                let dv = Int(round((pt.y / 1150) * 127))
+                                let depthPosi = depthArray[du * 128 + dv]
+                                
+                                let diff = sqrt((world_vector3.x - depthPosi.x)*(world_vector3.x - depthPosi.x) + (world_vector3.y - depthPosi.y)*(world_vector3.y - depthPosi.y) + (world_vector3.z - depthPosi.z)*(world_vector3.z - depthPosi.z))
+                                if diff < 0.2 {
+                                    points.append(pt)
+                                    perVerticles.append(world_vector3)
+                                    perNormals.append(normal)
+                                }
+                            }
+                        }
+                    }
+                    
+                    if points.count == 3 {
+                        texCount += 1
+                        face_bool[num][j] = num
+                        
+                        for (k, pt) in points.enumerated() {
+                            face_count += 1
+                            let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                            let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                            
+                            new_texcoords2[num].append(SIMD2<Float>(u, v))
+                            new_face_array[num].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
+                            new_vertex_array[num].append(SIMD3<Float>(perVerticles[k]))
+                            new_normal_array[num].append(SIMD3<Float>(perNormals[k]))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    //MARK: - hittestを用いた処理
+    func makeCPUTexture3(completionHandler: @escaping () -> ()) {
+        let start = Date()
+        var poly = ""
+        var time = ""
+        var count = 0
+        let max = 1//self.models.json.count
+        
+        print("calcu開始")
+        make_calcuParameta2() { (dep, mat) in
+            //DispatchQueue.global().sync {
+            for j in 0..<1{//self.models.json.count {
+                    let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: self.models.json[j].json_data!)
+                    let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+                                                    json_data!.cameraPosition.y,
+                                                    json_data!.cameraPosition.z)
+                    let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+                                                       json_data!.cameraEulerAngles.y,
+                                                        json_data!.cameraEulerAngles.z)
+                    let move = SCNAction.move(to: cameraPosition, duration: 0)
+                    let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+                    self.cameraNode.runAction(SCNAction.group([move, rotation]),
+                                         completionHandler: {
+                        //処理
+                        for (i, anchor) in self.anchors.enumerated() {
+                            self.calcTextureCoordinates3(num: i, anchor: anchor, matrixs: mat)
+                            poly += "\(self.sumPolygon)\n"
+                            time += "\(Date().timeIntervalSince(start))\n"
+                            print("calculate\(i)完了")
+                        }
+                        
+                        count += 1
+                        if count == max {
+                            DispatchQueue.main.async {
+                                self.st += poly + time
+                                self.saveDocument(text: self.st, filename: "バージョン1")
+                                self.save_model()
+                                
+                                print("calcu終了")
+                                print("処理時間：\(Date().timeIntervalSince(start))")
+                                completionHandler()
+                            }
+                        }
+                    })
+                //}
+            }
+        }
+    }
+    
+    func calcTextureCoordinates3(num: Int, anchor: ARMeshAnchor, matrixs: [simd_float4x4]){
+        let tate = Float(calculateParameta.tate)
+        let yoko = Float(calculateParameta.yoko)
+        let scWidth = Float(calculateParameta.screenWidth)
+        let scHeight = Float(calculateParameta.screenHeight)
+        
+        var face_count = new_face_array[num].count - 1 //新しく構成する頂点のインデックス番号（-1から）
+        
+        //アンカー情報
+        let verticles = anchor.geometry.vertices
+        let normals = anchor.geometry.normals
+        let faces = anchor.geometry.faces
+        sumPolygon += faces.count
+        
+        //全パラメータで処理
+        for (i, matrix) in matrixs.enumerated() {
+            for j in 0..<faces.count {
+                if i == 0 {
+                    face_bool[num].append(-1) //１番目のパラメータ処理時にポリゴン数だけ-1を格納（-1ならそのポリゴンはまだ処理してない）
+                }
+                if face_bool[num][j] == -1 {
+                    //各ポリゴン毎に処理
+                    var points: [SCNVector3] = [] //UV計算された頂点のスクリーン座標を格納
+                    var perVerticles: [SCNVector3] = []
+                    var perNormals: [SCNVector3] = []
+                    
+                    for offset in 0..<faces.indexCountPerPrimitive {
+                        let vertexIndexAddress = faces.buffer.contents().advanced(by: (j * faces.indexCountPerPrimitive + offset) * MemoryLayout<UInt32>.size)
+                        let per_face_index = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
+                        
+                        let vertexPointer = verticles.buffer.contents().advanced(by: verticles.offset + (verticles.stride * Int(per_face_index)))
+                        let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+                        let vertex4 = vector_float4(vertex.x, vertex.y, vertex.z, 1)
+                        let world_vertex4 = simd_mul(anchor.transform, vertex4)
+                        let world_vector3 = SCNVector3(x: world_vertex4.x, y: world_vertex4.y, z: world_vertex4.z)
+                        let normalsPointer = normals.buffer.contents().advanced(by: normals.offset + (normals.stride * Int(per_face_index)))
+                        let normal = normalsPointer.assumingMemoryBound(to: SCNVector3.self).pointee
+                        
+                        //ポリゴンの頂点座標（3次元）をスクリーン座標（2次元）に変換
+                        let clipSpacePosition = matrix * world_vertex4
+                        let normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w
+                        let pt = SCNVector3((CGFloat(normalizedDeviceCoordinate.x) + 1) * CGFloat(834 / 2),
+                                            (-CGFloat(normalizedDeviceCoordinate.y) + 1) * CGFloat(1150 / 2),
+                                            1 - (-CGFloat(normalizedDeviceCoordinate.z) + 1))
+                        
+                        if pt.x >= 0 && pt.x <= 834 && pt.y >= 0 && pt.y <= 1150 && pt.z < 1.0 {
+                            
+                            let hitResults = sceneView.hitTest(CGPoint(x: CGFloat(pt.x), y: CGFloat(pt.y)), options: [:])
+                            if !hitResults.isEmpty {
+                                if hitResults[0].node.parent?.name == "meshNode" {
+                                    let hitPoints = hitResults[0].worldCoordinates
+                                    //print("\(hitPoints)")
+                                    if abs(world_vector3.x - hitPoints.x) < 0.1 && abs(world_vector3.y - hitPoints.y) < 0.1 && abs(world_vector3.z - hitPoints.z) < 0.1 {
+                                        points.append(pt)
+                                        perVerticles.append(world_vector3)
+                                        perNormals.append(normal)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    if points.count == 3 {
+                        texCount += 1
+                        //face_bool[num][j] = i
+                        
+                        for (k, pt) in points.enumerated() {
+                            face_count += 1
+                            let u = pt.x / (834 * yoko)  + Float((num % Int(yoko))) / yoko
+                            let v = pt.y / (1150 * tate) + Float(floor(Float(num) / yoko)) / tate
+                            
+                            new_texcoords2[num].append(SIMD2<Float>(u, v))
+                            new_face_array[num].append(Int32(face_count)) //新しく順番に面を構成するインデックスを格納
+                            new_vertex_array[num].append(SIMD3<Float>(perVerticles[k]))
+                            new_normal_array[num].append(SIMD3<Float>(perNormals[k]))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    //MARK: - データベースに保存
     func save_model() {
         
         for (i, _) in anchors.enumerated() {

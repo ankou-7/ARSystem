@@ -677,7 +677,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        if mesh_flag == true {
+        if mesh_flag {
             for anchor in anchors {
                 var sceneNode : SCNNode?
                 if let meshAnchor = anchor as? ARMeshAnchor {
@@ -696,13 +696,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-        if mesh_flag == true {
+        if mesh_flag {
             var meshAnchors = [ARMeshAnchor]()
             for anchor in anchors {
                 if let node = knownAnchors[anchor.identifier] {
                     if let meshAnchor = anchor as? ARMeshAnchor {
                         
-                        meshAnchors.append(meshAnchor) //updateされたメッシュ情報を格納
+                        meshAnchors.append(meshAnchor) //updateされたメッシュ情報
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }

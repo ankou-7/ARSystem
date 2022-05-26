@@ -42,6 +42,8 @@ class GPUCalculateTexture {
     func makeGPUTexture(completionHandler: @escaping () -> ()) {
         var flag = 0
         let start = Date()
+        var poly = ""
+        var time = ""
         print("calcu開始")
         
         self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
@@ -51,12 +53,13 @@ class GPUCalculateTexture {
             print("-----------------------------------------")
             print("\(flag)回目")
             flag += self.calculateRenderer.calcu5(num: i)
+            poly += "\(calculateRenderer.sumPolygon)\n"
+            time += "\(Date().timeIntervalSince(start))\n"
             print("メモリ使用量：\(String(describing: getMemoryUsed()))")
         }
         print("-----------------------------------------")
         print("calcu終了")
-        let elapsed = Date().timeIntervalSince(start)
-        print("処理時間：\(elapsed)")
+        print("処理時間：\(Date().timeIntervalSince(start))")
         print("総ポリゴン数：\(calculateRenderer.sumPolygon)")
         print("割り当てられたポリゴン数：\(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3)")
         print("テクスチャ割り当て割合：\(Double(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3) / Double(calculateRenderer.sumPolygon))")
@@ -65,8 +68,9 @@ class GPUCalculateTexture {
                     総ポリゴン数：\(calculateRenderer.sumPolygon)
                     割り当てられたポリゴン数：\(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3)
                     テクスチャ割り当て割合：\(Double(calculateRenderer.sumPolygon - calculateRenderer.texCount / 3) / Double(calculateRenderer.sumPolygon))
-                    割り当てられなかったポリゴン数：\(calculateRenderer.texCount / 3)
+                    割り当てられなかったポリゴン数：\(calculateRenderer.texCount / 3)\n
                 """
+        st += poly + time
         saveDocument(text: st)
         
         completionHandler()
