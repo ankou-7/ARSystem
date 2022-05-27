@@ -83,6 +83,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var parametaCount: Int!
     
     var remap_flag = false
+    var cover_flag = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,6 +92,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.session.delegate = self
         sceneView.scene = scene
         sceneView.debugOptions = .showWorldOrigin
+        
+        //realm初期化
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let realm = try! Realm(fileURL: url.appendingPathComponent("try.realm"))
+        }
         
         //パラメータを一時的に保存する場所を初期化
         let realm = try! Realm()
@@ -212,6 +218,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     self.pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
                     self.pointCloudRenderer.numGridPoints = self.numGridPoints
                     
+                    //メッシュの取得，更新
+                    self.mesh_flag = true
+                    
                     //点群の表示
                     //                if self.menu_array[2] == false {
                     //                    self.exit_point_num = 1
@@ -269,7 +278,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.make_out_modelButton.layer.cornerRadius = 3.0
                 self.make_modelButton.layer.cornerRadius = 3.0
                 
-                self.mesh_flag = true
+                
                 self.parameta_flag = true
                 self.parametaCount = 0
                 
@@ -302,7 +311,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                       """
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        if remap_flag == false {
+        if remap_flag == false && cover_flag == false {
             alertController.addAction(UIAlertAction(title: "続行", style: .default) { [self] _ in
                 self.Make_mesh_obj() //モデルを一時保存
                 self.mesh_flag = false
@@ -314,10 +323,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 finish_mapping()
             })
-        } else {
+        } else if remap_flag {
             alertController.addAction(UIAlertAction(title: "ReMap終了", style: .default) { [self] _ in
-                self.mesh_flag = false
                 self.remap_flag = false
+            })
+        } else if cover_flag {
+            alertController.addAction(UIAlertAction(title: "上書き終了", style: .default) { [self] _ in
+                self.mesh_flag = false
+                
+                self.Make_mesh_obj()
             })
         }
         
@@ -334,14 +348,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.to_CheckDataViewController()
     }
     
-    var choice_section: Int!
-    var choice_cell: Int!
-    
     @IBAction func Tapped_to_ReMap(_ sender: UIButton) {
         self.remap_flag = true
         
-        choice_section = 0
-        choice_cell = 5
+        let storyboard = UIStoryboard(name: "ReMap", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceReMap") as! ChoiceReMap
+        vc.presentationController?.delegate = self
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    func setup_ReMap() {
+        let choice_section = (ReMapManagement.sectionID)!
+        let choice_cell = (ReMapManagement.cellID)!
         
         //データベースからcell削除
         let results = try! Realm().objects(Navi_SectionTitle.self)
@@ -352,10 +370,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             results[choice_section].cells[choice_cell].models[0].depth.removeAll()
         }
         print(results[choice_section].cells[choice_cell].models[0])
-        
+
         //ARWorldMapの復元
         self.coachingOverlay.setActive(true, animated: true)
-        let data = results[self.choice_section].cells[self.choice_cell].models[0].worlddata
+        let data = results[choice_section].cells[choice_cell].models[0].worlddata
         let worldMap = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data!)
         DispatchQueue.main.async {
             let configuration = ARWorldTrackingConfiguration()
@@ -369,6 +387,30 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         }
     }
     
+    @IBAction func Tapped_coverMap(_ sender: UIButton) {
+        self.cover_flag = true
+        
+        let storyboard = UIStoryboard(name: "ReMap", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceReMap") as! ChoiceReMap
+        vc.presentationController?.delegate = self
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    func setup_coverMap() {
+        let choice_section = (ReMapManagement.sectionID)!
+        let choice_cell = (ReMapManagement.cellID)!
+        
+        //データベースからcell削除
+        let results = try! Realm().objects(Navi_SectionTitle.self)
+        print(results[choice_section].cells[choice_cell].models[0])
+        try! Realm().write {
+            results[choice_section].cells[choice_cell].models[0].json.removeAll()
+            results[choice_section].cells[choice_cell].models[0].pic.removeAll()
+            results[choice_section].cells[choice_cell].models[0].depth.removeAll()
+            results[choice_section].cells[choice_cell].models[0].mesh_anchor.removeAll()
+        }
+        print(results[choice_section].cells[choice_cell].models[0])
+    }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         
@@ -379,31 +421,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var indices: [Int32] = []
     
     var pre_eulerAngles = SCNVector3(0,0,0)
-    
-//    func snapshot() {
-//        //コンテキスト開始
-//        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
-//        //viewを書き出す
-//        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
-//        // imageにコンテキストの内容を書き出す
-//        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-//        //コンテキストを閉じる
-//        UIGraphicsEndImageContext()
-//        // imageをカメラロールに保存
-//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-//    }
-    
-    //    var snap_flag = false
-    //    var snap_count = 0
-    //    @objc func update2() {
-    //        if snap_flag == true {
-    //            snapshot()
-    //            snap_count += 1
-    //        }
-    //        if snap_count == 15 {
-    //            print("finish")
-    //        }
-    //    }
     
     @IBAction func mappingSwitch(_ sender: UISwitch) {
         if sender.isOn == false {
@@ -529,15 +546,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                             }
                         }
                     }
-                    
-                    
-                    //                    if depth_pointCloudRenderer.imgPlaceMatrix.count >= 1 {
-                    //                        snapshot()
-                    //                        snap_flag = true
-                    //                    }
-                    
                 }
-                
             }
         }
     }
@@ -560,7 +569,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //print("save")
         let realm = try! Realm()
         
-        if remap_flag == false {
+        if remap_flag == false && cover_flag == false {
             let results = realm.objects(Data_parameta.self)
             try! realm.write {
                 results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
@@ -572,8 +581,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
                                                                               "depth_data": depthData]))
             }
-        } else {
+        } else if remap_flag || cover_flag {
             let results = realm.objects(Navi_SectionTitle.self)
+            let choice_section = (ReMapManagement.sectionID)!
+            let choice_cell = (ReMapManagement.cellID)!
             try! realm.write {
                 results[choice_section].cells[choice_cell].models[0].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
                                                                                                  "pic_data": jpegData]))
@@ -601,11 +612,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let objName = "NaviModel\(results.count)"
         
         if menu_array[1] == false {
-            let realm = try! Realm()
-            let results = realm.objects(Data_parameta.self)
-            try! Realm().write {
-                results[self.recording_count].mesh_anchor.removeAll()
-            }
+//            let realm = try! Realm()
+//            let results = realm.objects(Data_parameta.self)
+//            try! Realm().write {
+//                results[self.recording_count].mesh_anchor.removeAll()
+//            }
             
             guard let anchors = sceneView.session.currentFrame?.anchors else { return }
             let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
@@ -613,9 +624,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                 else{ return }
-                let results = realm.objects(Data_parameta.self)
-                try! realm.write {
-                    results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                if cover_flag {
+                    let results = realm.objects(Navi_SectionTitle.self)
+                    let choice_section = (ReMapManagement.sectionID)!
+                    let choice_cell = (ReMapManagement.cellID)!
+                    try! realm.write {
+                        results[choice_section].cells[choice_cell].models[0].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                    }
+                } else {
+                    let results = realm.objects(Data_parameta.self)
+                    try! realm.write {
+                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+                    }
                 }
             }
         }
@@ -623,20 +643,36 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.session.getCurrentWorldMap { [self]worldMap, error in
             if let map = worldMap {
                 if let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
-                    try! realm.write {
-                        realm.add(Navityu(value: ["modelname": objName,
-                                                  "dayString": dayString,
-                                                  "worlddata": data,
-                                                  "worldimage": self.current_imageData!,
-                                                  "exit_mesh": self.exit_mesh_num,
-                                                  "exit_point": self.exit_point_num,
-                                                  "exit_parameta": self.exit_parameta]))
+                    print(data)
+                    if cover_flag {
+                        let results = realm.objects(Navi_SectionTitle.self)
+                        let choice_section = (ReMapManagement.sectionID)!
+                        let choice_cell = (ReMapManagement.cellID)!
+                        try! realm.write {
+                            results[choice_section].cells[choice_cell].models[0].modelname = objName
+                            results[choice_section].cells[choice_cell].models[0].dayString = dayString
+                            //results[choice_section].cells[choice_cell].models[0].worlddata = data
+                            results[choice_section].cells[choice_cell].models[0].worldimage = self.current_imageData!
+                            results[choice_section].cells[choice_cell].models[0].exit_mesh = self.exit_mesh_num
+                            results[choice_section].cells[choice_cell].models[0].exit_point = self.exit_point_num
+                            results[choice_section].cells[choice_cell].models[0].texture_bool = 0
+                        }
+                        
+                    } else {
+                        try! realm.write {
+                            realm.add(Navityu(value: ["modelname": objName,
+                                                      "dayString": dayString,
+                                                      //"worlddata": data,
+                                                      "worldimage": self.current_imageData!,
+                                                      "exit_mesh": self.exit_mesh_num,
+                                                      "exit_point": self.exit_point_num,
+                                                      "exit_parameta": self.exit_parameta]))
+                        }
+                        
+                        self.exit_parameta = 0
+                        self.exit_mesh_num = 0
+                        self.exit_point_num = 0
                     }
-                    
-                    self.exit_parameta = 0
-                    self.exit_mesh_num = 0
-                    self.exit_point_num = 0
-                    
                 } else {
                     let alertController = UIAlertController(title: "Failed to save the model1", message: "Try again", preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -659,14 +695,30 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             
         }
         print(realm.objects(Navi_SectionTitle.self))
+        
+        self.cover_flag = false
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        
         if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100() //深度情報
             
             if mappingSupportFlag == false {
                 self.depth_pointCloudRenderer.mapping100() //マッピング支援
+                if remap_flag {
+                    var meshAnchors = [ARMeshAnchor]()
+                    let results = try! Realm().objects(Navi_SectionTitle.self)
+                    let choice_section = (ReMapManagement.sectionID)!
+                    let choice_cell = (ReMapManagement.cellID)!
+                    let remapModels = results[choice_section].cells[choice_cell].models[0]
+                    for meshData in remapModels.mesh_anchor {
+                        if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: meshData.mesh) {
+                            meshAnchors.append(meshAnchor)
+                        }
+                    }
+                    depth_pointCloudRenderer.meshAnchors = meshAnchors
+                }
             }
             
             if pointCloud_flag == true {
@@ -725,22 +777,51 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var check_flag = false
     
+    func snapshot() -> UIImage {
+        //コンテキスト開始
+        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+        //viewを書き出す
+        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
+        // imageにコンテキストの内容を書き出す
+        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        //コンテキストを閉じる
+        UIGraphicsEndImageContext()
+        // imageをカメラロールに保存
+        //UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        return image
+    }
+    
     func to_CheckDataViewController() {
         check_flag = true
         timer.invalidate()
+        
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let archivePath = url.appendingPathComponent("現実.jpg")
+            let imageData = snapshot().jpegData(compressionQuality: 1.0)
+            do {
+                try imageData!.write(to: archivePath)
+            } catch {
+                print("Failed to save the image:", error)
+            }
+        }
+        
         let storyboard = UIStoryboard(name: "CheckData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataViewController") as! CheckDataViewController
         guard let anchors = sceneView.session.currentFrame?.anchors else { return }
         vc.anchors = anchors.compactMap { $0 as? ARMeshAnchor}
         let realm = try! Realm()
         let models = realm.objects(Data_parameta.self)[0]
-        let yoko: Float = 17.0
-        let tate: Float = ceil(Float(models.pic.count)/yoko)
+//        let yoko: Float = 17.0
+//        let tate: Float = ceil(Float(models.pic.count)/yoko)
+        let num = 2.0
+        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+        let yoko = Float(floor(16384.0 / width)) //17.0
+        let tate = ceil(Float(models.pic.count)/yoko)
         vc.calculateParameta = calculateParameta(device: self.sceneView.device!,
                                                  W: Int(sceneView.bounds.width),
                                                  H: Int(sceneView.bounds.height),
                                                  tate: Int(tate), yoko: Int(yoko),
-                                                 funcString: "calcu50")
+                                                 funcString: "calcu5")
         vc.presentationController?.delegate = self
         self.present(vc, animated: true, completion: nil)
     }
@@ -781,8 +862,14 @@ extension MakeNavigationController: UIAdaptivePresentationControllerDelegate {
           self.check_flag = false
       }
       
-      if remap_flag == true {
+      if remap_flag {
           print("remap")
+          setup_ReMap()
+      }
+      
+      if cover_flag {
+          print("cover")
+          setup_coverMap()
       }
   }
 }

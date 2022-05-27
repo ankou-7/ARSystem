@@ -51,13 +51,18 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
             let uiimage = UIImage(data: models.pic[i].pic_data!)
             imageArray.append(uiimage!)
         }
-        let num = 3.0
-        texImage = TextureImage(W: (2880 / num) * CGFloat(calculateParameta.yoko), H: (3840 / num) * CGFloat(calculateParameta.tate), array: imageArray, yoko: Float(calculateParameta.yoko), num: num).makeTexture()
+        let num = 2.0
+//        texImage = TextureImage(W: (2880 / num) * CGFloat(calculateParameta.yoko), H: (3840 / num) * CGFloat(calculateParameta.tate), array: imageArray, yoko: Float(calculateParameta.yoko), num: num).makeTexture()
+        let imageWidth = UIImage(data: models.pic[0].pic_data!)?.size.width
+        let imageHeight = UIImage(data: models.pic[0].pic_data!)?.size.height
+        texImage = TextureImage(W: (imageWidth! / num) * CGFloat(calculateParameta.yoko),
+                                H: (imageHeight! / num) * CGFloat(calculateParameta.tate),
+                                array: imageArray,
+                                yoko: Float(calculateParameta.yoko), num: num).makeTexture()
         
         make_calcuParameta()
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
             makeTexture()
-            
         })
     }
     
@@ -77,6 +82,23 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
                 print("calcu完了")
                 sceneView.scene?.rootNode.addChildNode(tex_node)
                 SVProgressHUD.dismiss()
+            }
+        }
+    }
+    
+    @IBAction func tapped_save(_ sender: UIButton) {
+        
+    }
+    
+    
+    @IBAction func tapped_snapshot(_ sender: UIButton) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let archivePath = url.appendingPathComponent("モデル.jpg")
+            let imageData = sceneView.snapshot().jpegData(compressionQuality: 1.0)
+            do {
+                try imageData!.write(to: archivePath)
+            } catch {
+                print("Failed to save the image:", error)
             }
         }
     }

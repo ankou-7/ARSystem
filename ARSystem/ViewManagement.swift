@@ -19,3 +19,8 @@ class ModelManagement {
 
 }
 
+class ReMapManagement {
+    static var sectionID: Int!
+    static var cellID: Int!
+}
+

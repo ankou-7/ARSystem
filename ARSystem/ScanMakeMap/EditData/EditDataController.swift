@@ -30,7 +30,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBOutlet weak var ExChangeButton: UIButton!
     var cameraNode = SCNNode()
     
-    let num: CGFloat = 2.0 //画像のサイズの縮尺率
+    let num: CGFloat = 5.0 //画像のサイズの縮尺率 //266枚
     var current_model_num = 0 //現在表示しているモデルの番号を格納
     var database_model_num = 1 //読み込んだcellの中に格納されているモデル数
 
@@ -166,7 +166,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         try! realm.write {
             models.texture_bool = 0
         }
-        
+        print(models)
+        print(models.mesh_anchor.count)
         //モデルを表示
         buildSetup()
         
@@ -194,9 +195,12 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     func buildSetup() {
         
         picCount = models.pic.count
+        //print(models.pic)
+        print(models.pic.count)
         let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
         yoko = Float(floor(16384.0 / width)) //17.0
         tate = ceil(Float(picCount)/yoko)
+        print(tate, yoko)
         
         uiimage_array = []
         for i in 0..<picCount {
@@ -212,12 +216,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
         new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
         imageView.image = new_uiimage
-//        let uiImage = new_uiimage
-//        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-//        let realm = try! Realm()
-//        try! realm.write {
-//            models.texture_pic = imageData
-//        }
+        
+        print(new_uiimage.size)
+        let uiImage = new_uiimage
+        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_pic = imageData
+        }
         
         anchors = []
         for i in 0..<models.mesh_anchor.count {

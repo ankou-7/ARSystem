@@ -201,7 +201,7 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                 results[section_num].cells[cell_num].models.append(Navi_Modelname(
                                                                     value: ["modelname": objName,
                                                                             "dayString": navityu_results[i].dayString,
-                                                                            "worlddata": navityu_results[i].worlddata!,
+                                                                            //"worlddata": navityu_results[i].worlddata!,
                                                                             "worldimage": navityu_results[i].worldimage!,
                                                                             "exit_mesh": navityu_results[i].exit_mesh,
                                                                             "exit_point": navityu_results[i].exit_point]))

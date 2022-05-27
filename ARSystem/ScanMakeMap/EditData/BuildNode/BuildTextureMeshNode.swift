@@ -21,6 +21,8 @@ class BuildTextureMeshNode: SCNNode {
         self.texImage = texImage
         super.init()
         
+        print(result.count)
+        
         buildTexMesh()
         tex_node.name = "meshNode"
         addChildNode(tex_node)

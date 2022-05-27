@@ -73,7 +73,7 @@
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="1" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ncI-bY-CXq">
-                                <rect key="frame" x="702" y="140" width="124" height="31"/>
+                                <rect key="frame" x="702" y="139.5" width="124" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="1A6-1c-md3"/>
                                 </constraints>
@@ -82,7 +82,7 @@
                                 </connections>
                             </slider>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1000個/frame" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i6n-Fu-Eel">
-                                <rect key="frame" x="704" y="114" width="120" height="21"/>
+                                <rect key="frame" x="704" y="114" width="120" height="20.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="5hN-it-lMz"/>
                                 </constraints>
@@ -95,7 +95,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="動作中" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HRM-v7-R3h">
-                                <rect key="frame" x="724" y="1085" width="100" height="25"/>
+                                <rect key="frame" x="724" y="1084.5" width="100" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="ac4-5J-haO"/>
                                     <constraint firstAttribute="height" constant="25" id="o4D-BJ-Iwy"/>
@@ -105,31 +105,11 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iYa-QV-zN3">
-                                <rect key="frame" x="749" y="1115" width="51" height="31"/>
+                                <rect key="frame" x="749" y="1114.5" width="51" height="31"/>
                                 <connections>
                                     <action selector="mappingSwitch:" destination="Mh7-nO-JyT" eventType="valueChanged" id="q4D-ss-vte"/>
                                 </connections>
                             </switch>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Pq-BO-MC7">
-                                <rect key="frame" x="20" y="1059" width="90" height="40"/>
-                                <color key="backgroundColor" systemColor="systemRedColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="9ab-LW-jLf"/>
-                                    <constraint firstAttribute="width" constant="90" id="kPi-iv-Syj"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="確認"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="to_CheckDataViewController:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="w6G-To-rg2"/>
-                                </connections>
-                            </button>
                             <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WKI-HK-xt4">
                                 <rect key="frame" x="0.0" y="18" width="834" height="50"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
@@ -151,7 +131,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="取得パラメータ数：0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Lu-nJ-lVx">
-                                <rect key="frame" x="654" y="180" width="170" height="20"/>
+                                <rect key="frame" x="654" y="179.5" width="170" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="170" id="fMI-Db-GPV"/>
                                     <constraint firstAttribute="height" constant="20" id="hsl-jK-RMa"/>
@@ -160,42 +140,85 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILs-fg-M0T">
-                                <rect key="frame" x="20" y="1114" width="90" height="40"/>
-                                <color key="backgroundColor" red="0.45990481820341023" green="0.92128556966781616" blue="0.36626839167350617" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="XzJ-0e-o0l"/>
-                                    <constraint firstAttribute="width" constant="90" id="f2L-kQ-jmm"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="再取得"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="Tapped_to_ReMap:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="Sfp-Y0-x20"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="d86-EJ-OSv">
+                                <rect key="frame" x="20" y="984" width="90" height="160"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Pq-BO-MC7">
+                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
+                                        <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="9ab-LW-jLf"/>
+                                            <constraint firstAttribute="width" constant="90" id="kPi-iv-Syj"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="確認"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="10"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="to_CheckDataViewController:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="w6G-To-rg2"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILs-fg-M0T">
+                                        <rect key="frame" x="0.0" y="60" width="90" height="40"/>
+                                        <color key="backgroundColor" red="0.45990481820341023" green="0.92128556966781616" blue="0.36626839167350617" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="XzJ-0e-o0l"/>
+                                            <constraint firstAttribute="width" constant="90" id="f2L-kQ-jmm"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="再取得"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="10"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="Tapped_to_ReMap:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="Sfp-Y0-x20"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8W0-lq-0ny">
+                                        <rect key="frame" x="0.0" y="120" width="90" height="40"/>
+                                        <color key="backgroundColor" systemColor="systemIndigoColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="BA3-Sa-meY"/>
+                                            <constraint firstAttribute="width" constant="90" id="p0n-Je-4GL"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="上書き"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="10"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="Tapped_coverMap:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="727-T9-wCq"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="bcH-QO-ftj"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="ILs-fg-M0T" firstAttribute="leading" secondItem="bcH-QO-ftj" secondAttribute="leading" constant="20" id="0rU-Cd-luk"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="trailing" secondItem="HRM-v7-R3h" secondAttribute="trailing" constant="10" id="7Gh-Iq-Q6H"/>
                             <constraint firstItem="hZE-Ra-n7c" firstAttribute="centerX" secondItem="ql7-o7-4ku" secondAttribute="centerX" id="9FS-Sa-3xv"/>
                             <constraint firstItem="B50-O0-fH0" firstAttribute="bottom" secondItem="bcH-QO-ftj" secondAttribute="bottom" id="A1I-pJ-yqv"/>
                             <constraint firstItem="B50-O0-fH0" firstAttribute="leading" secondItem="bcH-QO-ftj" secondAttribute="leading" id="Dce-uD-myt"/>
                             <constraint firstItem="B50-O0-fH0" firstAttribute="top" secondItem="bcH-QO-ftj" secondAttribute="top" id="JMT-Ck-oJp"/>
-                            <constraint firstItem="4Pq-BO-MC7" firstAttribute="leading" secondItem="bcH-QO-ftj" secondAttribute="leading" constant="20" id="M6U-l5-ZEO"/>
+                            <constraint firstItem="d86-EJ-OSv" firstAttribute="leading" secondItem="bcH-QO-ftj" secondAttribute="leading" constant="20" id="Kbb-UJ-gwA"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="trailing" secondItem="nqi-3n-07i" secondAttribute="trailing" constant="30" id="N9n-X6-lQg"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="trailing" secondItem="ncI-bY-CXq" secondAttribute="trailing" constant="10" id="O0B-XG-Wtf"/>
                             <constraint firstItem="0Lu-nJ-lVx" firstAttribute="top" secondItem="ncI-bY-CXq" secondAttribute="bottom" constant="10" id="Oqf-mx-ibR"/>
                             <constraint firstItem="EuJ-yI-Phk" firstAttribute="centerX" secondItem="ql7-o7-4ku" secondAttribute="centerX" id="QAZ-b9-cpZ"/>
-                            <constraint firstItem="bcH-QO-ftj" firstAttribute="bottom" secondItem="ILs-fg-M0T" secondAttribute="bottom" constant="20" id="RA1-KU-KgJ"/>
                             <constraint firstItem="ETY-ov-0zr" firstAttribute="leading" secondItem="bcH-QO-ftj" secondAttribute="leading" id="RC6-DX-FO1"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="bottom" secondItem="EuJ-yI-Phk" secondAttribute="bottom" constant="62.5" id="SVM-Z6-OoM"/>
                             <constraint firstItem="nqi-3n-07i" firstAttribute="top" secondItem="bcH-QO-ftj" secondAttribute="top" constant="25" id="WEO-IY-qOc"/>
@@ -206,9 +229,9 @@
                             <constraint firstItem="ETY-ov-0zr" firstAttribute="top" secondItem="bcH-QO-ftj" secondAttribute="top" id="dsk-t6-jXx"/>
                             <constraint firstItem="B50-O0-fH0" firstAttribute="trailing" secondItem="bcH-QO-ftj" secondAttribute="trailing" id="eh4-Eg-lFU"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="trailing" secondItem="iYa-QV-zN3" secondAttribute="trailing" constant="36" id="fdA-J8-46X"/>
-                            <constraint firstItem="ILs-fg-M0T" firstAttribute="top" secondItem="4Pq-BO-MC7" secondAttribute="bottom" constant="15" id="hs1-Ym-zA1"/>
                             <constraint firstItem="ncI-bY-CXq" firstAttribute="top" secondItem="i6n-Fu-Eel" secondAttribute="bottom" constant="5" id="n0f-ma-YAr"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="bottom" secondItem="hZE-Ra-n7c" secondAttribute="bottom" constant="60" id="nBI-iN-2cU"/>
+                            <constraint firstItem="bcH-QO-ftj" firstAttribute="bottom" secondItem="d86-EJ-OSv" secondAttribute="bottom" constant="30" id="p2t-Dh-CsP"/>
                             <constraint firstItem="bcH-QO-ftj" firstAttribute="trailing" secondItem="i6n-Fu-Eel" secondAttribute="trailing" constant="10" id="pCu-cb-IlV"/>
                         </constraints>
                     </view>
@@ -229,13 +252,16 @@
         </scene>
     </scenes>
     <resources>
-        <image name="chevron.backward" catalog="system" width="32" height="32"/>
+        <image name="chevron.backward" catalog="system" width="96" height="128"/>
         <image name="gearshape" catalog="system" width="128" height="121"/>
         <systemColor name="opaqueSeparatorColor">
             <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemIndigoColor">
+            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

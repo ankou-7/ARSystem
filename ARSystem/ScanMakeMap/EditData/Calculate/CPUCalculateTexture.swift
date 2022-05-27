@@ -388,6 +388,8 @@ class CPUCalculateTexture {
                             self.calcTextureCoordinates3(num: i, anchor: anchor, matrixs: mat)
                             poly += "\(self.sumPolygon)\n"
                             time += "\(Date().timeIntervalSince(start))\n"
+                            print(poly)
+                            print(time)
                             print("calculate\(i)完了")
                         }
                         

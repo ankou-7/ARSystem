@@ -85,8 +85,8 @@
                             <constraint firstItem="8rZ-Ys-HTx" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" id="CLi-gS-fIO"/>
                             <constraint firstItem="8rZ-Ys-HTx" firstAttribute="top" secondItem="vf4-OB-RGh" secondAttribute="bottom" constant="66" id="FR2-nl-jFl"/>
                             <constraint firstItem="Ac5-pk-1vN" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="VAn-ua-xA8"/>
-                            <constraint firstItem="vf4-OB-RGh" firstAttribute="leading" secondItem="Ac5-pk-1vN" secondAttribute="trailing" constant="248" id="YC7-Es-seE"/>
                             <constraint firstItem="Ac5-pk-1vN" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="hMM-dp-ZXP"/>
+                            <constraint firstItem="vf4-OB-RGh" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="iif-k7-sT2"/>
                             <constraint firstItem="8rZ-Ys-HTx" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="jVs-M1-dvw"/>
                             <constraint firstItem="8rZ-Ys-HTx" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="100" id="kdg-5S-K0u"/>
                             <constraint firstItem="vf4-OB-RGh" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="mX1-T8-QI6"/>
@@ -102,9 +102,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="chevron.backward" catalog="system" width="32" height="32"/>
+        <image name="chevron.backward" catalog="system" width="96" height="128"/>
         <systemColor name="systemBackgroundColor">
-            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>
