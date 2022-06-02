@@ -140,7 +140,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="d86-EJ-OSv">
-                                <rect key="frame" x="20" y="984" width="90" height="160"/>
+                                <rect key="frame" x="20" y="1104" width="90" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Pq-BO-MC7">
                                         <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
@@ -162,8 +162,8 @@
                                             <action selector="to_CheckDataViewController:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="w6G-To-rg2"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILs-fg-M0T">
-                                        <rect key="frame" x="0.0" y="60" width="90" height="40"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILs-fg-M0T">
+                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
                                         <color key="backgroundColor" red="0.45990481820341023" green="0.92128556966781616" blue="0.36626839167350617" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="XzJ-0e-o0l"/>
@@ -182,8 +182,8 @@
                                             <action selector="Tapped_to_ReMap:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="Sfp-Y0-x20"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8W0-lq-0ny">
-                                        <rect key="frame" x="0.0" y="120" width="90" height="40"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8W0-lq-0ny">
+                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
                                         <color key="backgroundColor" systemColor="systemIndigoColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="BA3-Sa-meY"/>

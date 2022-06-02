@@ -214,41 +214,43 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                                                                             //"worlddata": navityu_results[i].worlddata!,
                                                                             "worldimage": navityu_results[i].worldimage!,
                                                                             "exit_mesh": navityu_results[i].exit_mesh,
-                                                                            "exit_point": navityu_results[i].exit_point]))
+                                                                            "exit_point": navityu_results[i].exit_point,
+                                                                            "parametaNum": navityu_results[i].parametaNum,
+                                                                            "meshNum": navityu_results[i].meshNum]))
                 
-                if navityu_results[i].exit_mesh == 1 {
-                    for j in 0...data_parameta_results[i].mesh_anchor.count-1 {
-                        results[section_num].cells[cell_num].models[i].mesh_anchor.append(
-                            anchor_data(value: ["mesh": data_parameta_results[i].mesh_anchor[j].mesh]))
-                        //,"texcoords": data_parameta_results[i].mesh_anchor[j].texcoords]))
-                    }
-                }
-                
-                if navityu_results[i].exit_parameta == 1 {
-                    if data_parameta_results[i].pic.count > 0 {
-                        for j in 0...data_parameta_results[i].pic.count-1 {
-                            results[section_num].cells[cell_num].models[i].pic.append(
-                                pic_data(value: ["pic_name": data_parameta_results[i].pic[j].pic_name,
-                                                 "pic_data": data_parameta_results[i].pic[j].pic_data]))
-                        }
-                    }
-                    
-                    if data_parameta_results[i].json.count > 0 {
-                        for j in 0...data_parameta_results[i].json.count-1 {
-                            results[section_num].cells[cell_num].models[i].json.append(
-                                json_data(value: ["json_name": data_parameta_results[i].json[j].json_name,
-                                                  "json_data": data_parameta_results[i].json[j].json_data]))
-                        }
-                    }
-                    
-                    if data_parameta_results[i].depth.count > 0 {
-                        for j in 0...data_parameta_results[i].depth.count-1 {
-                            results[section_num].cells[cell_num].models[i].depth.append(
-                                depth_data(value: ["depth_name": data_parameta_results[i].depth[j].depth_name,
-                                                  "depth_data": data_parameta_results[i].depth[j].depth_data]))
-                        }
-                    }
-                }
+//                if navityu_results[i].exit_mesh == 1 {
+//                    for j in 0...data_parameta_results[i].mesh_anchor.count-1 {
+//                        results[section_num].cells[cell_num].models[i].mesh_anchor.append(
+//                            anchor_data(value: ["mesh": data_parameta_results[i].mesh_anchor[j].mesh]))
+//                        //,"texcoords": data_parameta_results[i].mesh_anchor[j].texcoords]))
+//                    }
+//                }
+//
+//                if navityu_results[i].exit_parameta == 1 {
+//                    if data_parameta_results[i].pic.count > 0 {
+//                        for j in 0...data_parameta_results[i].pic.count-1 {
+//                            results[section_num].cells[cell_num].models[i].pic.append(
+//                                pic_data(value: ["pic_name": data_parameta_results[i].pic[j].pic_name,
+//                                                 "pic_data": data_parameta_results[i].pic[j].pic_data]))
+//                        }
+//                    }
+//
+//                    if data_parameta_results[i].json.count > 0 {
+//                        for j in 0...data_parameta_results[i].json.count-1 {
+//                            results[section_num].cells[cell_num].models[i].json.append(
+//                                json_data(value: ["json_name": data_parameta_results[i].json[j].json_name,
+//                                                  "json_data": data_parameta_results[i].json[j].json_data]))
+//                        }
+//                    }
+//
+//                    if data_parameta_results[i].depth.count > 0 {
+//                        for j in 0...data_parameta_results[i].depth.count-1 {
+//                            results[section_num].cells[cell_num].models[i].depth.append(
+//                                depth_data(value: ["depth_name": data_parameta_results[i].depth[j].depth_name,
+//                                                  "depth_data": data_parameta_results[i].depth[j].depth_data]))
+//                        }
+//                    }
+//                }
                 
             }
             print(results[section_num].cells[cell_num].models)

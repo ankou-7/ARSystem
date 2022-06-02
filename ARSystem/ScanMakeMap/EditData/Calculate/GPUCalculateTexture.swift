@@ -21,6 +21,8 @@ class GPUCalculateTexture {
     private var depth = [depthPosition]()
     private var calculateRenderer: CalculateRenderer!
     
+    private var url: URL!
+    
     var removeCount: [Int]
     
     var st = ""
@@ -36,6 +38,7 @@ class GPUCalculateTexture {
         
         self.removeCount = removeCount
         
+        url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         make_calcuParameta()
     }
     
@@ -91,35 +94,25 @@ class GPUCalculateTexture {
     
     func saveDocument(text: String) {
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            //フォルダ作成
-            let section_num = ViewManagement.sectionID!
-            let cell_num = ViewManagement.cellID!
-            let results = try! Realm().objects(Navi_SectionTitle.self)
-            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)", isDirectory: true)
-            do {
-                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("失敗した")
-            }
             
-            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/rate.txt")
+            let archivePath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/バージョン3.txt")
             do {
                 try text.write(to: archivePath, atomically: false, encoding: .utf8)
             } catch {
                 print("Error: \(error)")
             }
             
-            var posiString = ""
-            for json in results[section_num].cells[cell_num].models[ModelManagement.modelID].json {
-                let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
-                posiString += "\(json_data!.cameraPosition.x) \(json_data!.cameraPosition.y) \(json_data!.cameraPosition.z)\n"
-            }
-            let posiPath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/position.txt")
-            do {
-                try posiString.write(to: posiPath, atomically: false, encoding: .utf8)
-            } catch {
-                print("Error: \(error)")
-            }
+//            var posiString = ""
+//            for json in results[section_num].cells[cell_num].models[ModelManagement.modelID].json {
+//                let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
+//                posiString += "\(json_data!.cameraPosition.x) \(json_data!.cameraPosition.y) \(json_data!.cameraPosition.z)\n"
+//            }
+//            let posiPath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/position.txt")
+//            do {
+//                try posiString.write(to: posiPath, atomically: false, encoding: .utf8)
+//            } catch {
+//                print("Error: \(error)")
+//            }
             
         }
     }
@@ -128,9 +121,11 @@ class GPUCalculateTexture {
     func make_calcuParameta() {
         let decoder = JSONDecoder()
         
-        for i in 0..<models.pic.count {
+        for i in 0..<models.parametaNum { //pic.count {
             if removeCount.firstIndex(of: i) == nil {
-                let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
+                let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json\(i).data")
+                //let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
+                let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
                 
                 let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
                                                json_data!.viewMatrix.y,
@@ -143,8 +138,10 @@ class GPUCalculateTexture {
                 let matrix = projectionMatrix * viewMatrix
                 calcuMatrix.append(matrix)
                 
-                let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
-                depth.append(contentsOf: depth_array)
+                let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth\(i).data")
+                //let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
+                let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
+                depth.append(contentsOf: depth_array!)
             }
         }
     }

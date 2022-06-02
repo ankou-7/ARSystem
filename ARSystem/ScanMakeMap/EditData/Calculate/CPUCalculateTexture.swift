@@ -35,6 +35,8 @@ class CPUCalculateTexture {
     var new_normal_array: [[SIMD3<Float>]] = []
     var new_texcoords2: [[SIMD2<Float>]] = []
     
+    var url: URL!
+    
     //ポリゴン数の合計
     var sumPolygon = 0
     var texCount = 0
@@ -49,11 +51,12 @@ class CPUCalculateTexture {
         self.cameraNode = cameraNode
         self.sceneView = sceneView
         
+        url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         setupArray()
     }
     
     func setupArray() {
-        for _ in 0..<models.mesh_anchor.count {
+        for _ in 0..<anchors.count {
             texcoords2.append([])
             normal_array.append([])
             tex_bool.append([])
@@ -100,18 +103,8 @@ class CPUCalculateTexture {
     
     func saveDocument(text: String, filename: String) {
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            //フォルダ作成
-            let section_num = ViewManagement.sectionID!
-            let cell_num = ViewManagement.cellID!
-            let results = try! Realm().objects(Navi_SectionTitle.self)
-            let directory = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)", isDirectory: true)
-            do {
-                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("失敗した")
-            }
             
-            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/\(filename).txt")
+            let archivePath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/\(filename).txt")
             do {
                 try text.write(to: archivePath, atomically: false, encoding: .utf8)
             } catch {
@@ -123,8 +116,11 @@ class CPUCalculateTexture {
     func make_calcuParameta(num: Int, completionHandler: @escaping ([depthPosition], simd_float4x4, SCNVector3) -> ()) {
         let decoder = JSONDecoder()
         
-        let depth = (try? decoder.decode([depthPosition].self, from: models.depth[num].depth_data!))!
-        let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[num].json_data!)
+        let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth\(num).data")
+        let depth = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
+        
+        let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json\(num).data")
+        let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
         let cameraVector = SCNVector3(json_data!.cameraVector.x,
                                       json_data!.cameraVector.y,
                                       json_data!.cameraVector.z)
@@ -138,7 +134,7 @@ class CPUCalculateTexture {
                                              json_data!.projectionMatrix.w)
         let calcuMatrix = projectionMatrix * viewMatrix
         
-        completionHandler(depth, calcuMatrix, cameraVector)
+        completionHandler(depth!, calcuMatrix, cameraVector)
     }
     
     func calcTextureCoordinates(num: Int, cameraVector: SCNVector3, depthArray: [depthPosition], matrix: simd_float4x4){
@@ -258,7 +254,9 @@ class CPUCalculateTexture {
         var depth = [depthPosition]()
         
         for i in 0..<models.pic.count {
-            let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
+            
+            let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json\(i).data")
+            let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
             
             let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
                                            json_data!.viewMatrix.y,
@@ -271,8 +269,9 @@ class CPUCalculateTexture {
             let matrix = projectionMatrix * viewMatrix
             calcuMatrix.append(matrix)
             
-            let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
-            depth.append(contentsOf: depth_array)
+            let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth\(i).data")
+            let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
+            depth.append(contentsOf: depth_array!)
         }
         
         completionHandler(depth, calcuMatrix)
@@ -510,6 +509,21 @@ class CPUCalculateTexture {
                 models.mesh_anchor[i].faces = faces_data
                 models.mesh_anchor[i].vertice_count = new_vertex_array[i].count
             }
+            
+            let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords\(i).data")
+            let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex\(i).data")
+            let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals\(i).data")
+            let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces\(i).data")
+            do {
+                try texcoords_data.write(to: texcoordsPath)
+                try vertices_data.write(to: vertexPath)
+                try normals_data.write(to: normalsPath)
+                try faces_data.write(to: facesPath)
+                print("CPU計算データ\(i)保存成功")
+            } catch {
+                print("CPU計算データ\(i)保存失敗", error)
+            }
+            
         }
         
         let realm = try! Realm()

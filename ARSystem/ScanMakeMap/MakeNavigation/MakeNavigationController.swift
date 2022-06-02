@@ -21,6 +21,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     //    var section_num = Int()
     //    var cell_num = Int()
     
+    var url: URL!
+    
     var restart_flag = false
     let coachingOverlay = ARCoachingOverlayView()
     var restartCalucuMatrix: [float4x4] = []
@@ -78,7 +80,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var mappingSupportFlag = false
     @IBOutlet weak var takeParametaCountLabel: UILabel!
-    var parametaCount: Int!
+    var parametaCount = 0
+    var meshCount = 0
     
     var remap_flag = false
     var cover_flag = false
@@ -95,6 +98,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
 //            let realm = try! Realm(fileURL: url.appendingPathComponent("try.realm"))
 //        }
+        
+        url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         
         //パラメータを一時的に保存する場所を初期化
         let realm = try! Realm()
@@ -124,6 +129,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //        configuration.sceneReconstruction = .meshWithClassification
         //        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
         sceneView.session.run(configuration)
+        
+        //深度情報，マッピング支援
+        self.depth_pointCloudRenderer = depth_Renderer(
+            session: self.sceneView.session,
+            metalDevice: self.sceneView.device!,
+            sceneView: self.sceneView)
+        self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
+        
+        //点群
+//        self.pointCloudRenderer = Renderer(
+//            session: self.sceneView.session,
+//            metalDevice: self.sceneView.device!,
+//            sceneView: self.sceneView)
+//        self.pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
+//        self.pointCloudRenderer.numGridPoints = self.numGridPoints
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -190,6 +210,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 if self.remap_flag == false {
                     self.recording_count += 1
+                    self.mesh_flag = true //メッシュの取得，更新
                     
                     //データ保存用のディレクトリ作成
                     self.makeDirectory(num: self.recording_count)
@@ -198,16 +219,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
                         self.sceneView.debugOptions.remove([.showWorldOrigin])
                     }
-                    
-                    self.pointCloudRenderer = Renderer(
-                        session: self.sceneView.session,
-                        metalDevice: self.sceneView.device!,
-                        sceneView: self.sceneView)
-                    self.pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
-                    self.pointCloudRenderer.numGridPoints = self.numGridPoints
-                    
-                    //メッシュの取得，更新
-                    self.mesh_flag = true
                     
                     //点群の表示
                     //                if self.menu_array[2] == false {
@@ -269,12 +280,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 self.parameta_flag = true
                 self.parametaCount = 0
+                self.meshCount = 0
                 
-                self.depth_pointCloudRenderer = depth_Renderer(
-                    session: self.sceneView.session,
-                    metalDevice: self.sceneView.device!,
-                    sceneView: self.sceneView)
-                self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
+                
                 
                 self.lastCameraTransform = self.sceneView.session.currentFrame?.camera.transform
                 
@@ -291,6 +299,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         isRecording = !isRecording
     }
     
+    //マップの新規作成時にデータ保存用のディレクトリを作成する関数
     func makeDirectory(num: Int) {
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let directory = url.appendingPathComponent("保存前/\(num)", isDirectory: true)
@@ -556,7 +565,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                             
                             DispatchQueue.main.async {
                                 self.parametaCount += 1
-                                self.takeParametaCountLabel.text = "取得パラメータ数：\(self.parametaCount!)"
+                                self.takeParametaCountLabel.text = "取得パラメータ数：\(self.parametaCount)"
                             }
                         }
                     }
@@ -580,31 +589,33 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     //jpegデータ保存
     func save_jpeg(filename: String, jpegData: Data, jsonData: Data, depthData: Data) {
-        //print("save")
         let realm = try! Realm()
         
         if remap_flag == false && cover_flag == false {
-            let results = realm.objects(Data_parameta.self)
-            try! realm.write {
-                results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
-                                                                          "pic_data": jpegData]))
+//            let results = realm.objects(Data_parameta.self)
+//            try! realm.write {
+//                results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
+//                                                                          "pic_data": jpegData]))
+//
+//                results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
+//                                                                            "json_data": jsonData]))
+//
+//                results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
+//                                                                              "depth_data": depthData]))
+//            }
                 
-                results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
-                                                                            "json_data": jsonData]))
-                
-                results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
-                                                                              "depth_data": depthData]))
-                
-                //ディレクトリ内にデータを保存
-//                if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-//                    let scarchivePath = url.appendingPathComponent("保存前/\(recording_count)/world.data")
-//                    do {
-//                        try data.write(to: scarchivePath)
-//                    } catch {
-//                        print("Failed to save the image:", error)
-//                    }
-//                }
+            //ディレクトリ内にデータを保存
+            let picPath = url.appendingPathComponent("保存前/\(recording_count)/pic\(parametaCount).data")
+            let jsonPath = url.appendingPathComponent("保存前/\(recording_count)/json\(parametaCount).data")
+            let depthPath = url.appendingPathComponent("保存前/\(recording_count)/depth\(parametaCount).data")
+            do {
+                try jpegData.write(to: picPath)
+                try jsonData.write(to: jsonPath)
+                try depthData.write(to: depthPath)
+            } catch {
+                print("データ保存失敗", error)
             }
+                
         } else if remap_flag || cover_flag {
             let results = realm.objects(Navi_SectionTitle.self)
             let choice_section = (ReMapManagement.sectionID)!
@@ -644,7 +655,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             
             guard let anchors = sceneView.session.currentFrame?.anchors else { return }
             let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
-            for (_, anchor) in meshAnchors.enumerated() {
+            meshCount = meshAnchors.count
+            for (i, anchor) in meshAnchors.enumerated() {
                 
                 guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                 else{ return }
@@ -656,10 +668,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         results[choice_section].cells[choice_cell].models[0].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
                     }
                 } else {
-                    let results = realm.objects(Data_parameta.self)
-                    try! realm.write {
-                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+//                    let results = realm.objects(Data_parameta.self)
+//                    try! realm.write {
+//                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
+//                    }
+                    
+                    //ディレクトリにメッシュデータを保存
+                    let meshPath = url.appendingPathComponent("保存前/\(recording_count)/mesh\(i).data")
+                    do {
+                        try mesh_data.write(to: meshPath)
+                    } catch {
+                        print("メッシュデータ保存失敗", error)
                     }
+                    
                 }
             }
         }
@@ -667,7 +688,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.session.getCurrentWorldMap { [self]worldMap, error in
             if let map = worldMap {
                 if let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
-                    print(data)
+                    
                     if cover_flag {
                         let results = realm.objects(Navi_SectionTitle.self)
                         let choice_section = (ReMapManagement.sectionID)!
@@ -683,7 +704,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         }
                         
                     } else {
-                        saveDocument(data: data)
+                        
+                        //データをドキュメント内に保存
+                        let worldmapPath = url.appendingPathComponent("保存前/\(recording_count)/worldMap.data")
+                        let worldimagePath = url.appendingPathComponent("保存前/\(recording_count)/worldImage.data")
+                        do {
+                            try data.write(to: worldmapPath) //ARWorldMap
+                            try current_imageData!.write(to: worldimagePath)
+                        } catch {
+                            print("Failed to save the image:", error)
+                        }
+                        
+                        
                         try! realm.write {
                             realm.add(Navityu(value: ["modelname": objName,
                                                       "dayString": dayString,
@@ -691,7 +723,9 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                                                       "worldimage": self.current_imageData!,
                                                       "exit_mesh": self.exit_mesh_num,
                                                       "exit_point": self.exit_point_num,
-                                                      "exit_parameta": self.exit_parameta]))
+                                                      "exit_parameta": self.exit_parameta,
+                                                      "parametaNum": self.parametaCount,
+                                                      "meshNum": self.meshCount]))
                         }
                         
                         self.exit_parameta = 0
@@ -724,27 +758,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.cover_flag = false
     }
     
-    //worldDataをドキュメントに仮保存
-    func saveDocument(data: Data) {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let scarchivePath = url.appendingPathComponent("保存前/\(recording_count)/world.data")
-            do {
-                try data.write(to: scarchivePath)
-            } catch {
-                print("Failed to save the image:", error)
-            }
-        }
-    }
-    
     //ディレクトリ削除
     func removeDirectory() {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            do {
-                try FileManager.default.removeItem(at: url.appendingPathComponent("保存前"))
-                print("ディレクトリ削除成功")
-            } catch _ {
-                print("ディレクトリ削除失敗（存在しない）")
-            }
+        do {
+            try FileManager.default.removeItem(at: url.appendingPathComponent("保存前"))
+            print("ディレクトリ削除成功")
+        } catch _ {
+            print("ディレクトリ削除失敗（存在しない）")
         }
     }
     
@@ -844,33 +864,32 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         check_flag = true
         timer.invalidate()
         
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let archivePath = url.appendingPathComponent("現実.jpg")
-            let imageData = snapshot().jpegData(compressionQuality: 1.0)
-            do {
-                try imageData!.write(to: archivePath)
-            } catch {
-                print("Failed to save the image:", error)
-            }
-        }
+//        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//            let archivePath = url.appendingPathComponent("現実.jpg")
+//            let imageData = snapshot().jpegData(compressionQuality: 1.0)
+//            do {
+//                try imageData!.write(to: archivePath)
+//            } catch {
+//                print("Failed to save the image:", error)
+//            }
+//        }
         
         let storyboard = UIStoryboard(name: "CheckData", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CheckDataViewController") as! CheckDataViewController
         guard let anchors = sceneView.session.currentFrame?.anchors else { return }
         vc.anchors = anchors.compactMap { $0 as? ARMeshAnchor}
-        let realm = try! Realm()
-        let models = realm.objects(Data_parameta.self)[0]
-//        let yoko: Float = 17.0
-//        let tate: Float = ceil(Float(models.pic.count)/yoko)
         let num = 2.0
-        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+        let picPath = url.appendingPathComponent("保存前/\(recording_count)/pic0.data")
+        let width = (UIImage(data: try! Data(contentsOf: picPath))?.size.width)! / num
         let yoko = Float(floor(16384.0 / width)) //17.0
-        let tate = ceil(Float(models.pic.count)/yoko)
+        let tate = ceil(Float(parametaCount)/yoko)
         vc.calculateParameta = calculateParameta(device: self.sceneView.device!,
                                                  W: Int(sceneView.bounds.width),
                                                  H: Int(sceneView.bounds.height),
                                                  tate: Int(tate), yoko: Int(yoko),
                                                  funcString: "calcu5")
+        vc.picCount = parametaCount
+        vc.recording_count = recording_count
         vc.presentationController?.delegate = self
         self.present(vc, animated: true, completion: nil)
     }

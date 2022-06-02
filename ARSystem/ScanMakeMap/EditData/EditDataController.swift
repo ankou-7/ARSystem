@@ -99,14 +99,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         //print(results[section_num].cells)
         
-        parametaCount_label.text = "パラメータ数：\(models.pic.count)個"
+//        parametaCount_label.text = "パラメータ数：\(models.pic.count)個"
+        parametaCount_label.text = "パラメータ数：\(models.parametaNum)個"
          
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Loading･･･")
         
         sceneView.delegate = self
         sceneView.scene = scene
-        //sceneView.allowsCameraControl = true
         sceneView.scene?.rootNode.addChildNode(LightNode())
         cameraNode = CameraNode()
         sceneView.scene?.rootNode.addChildNode(cameraNode)
@@ -117,7 +117,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             modelname_label.isHidden = true
         }
         
-        //pinch gesuture
+        //pinch gesutureの設定
         let pinch = UIPinchGestureRecognizer(
             target: self,
             action: #selector(type(of: self).scenePinchGesture(_:))
@@ -162,10 +162,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_bool = 0
-        }
+//        let realm = try! Realm()
+//        try! realm.write {
+//            models.texture_bool = 0
+//        }
         //print(models)
         //print(models.mesh_anchor.count)
         //モデルを表示
@@ -194,41 +194,73 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     func buildSetup() {
         
-        picCount = models.pic.count
+        picCount = models.parametaNum //pic.count
         //print(models.pic)
-        print(models.pic.count)
-        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+        print("パラメータ数：\(picCount!)")
+        
+//        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+//        print(width)
+        
+        guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        else { return }
+        
+        let picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic0.data")
+        let width = (UIImage(data: try! Data(contentsOf: picPath))?.size.width)! / num
+        print(width)
+        
+        
         yoko = Float(floor(16384.0 / width)) //17.0
         tate = ceil(Float(picCount)/yoko)
-        print(tate, yoko)
+        print(tate!, yoko!)
         
         uiimage_array = []
         for i in 0..<picCount {
-            let uiimage = UIImage(data: models.pic[i].pic_data!)
+            let per_picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic\(i).data")
+            let uiimage = UIImage(data: try! Data(contentsOf: per_picPath))
             uiimage_array.append(uiimage!)
         }
         
-        //16384以下にする必要あり
-        imageWidth = UIImage(data: models.pic[0].pic_data!)?.size.width
-        imageHeight = UIImage(data: models.pic[0].pic_data!)?.size.height
-        print(imageWidth!, imageHeight!)
         
-//        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
-        new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
-        imageView.image = new_uiimage
-        
-        print(new_uiimage.size)
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_pic = imageData
+        let texpicPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/texpic.data")
+        if models.texBool == false {
+            //16384以下にする必要あり
+            imageWidth = UIImage(data: try! Data(contentsOf: picPath))!.size.width
+            imageHeight = UIImage(data: try! Data(contentsOf: picPath))!.size.height
+            print(imageWidth!, imageHeight!)
+            
+            
+            new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+            imageView.image = new_uiimage
+            
+            print(new_uiimage.size)
+            let uiImage = new_uiimage
+            let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+            let realm = try! Realm()
+            try! realm.write {
+                models.texture_pic = imageData
+            }
+            
+            do {
+                try imageData!.write(to: texpicPath)
+                try! realm.write {
+                    models.texBool = true
+                }
+                print("テクスチャデータ保存成功")
+            } catch {
+                print("テクスチャデータ保存失敗", error)
+            }
+        } else {
+            new_uiimage = UIImage(data: try! Data(contentsOf: texpicPath))
+            imageView.image = new_uiimage
         }
-        
+            
         anchors = []
-        for i in 0..<models.mesh_anchor.count {
-            let mesh_data = models.mesh_anchor[i].mesh
-            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+        for i in 0..<models.meshNum { //mesh_anchor.count {
+            //let mesh_data = models.mesh_anchor[i].mesh
+            
+            let per_meshPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/mesh\(i).data")
+            let mesh_data = try! Data(contentsOf: per_meshPath)
+            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data) {
                 anchors.append(meshAnchor)
             }
         }
@@ -239,7 +271,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             sceneView.scene?.rootNode.addChildNode(meshNode)
             SVProgressHUD.dismiss()
         } else if models.texture_bool != 0 {
-            texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+            texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
             sceneView.scene?.rootNode.addChildNode(texmeshNode)
             SVProgressHUD.dismiss()
         }
@@ -491,7 +523,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     @IBAction func tap_colorNode(_ sender: UIButton) {
         delete_mesh()
-        texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+        texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
         sceneView.scene?.rootNode.addChildNode(texmeshNode)
     }
     
@@ -885,7 +917,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: [])
             GPUCalculateTexture.makeGPUTexture() { [self] in
                 delete_mesh()
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
@@ -903,9 +935,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                                                       tate: Int(tate), yoko: Int(yoko),
                                                       funcString: texString)
             let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta, cameraNode: cameraNode, sceneView: sceneView)
-            CPUCalculateTexture.makeCPUTexture2() { [self] in
+            CPUCalculateTexture.makeCPUTexture() { [self] in
                 delete_mesh()
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
@@ -925,7 +957,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta, cameraNode: cameraNode, sceneView: sceneView)
             CPUCalculateTexture.makeCPUTexture3() { [self] in
                 delete_mesh()
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
@@ -1113,7 +1145,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: remove)
             GPUCalculateTexture.noLog_makeGPUTexture() { [self] in
                 delete_mesh()
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }

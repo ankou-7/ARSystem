@@ -174,12 +174,28 @@ class CalculateRenderer {
         
         let realm = try! Realm()
         try! realm.write {
-            models.mesh_anchor[num].texcoords = texcoordsData
-            models.mesh_anchor[num].vertices = vertexData
-            models.mesh_anchor[num].normals = normalsData
-            models.mesh_anchor[num].faces = facesData
-            models.mesh_anchor[num].vertice_count = face_count * 3
+//            models.mesh_anchor[num].texcoords = texcoordsData
+//            models.mesh_anchor[num].vertices = vertexData
+//            models.mesh_anchor[num].normals = normalsData
+//            models.mesh_anchor[num].faces = facesData
+//            models.mesh_anchor[num].vertice_count = face_count * 3
             models.texture_bool = 3
+        }
+        
+        guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        else { return }
+        let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords\(num).data")
+        let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex\(num).data")
+        let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals\(num).data")
+        let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces\(num).data")
+        do {
+            try texcoordsData.write(to: texcoordsPath)
+            try vertexData.write(to: vertexPath)
+            try normalsData.write(to: normalsPath)
+            try facesData.write(to: facesPath)
+            print("GPU計算データ\(num)保存成功")
+        } catch {
+            print("GPU計算データ\(num)保存失敗", error)
         }
     }
 }

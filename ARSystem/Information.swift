@@ -35,6 +35,10 @@ class Navi_Modelname: Object {
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
     
+    @objc dynamic var parametaNum: Int = 0
+    @objc dynamic var meshNum: Int = 0
+    @objc dynamic var texBool: Bool = false
+    
     let obj = List<ObjectInfo>()
     @objc dynamic var add_obj_count: Int = 0
     
@@ -64,6 +68,9 @@ class Navityu: Object {
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
     @objc dynamic var exit_parameta: Int = 0
+    
+    @objc dynamic var parametaNum: Int = 0
+    @objc dynamic var meshNum: Int = 0
 }
 
 //内部パラメータ用
