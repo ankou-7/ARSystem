@@ -150,8 +150,13 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
     func add_Cell(text: String, sec_num: Int) {
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
+        let date = Date()
+        let format = DateFormatter()
+        format.dateFormat = "yyyy-MM-dd HH:mm"
+        let dayString = format.string(from: date)
         try! realm.write {
-            results[sec_num].cells.append(Navi_CellTitle(value: ["cellName": text]))
+            results[sec_num].cells.append(Navi_CellTitle(value: ["cellName": text,
+                                                                 "dayString": dayString]))
         }
         self.tableview.reloadData()
     }
@@ -171,6 +176,10 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
             
             let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let documentsDirectory = paths[0]
+            
+            //保存したデータフォルダ名を保存した日時名に変換
+            rename(oldName: "\(documentsDirectory)/保存前",
+                   newName: "\(documentsDirectory)/\(results[section_num].cells[cell_num].dayString)")
             
             if navityu_results[i].exit_mesh == 1 {
 //                do {
@@ -193,7 +202,8 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                     try FileManager.default.moveItem(atPath: old_txtname!, toPath: new_txtname!)
                     try FileManager.default.moveItem(atPath: old_mesh_modelname!, toPath: new_mesh_modelname!)
                 } catch {
-                    fatalError()
+                    //fatalError()
+                    print("point書き込み失敗")
                 }
             }
             
@@ -250,6 +260,18 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
         
         print(realm.objects(Navi_SectionTitle.self))
         
+    }
+    
+    //ディレクトリのリネーム
+    func rename(oldName: String, newName: String) {
+        let atPathName = "\(oldName)"
+        let toPathName = "\(newName)"
+        do {
+            try FileManager.default.moveItem(atPath: atPathName, toPath: toPathName)
+            print("ディレクトリ名リネーム成功")
+        } catch {
+            print("ディレクトリ名リネーム失敗")
+        }
     }
     
     // 全データ削除

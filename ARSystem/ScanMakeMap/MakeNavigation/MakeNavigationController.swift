@@ -47,10 +47,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var make_modelButton: UIButton!
     @IBOutlet weak var make_out_modelButton: UIButton!
     
-    var make_modelButton_Tapped_count = 0 //マップ作成ボタンを押した数
-    
     var isRecording = false
-    var recording_count = -1 //何回スキャンを行なったか
+    var recording_count = -1 //何回スキャンを行なったか(マップ作成ボタンを押した数)
     
     var current_imageData: Data?
     var current_worlddata: Data!
@@ -90,13 +88,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         sceneView.delegate = self //delegateのセット
         sceneView.session.delegate = self
-        sceneView.scene = scene
+        //sceneView.scene = scene
         sceneView.debugOptions = .showWorldOrigin
         
-        //realm初期化
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let realm = try! Realm(fileURL: url.appendingPathComponent("try.realm"))
-        }
+//        //realm初期化
+//        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//            let realm = try! Realm(fileURL: url.appendingPathComponent("try.realm"))
+//        }
         
         //パラメータを一時的に保存する場所を初期化
         let realm = try! Realm()
@@ -104,6 +102,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             realm.delete(realm.objects(Navityu.self))
             realm.delete(realm.objects(Data_parameta.self))
         }
+        
+        removeDirectory()
         
         let viewModel = MenuViewModel()
         for _ in 1...viewModel.count {
@@ -124,21 +124,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         //        configuration.sceneReconstruction = .meshWithClassification
         //        configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
         sceneView.session.run(configuration)
-        
-        //特徴点を取るためのコーチングの追加
-        coachingOverlay.session = sceneView.session
-        coachingOverlay.delegate = self
-        coachingOverlay.translatesAutoresizingMaskIntoConstraints = false
-        coachingOverlay.activatesAutomatically = false
-        coachingOverlay.goal =  .tracking //horizontalPlane,verticalPlane,anyPlane,tracking
-        self.view.addSubview(coachingOverlay)
-        //ARCoachingOverlayViewを画面の中心に表示させる
-        NSLayoutConstraint.activate([
-            coachingOverlay.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            coachingOverlay.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            coachingOverlay.widthAnchor.constraint(equalTo: view.widthAnchor),
-            coachingOverlay.heightAnchor.constraint(equalTo: view.heightAnchor)
-        ])
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -204,12 +189,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             UIView.animate(withDuration: 0.2) {
                 
                 if self.remap_flag == false {
+                    self.recording_count += 1
                     
-                    if self.make_modelButton_Tapped_count == 0 {
+                    //データ保存用のディレクトリ作成
+                    self.makeDirectory(num: self.recording_count)
+                    
+                    if self.recording_count == 0 {
                         self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
                         self.sceneView.debugOptions.remove([.showWorldOrigin])
                     }
-                    self.make_modelButton_Tapped_count += 1
                     
                     self.pointCloudRenderer = Renderer(
                         session: self.sceneView.session,
@@ -227,7 +215,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     //                    self.pointCloud_flag = true
                     //                }
                     
-                    self.recording_count += 1
+                    
                     
                     guard let frame = self.sceneView.session.currentFrame else {
                         fatalError("Couldn't get the current ARFrame")
@@ -303,6 +291,17 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         isRecording = !isRecording
     }
     
+    func makeDirectory(num: Int) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let directory = url.appendingPathComponent("保存前/\(num)", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+        }
+    }
+    
     @objc func Alert() {
         let title = "マッピング完了"
         let message = """
@@ -370,6 +369,21 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             results[choice_section].cells[choice_cell].models[0].depth.removeAll()
         }
         print(results[choice_section].cells[choice_cell].models[0])
+        
+        //特徴点を取るためのコーチングの追加
+        coachingOverlay.session = sceneView.session
+        coachingOverlay.delegate = self
+        coachingOverlay.translatesAutoresizingMaskIntoConstraints = false
+        coachingOverlay.activatesAutomatically = false
+        coachingOverlay.goal =  .tracking //horizontalPlane,verticalPlane,anyPlane,tracking
+        self.view.addSubview(coachingOverlay)
+        //ARCoachingOverlayViewを画面の中心に表示させる
+        NSLayoutConstraint.activate([
+            coachingOverlay.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            coachingOverlay.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            coachingOverlay.widthAnchor.constraint(equalTo: view.widthAnchor),
+            coachingOverlay.heightAnchor.constraint(equalTo: view.heightAnchor)
+        ])
 
         //ARWorldMapの復元
         self.coachingOverlay.setActive(true, animated: true)
@@ -580,6 +594,16 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
                                                                               "depth_data": depthData]))
+                
+                //ディレクトリ内にデータを保存
+//                if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//                    let scarchivePath = url.appendingPathComponent("保存前/\(recording_count)/world.data")
+//                    do {
+//                        try data.write(to: scarchivePath)
+//                    } catch {
+//                        print("Failed to save the image:", error)
+//                    }
+//                }
             }
         } else if remap_flag || cover_flag {
             let results = realm.objects(Navi_SectionTitle.self)
@@ -659,6 +683,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         }
                         
                     } else {
+                        saveDocument(data: data)
                         try! realm.write {
                             realm.add(Navityu(value: ["modelname": objName,
                                                       "dayString": dayString,
@@ -697,6 +722,30 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         print(realm.objects(Navi_SectionTitle.self))
         
         self.cover_flag = false
+    }
+    
+    //worldDataをドキュメントに仮保存
+    func saveDocument(data: Data) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let scarchivePath = url.appendingPathComponent("保存前/\(recording_count)/world.data")
+            do {
+                try data.write(to: scarchivePath)
+            } catch {
+                print("Failed to save the image:", error)
+            }
+        }
+    }
+    
+    //ディレクトリ削除
+    func removeDirectory() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            do {
+                try FileManager.default.removeItem(at: url.appendingPathComponent("保存前"))
+                print("ディレクトリ削除成功")
+            } catch _ {
+                print("ディレクトリ削除失敗（存在しない）")
+            }
+        }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {

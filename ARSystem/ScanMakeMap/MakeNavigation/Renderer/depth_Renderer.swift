@@ -210,10 +210,11 @@ final class depth_Renderer {
     }
     
     //MARK: -計算
-    func draw100() {
+    func draw100(){
         guard let currentFrame = session.currentFrame,
               let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = sceneView.currentRenderCommandEncoder else {
+              let renderEncoder = sceneView.currentRenderCommandEncoder
+        else {
                 return
         }
 

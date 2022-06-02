@@ -11,9 +11,9 @@ import ARKit
 import RealmSwift
 import MultipeerConnectivity
 import SVProgressHUD
-import Firebase
+import FirebaseCore
 import FirebaseFirestore
-import ZipArchive
+import SSZipArchive
 
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
 
@@ -166,8 +166,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         try! realm.write {
             models.texture_bool = 0
         }
-        print(models)
-        print(models.mesh_anchor.count)
+        //print(models)
+        //print(models.mesh_anchor.count)
         //モデルを表示
         buildSetup()
         

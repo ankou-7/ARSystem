@@ -22,6 +22,7 @@ class Navi_SectionTitle: Object {
 
 class Navi_CellTitle: Object {
     @objc dynamic var cellName: String = ""
+    @objc dynamic var dayString: String = ""
     
     let models = List<Navi_Modelname>()
 }
