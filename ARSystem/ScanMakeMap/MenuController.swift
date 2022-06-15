@@ -63,7 +63,7 @@ class MenuController: UIViewController {
     }
     
     func to_ColabVRViewController() {
-        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
+        let storyboard = UIStoryboard(name: "CollaboVR", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ColabVRViewController") as! ColabVRViewController
         vc.modalPresentationStyle = .fullScreen
         
@@ -85,7 +85,7 @@ class MenuController: UIViewController {
     
     
     func to_ColabARViewController() {
-        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
+        let storyboard = UIStoryboard(name: "CollaboAR", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ColabARViewController") as! ColabARViewController
         vc.modalPresentationStyle = .fullScreen
         

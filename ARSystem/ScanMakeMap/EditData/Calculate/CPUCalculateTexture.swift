@@ -116,10 +116,10 @@ class CPUCalculateTexture {
     func make_calcuParameta(num: Int, completionHandler: @escaping ([depthPosition], simd_float4x4, SCNVector3) -> ()) {
         let decoder = JSONDecoder()
         
-        let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth\(num).data")
+        let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth/depth\(num).data")
         let depth = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
         
-        let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json\(num).data")
+        let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json/json\(num).data")
         let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
         let cameraVector = SCNVector3(json_data!.cameraVector.x,
                                       json_data!.cameraVector.y,
@@ -253,9 +253,9 @@ class CPUCalculateTexture {
         var calcuMatrix = [simd_float4x4]()
         var depth = [depthPosition]()
         
-        for i in 0..<models.pic.count {
+        for i in 0..<models.parametaNum {
             
-            let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json\(i).data")
+            let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json/json\(i).data")
             let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
             
             let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
@@ -269,7 +269,7 @@ class CPUCalculateTexture {
             let matrix = projectionMatrix * viewMatrix
             calcuMatrix.append(matrix)
             
-            let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth\(i).data")
+            let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth/depth\(i).data")
             let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
             depth.append(contentsOf: depth_array!)
         }
@@ -361,53 +361,53 @@ class CPUCalculateTexture {
     
     //MARK: - hittestを用いた処理
     func makeCPUTexture3(completionHandler: @escaping () -> ()) {
-        let start = Date()
-        var poly = ""
-        var time = ""
-        var count = 0
-        let max = 1//self.models.json.count
-        
-        print("calcu開始")
-        make_calcuParameta2() { (dep, mat) in
-            //DispatchQueue.global().sync {
-            for j in 0..<1{//self.models.json.count {
-                    let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: self.models.json[j].json_data!)
-                    let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
-                                                    json_data!.cameraPosition.y,
-                                                    json_data!.cameraPosition.z)
-                    let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
-                                                       json_data!.cameraEulerAngles.y,
-                                                        json_data!.cameraEulerAngles.z)
-                    let move = SCNAction.move(to: cameraPosition, duration: 0)
-                    let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
-                    self.cameraNode.runAction(SCNAction.group([move, rotation]),
-                                         completionHandler: {
-                        //処理
-                        for (i, anchor) in self.anchors.enumerated() {
-                            self.calcTextureCoordinates3(num: i, anchor: anchor, matrixs: mat)
-                            poly += "\(self.sumPolygon)\n"
-                            time += "\(Date().timeIntervalSince(start))\n"
-                            print(poly)
-                            print(time)
-                            print("calculate\(i)完了")
-                        }
-                        
-                        count += 1
-                        if count == max {
-                            DispatchQueue.main.async {
-                                self.st += poly + time
-                                self.saveDocument(text: self.st, filename: "バージョン1")
-                                self.save_model()
-                                
-                                print("calcu終了")
-                                print("処理時間：\(Date().timeIntervalSince(start))")
-                                completionHandler()
-                            }
-                        }
-                    })
-                //}
-            }
-        }
+//        let start = Date()
+//        var poly = ""
+//        var time = ""
+//        var count = 0
+//        let max = 1//self.models.json.count
+//
+//        print("calcu開始")
+//        make_calcuParameta2() { (dep, mat) in
+//            //DispatchQueue.global().sync {
+//            for j in 0..<1{//self.models.json.count {
+//                    let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: self.models.json[j].json_data!)
+//                    let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+//                                                    json_data!.cameraPosition.y,
+//                                                    json_data!.cameraPosition.z)
+//                    let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+//                                                       json_data!.cameraEulerAngles.y,
+//                                                        json_data!.cameraEulerAngles.z)
+//                    let move = SCNAction.move(to: cameraPosition, duration: 0)
+//                    let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+//                    self.cameraNode.runAction(SCNAction.group([move, rotation]),
+//                                         completionHandler: {
+//                        //処理
+//                        for (i, anchor) in self.anchors.enumerated() {
+//                            self.calcTextureCoordinates3(num: i, anchor: anchor, matrixs: mat)
+//                            poly += "\(self.sumPolygon)\n"
+//                            time += "\(Date().timeIntervalSince(start))\n"
+//                            print(poly)
+//                            print(time)
+//                            print("calculate\(i)完了")
+//                        }
+//
+//                        count += 1
+//                        if count == max {
+//                            DispatchQueue.main.async {
+//                                self.st += poly + time
+//                                self.saveDocument(text: self.st, filename: "バージョン1")
+//                                self.save_model()
+//
+//                                print("calcu終了")
+//                                print("処理時間：\(Date().timeIntervalSince(start))")
+//                                completionHandler()
+//                            }
+//                        }
+//                    })
+//                //}
+//            }
+//        }
     }
     
     func calcTextureCoordinates3(num: Int, anchor: ARMeshAnchor, matrixs: [simd_float4x4]){
@@ -501,19 +501,19 @@ class CPUCalculateTexture {
             let normals_data = Data(bytes: new_normal_array[i], count: MemoryLayout<SIMD3<Float>>.size * new_normal_array[i].count)
             let faces_data = try! JSONEncoder().encode(new_face_array[i])
             
-            let realm = try! Realm()
-            try! realm.write {
-                models.mesh_anchor[i].texcoords = texcoords_data
-                models.mesh_anchor[i].vertices = vertices_data
-                models.mesh_anchor[i].normals = normals_data
-                models.mesh_anchor[i].faces = faces_data
-                models.mesh_anchor[i].vertice_count = new_vertex_array[i].count
-            }
+//            let realm = try! Realm()
+//            try! realm.write {
+//                models.mesh_anchor[i].texcoords = texcoords_data
+//                models.mesh_anchor[i].vertices = vertices_data
+//                models.mesh_anchor[i].normals = normals_data
+//                models.mesh_anchor[i].faces = faces_data
+//                models.mesh_anchor[i].vertice_count = new_vertex_array[i].count
+//            }
             
-            let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords\(i).data")
-            let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex\(i).data")
-            let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals\(i).data")
-            let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces\(i).data")
+            let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/mesh/texcoords\(i).data")
+            let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/mesh/vertex\(i).data")
+            let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/mesh/normals\(i).data")
+            let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/mesh/faces\(i).data")
             do {
                 try texcoords_data.write(to: texcoordsPath)
                 try vertices_data.write(to: vertexPath)

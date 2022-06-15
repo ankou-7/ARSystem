@@ -53,6 +53,8 @@ class CalculateRenderer {
         pipeline = try! device.makeComputePipelineState(function: function)
         
         anchorUniformsBuffer = .init(device: device, count: 1, index: 9)
+        
+        makeDirectory()
     }
     
     func drawRectResized(size: CGSize) {
@@ -166,6 +168,24 @@ class CalculateRenderer {
         return 1
     }
     
+    //テクスチャ座標の計算時にデータ保存用のディレクトリを作成する関数
+    func makeDirectory() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let texcoords_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords", isDirectory: true)
+            let vertex_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex", isDirectory: true)
+            let normals_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals", isDirectory: true)
+            let faces_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: texcoords_directory, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(at: vertex_directory, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(at: normals_directory, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(at: faces_directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+        }
+    }
+    
     func save_model(num: Int) {
         let texcoordsData = try! JSONEncoder().encode(texcoords)
         let facesData = try! JSONEncoder().encode(faces)
@@ -184,10 +204,10 @@ class CalculateRenderer {
         
         guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         else { return }
-        let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords\(num).data")
-        let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex\(num).data")
-        let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals\(num).data")
-        let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces\(num).data")
+        let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords/texcoords\(num).data")
+        let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex/vertex\(num).data")
+        let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals/normals\(num).data")
+        let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces/faces\(num).data")
         do {
             try texcoordsData.write(to: texcoordsPath)
             try vertexData.write(to: vertexPath)

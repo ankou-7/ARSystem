@@ -50,14 +50,14 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidAppear(animated)
         
         for i in 0..<picCount {
-            let per_picPath = url.appendingPathComponent("保存前/\(recording_count!)/pic\(i).data")
+            let per_picPath = url.appendingPathComponent("保存前/\(recording_count!)/pic/pic\(i).data")
             let uiimage = UIImage(data: try! Data(contentsOf: per_picPath))
             imageArray.append(uiimage!)
         }
         
         let num = 2.0
 
-        let picPath = url.appendingPathComponent("保存前/\(recording_count!)/pic0.data")
+        let picPath = url.appendingPathComponent("保存前/\(recording_count!)/pic/pic0.data")
         let imageWidth = UIImage(data: try! Data(contentsOf: picPath))!.size.width
         let imageHeight = UIImage(data: try! Data(contentsOf: picPath))!.size.height
         texImage = TextureImage(W: (imageWidth / num) * CGFloat(calculateParameta.yoko),
@@ -108,7 +108,7 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
         let decoder = JSONDecoder()
         
         for i in 0..<picCount {
-            let jsonPath = url.appendingPathComponent("保存前/\(recording_count!)/json\(i).data")
+            let jsonPath = url.appendingPathComponent("保存前/\(recording_count!)/json/json\(i).data")
             let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
             
             let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
@@ -122,7 +122,7 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
             let matrix = projectionMatrix * viewMatrix
             calcuMatrix.append(matrix)
             
-            let depthPath = url.appendingPathComponent("保存前/\(recording_count!)/depth\(i).data")
+            let depthPath = url.appendingPathComponent("保存前/\(recording_count!)/depth/depth\(i).data")
             let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
             depth.append(contentsOf: depth_array!)
         }

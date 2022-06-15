@@ -140,7 +140,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="d86-EJ-OSv">
-                                <rect key="frame" x="20" y="1104" width="90" height="40"/>
+                                <rect key="frame" x="20" y="1044" width="90" height="100"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Pq-BO-MC7">
                                         <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
@@ -162,8 +162,8 @@
                                             <action selector="to_CheckDataViewController:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="w6G-To-rg2"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILs-fg-M0T">
-                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILs-fg-M0T">
+                                        <rect key="frame" x="0.0" y="60" width="90" height="40"/>
                                         <color key="backgroundColor" red="0.45990481820341023" green="0.92128556966781616" blue="0.36626839167350617" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="XzJ-0e-o0l"/>
@@ -180,26 +180,6 @@
                                         </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="Tapped_to_ReMap:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="Sfp-Y0-x20"/>
-                                        </connections>
-                                    </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8W0-lq-0ny">
-                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
-                                        <color key="backgroundColor" systemColor="systemIndigoColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="BA3-Sa-meY"/>
-                                            <constraint firstAttribute="width" constant="90" id="p0n-Je-4GL"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" title="上書き"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="10"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                        <connections>
-                                            <action selector="Tapped_coverMap:" destination="Mh7-nO-JyT" eventType="touchUpInside" id="727-T9-wCq"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -258,9 +238,6 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemIndigoColor">
-            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

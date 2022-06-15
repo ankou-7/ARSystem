@@ -45,8 +45,8 @@ class PictureChoiceController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         
         let index = model_array.indices.filter{model_array[$0] == true}
-        picture_array1 = [Bool](repeating: false, count: results[section_num].cells[cell_num].models[index[0]].pic.count)
-        picture_array2 = [Bool](repeating: false, count: results[section_num].cells[cell_num].models[index[1]].pic.count)
+        picture_array1 = [Bool](repeating: false, count: results[section_num].cells[cell_num].models[index[0]].parametaNum)
+        picture_array2 = [Bool](repeating: false, count: results[section_num].cells[cell_num].models[index[1]].parametaNum)
         
         model_name1.text = results[section_num].cells[cell_num].models[index[0]].modelname
         model_name2.text = results[section_num].cells[cell_num].models[index[1]].modelname
@@ -76,7 +76,7 @@ class PictureChoiceController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableview: UITableView, numberOfRowsInSection section: Int) -> Int {
         checkTableView(tableview)
         
-        return results[section_num].cells[cell_num].models[model_num].pic.count
+        return results[section_num].cells[cell_num].models[model_num].parametaNum
     }
     
     func tableView(_ table: UITableView,
@@ -90,10 +90,10 @@ class PictureChoiceController: UIViewController, UITableViewDelegate, UITableVie
         let cell = tableview.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
         let pictureImage = cell.viewWithTag(1) as! UIImageView
-        pictureImage.image = UIImage(data: results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_data!)
+        //pictureImage.image = UIImage(data: results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_data!)
         
         let picture_name = cell.viewWithTag(2) as! UILabel
-        picture_name.text = results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_name
+        //picture_name.text = results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_name
         
         return cell
     }
@@ -105,12 +105,12 @@ class PictureChoiceController: UIViewController, UITableViewDelegate, UITableVie
         choice_count += 1
         
         if tableview.tag == 1 {
-            choice_picture1.text = "選択画像：\(results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_name)"
+            //choice_picture1.text = "選択画像：\(results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_name)"
             
             picture1_num = indexPath.row
         }
         else if tableview.tag == 2 {
-            choice_picture2.text = "選択画像：\(results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_name)"
+            //choice_picture2.text = "選択画像：\(results[section_num].cells[cell_num].models[model_num].pic[indexPath.row].pic_name)"
             
             picture2_num = indexPath.row
         }

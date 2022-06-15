@@ -8,7 +8,7 @@
 import UIKit
 import RealmSwift
 
-class ChoiceReMap: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ChoiceData: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     let results = try! Realm().objects(Navi_SectionTitle.self)
@@ -68,7 +68,7 @@ class ChoiceReMap: UIViewController, UITableViewDelegate, UITableViewDataSource 
 }
 
 
-extension ChoiceReMap {
+extension ChoiceData {
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag, completion: completion)
         guard let presentationController = presentationController else {

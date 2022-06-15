@@ -150,13 +150,10 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
     func add_Cell(text: String, sec_num: Int) {
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
-        let date = Date()
-        let format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd HH:mm"
-        let dayString = format.string(from: date)
+        let navityu_results = realm.objects(Navityu.self)
         try! realm.write {
             results[sec_num].cells.append(Navi_CellTitle(value: ["cellName": text,
-                                                                 "dayString": dayString]))
+                                                                 "dayString": navityu_results[0].dayString]))
         }
         self.tableview.reloadData()
     }
@@ -212,7 +209,7 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
                                                                     value: ["modelname": objName,
                                                                             "dayString": navityu_results[i].dayString,
                                                                             //"worlddata": navityu_results[i].worlddata!,
-                                                                            "worldimage": navityu_results[i].worldimage!,
+                                                                            //"worldimage": navityu_results[i].worldimage!,
                                                                             "exit_mesh": navityu_results[i].exit_mesh,
                                                                             "exit_point": navityu_results[i].exit_point,
                                                                             "parametaNum": navityu_results[i].parametaNum,

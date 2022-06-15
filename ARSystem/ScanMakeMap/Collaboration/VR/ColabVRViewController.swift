@@ -10,6 +10,7 @@ import SceneKit
 import ARKit
 import RealmSwift
 import MultipeerConnectivity
+import SVProgressHUD
 
 class ColabVRViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
@@ -318,6 +319,12 @@ class ColabVRViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewC
     let scene = SCNScene()
     @IBOutlet weak var imageView: UIImageView!
     var texImage = UIImage()
+    var anchors: [ARMeshAnchor] = []
+    var url: URL! = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+    
+    var models: Navi_Modelname!
+    let results = try! Realm().objects(Navi_SectionTitle.self)
+    var current_model_num = 0
     
     let serviceType = "ar-collab"
 
@@ -333,11 +340,7 @@ class ColabVRViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewC
         sceneView.delegate = self
         sceneView.scene = scene
         sceneView.allowsCameraControl = true
-        
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .ambient //.omni
-        scene.rootNode.addChildNode(lightNode)
+        scene.rootNode.addChildNode(LightNode())
         
     }
     
@@ -356,8 +359,38 @@ class ColabVRViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewC
 
     }
     
+    func build() {
+        anchors = []
+        for i in 0..<models.meshNum { //mesh_anchor.count {
+            let per_meshPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/mesh/mesh\(i).data")
+            let mesh_data = try! Data(contentsOf: per_meshPath)
+            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data) {
+                anchors.append(meshAnchor)
+            }
+        }
+        
+        if models.texture_bool != 0 {
+            let texpicPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/texpic.jpg")
+            texImage = UIImage(data: try! Data(contentsOf: texpicPath))!
+            //imageView.image = texImage
+            
+            let texmeshNode = BuildTextureMeshNode(models: models, texImage: texImage)
+            sceneView.scene?.rootNode.addChildNode(texmeshNode)
+            SVProgressHUD.dismiss()
+        } else {
+            print("テクスチャがメッシュに割り当てられていないためビルド不可")
+        }
+    }
+    
     @IBAction func serchBrowser(_ sender: UIButton) {
         self.present(self.browser, animated: true, completion: nil)
+    }
+    
+    @IBAction func to_ChoiceData(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "ChoiceData", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChoiceData") as! ChoiceData
+        vc.presentationController?.delegate = self
+        self.present(vc, animated: true, completion: nil)
     }
     
     @IBAction func back(_ sender: UIButton) {
@@ -370,4 +403,17 @@ class ColabVRViewController: UIViewController, ARSCNViewDelegate, MCBrowserViewC
         self.dismiss(animated: false, completion: nil)
     }
     
+}
+
+//dismissをを検知
+extension ColabVRViewController: UIAdaptivePresentationControllerDelegate {
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+      print("dismiss")
+      let choice_section = (ReMapManagement.sectionID)!
+      let choice_cell = (ReMapManagement.cellID)!
+      print(choice_section, choice_cell)
+      
+      models = results[choice_section].cells[choice_cell].models[current_model_num]
+      build()
+  }
 }

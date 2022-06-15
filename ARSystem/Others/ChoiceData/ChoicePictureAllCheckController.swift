@@ -41,17 +41,17 @@ class ChoicePictureAllCheckController: UIViewController, UITableViewDelegate, UI
         let cell = tableview.dequeueReusableCell(withIdentifier: "CheckData_all_cell", for: indexPath)
         
         let pictureImage = cell.viewWithTag(1) as! UIImageView
-        pictureImage.image = UIImage(data: results[section_num].cells[cell_num].models[indexPath.row].worldimage!)
+        //pictureImage.image = UIImage(data: results[section_num].cells[cell_num].models[indexPath.row].worldimage!)
         let modelName = cell.viewWithTag(2) as! UILabel
         modelName.text = results[section_num].cells[cell_num].models[indexPath.row].modelname
         let dayLabel = cell.viewWithTag(3) as! UILabel
         dayLabel.text = results[section_num].cells[cell_num].models[indexPath.row].dayString
         
         let picture_num_Label = cell.viewWithTag(4) as! UILabel
-        picture_num_Label.text = "RGB画像数：\(results[section_num].cells[cell_num].models[indexPath.row].pic.count)"
+        picture_num_Label.text = "RGB画像数：\(results[section_num].cells[cell_num].models[indexPath.row].parametaNum)"
         
         let parameta_num_Label = cell.viewWithTag(5) as! UILabel
-        parameta_num_Label.text = "jsonファイル数：\(results[section_num].cells[cell_num].models[indexPath.row].json.count)"
+        parameta_num_Label.text = "jsonファイル数：\(results[section_num].cells[cell_num].models[indexPath.row].parametaNum)"
         
         let switchView = UISwitch()
         if cell.accessoryView == nil {

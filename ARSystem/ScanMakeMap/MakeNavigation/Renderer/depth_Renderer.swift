@@ -279,7 +279,7 @@ final class depth_Renderer {
             //depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
             depth_array.append(depthPosition(x: point.position.x, y: point.position.y, z: point.position.z))
         }
-        print(depth_array.count)
+        //print(depth_array.count)
         var result = false
         if depth_array.count > 0 {
             result = true

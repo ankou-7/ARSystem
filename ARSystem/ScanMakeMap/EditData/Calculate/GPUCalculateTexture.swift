@@ -123,7 +123,7 @@ class GPUCalculateTexture {
         
         for i in 0..<models.parametaNum { //pic.count {
             if removeCount.firstIndex(of: i) == nil {
-                let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json\(i).data")
+                let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json/json\(i).data")
                 //let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
                 let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
                 
@@ -138,7 +138,7 @@ class GPUCalculateTexture {
                 let matrix = projectionMatrix * viewMatrix
                 calcuMatrix.append(matrix)
                 
-                let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth\(i).data")
+                let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth/depth\(i).data")
                 //let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
                 let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
                 depth.append(contentsOf: depth_array!)

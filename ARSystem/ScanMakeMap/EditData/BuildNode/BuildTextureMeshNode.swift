@@ -33,10 +33,10 @@ class BuildTextureMeshNode: SCNNode {
     func buildTexMesh() {
         
         for i in 0..<models.meshNum {
-            let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords\(i).data")
-            let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex\(i).data")
-            let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals\(i).data")
-            let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces\(i).data")
+            let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords/texcoords\(i).data")
+            let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex/vertex\(i).data")
+            let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals/normals\(i).data")
+            let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces/faces\(i).data")
             
             let vertexData = try! Data(contentsOf: vertexPath) //result[i].vertices!
             let normalData = try! Data(contentsOf: normalsPath) //result[i].normals!
