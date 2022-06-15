@@ -314,13 +314,7 @@
 				CF0BAFE7281C739B004086C8 /* VRView.storyboard */,
 				CF0BAFEB281C7C9C004086C8 /* VRViewController.swift */,
 				CF0BB066281D8025004086C8 /* VideoView.swift */,
-				CF0BB065281D7689004086C8 /* Video */,
-				CF0BAFF0281C8593004086C8 /* Config.swift */,
-				CF0BAFF2281C8594004086C8 /* Message.swift */,
-				CF0BAFEE281C8593004086C8 /* SignalingClient.swift */,
-				CF0BAFF3281C8594004086C8 /* WebRTCClient.swift */,
-				CF0BB006281D15F3004086C8 /* WebSocketProvider */,
-				CF0BB005281D1592004086C8 /* Ex */,
+				CF25A2DC2859DB7700DC7C35 /* WebRTC */,
 			);
 			path = CollaboWebRTC;
 			sourceTree = "<group>";
@@ -421,6 +415,20 @@
 				CF2210A9283D42C200AA5C83 /* ChoiceData.swift */,
 			);
 			path = ReMap;
+			sourceTree = "<group>";
+		};
+		CF25A2DC2859DB7700DC7C35 /* WebRTC */ = {
+			isa = PBXGroup;
+			children = (
+				CF0BB065281D7689004086C8 /* Video */,
+				CF0BAFF0281C8593004086C8 /* Config.swift */,
+				CF0BAFF2281C8594004086C8 /* Message.swift */,
+				CF0BAFEE281C8593004086C8 /* SignalingClient.swift */,
+				CF0BAFF3281C8594004086C8 /* WebRTCClient.swift */,
+				CF0BB006281D15F3004086C8 /* WebSocketProvider */,
+				CF0BB005281D1592004086C8 /* Ex */,
+			);
+			path = WebRTC;
 			sourceTree = "<group>";
 		};
 		CF30EF46262BAF0A00C13B66 /* AllPopOver */ = {
