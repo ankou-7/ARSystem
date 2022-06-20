@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -106,6 +106,7 @@
 		CF966169280FD32E00D4C8BA /* GPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966168280FD32E00D4C8BA /* GPUCalculateTexture.swift */; };
 		CF96616B2810021F00D4C8BA /* CPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */; };
 		CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */; };
+		CFD1096228603BBF00F3DD71 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = CFD1096128603BBF00F3DD71 /* WebRTC */; };
 		CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */; };
 		CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */; };
 		CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9926C5121700E51949 /* ChoicePictureAllCheckController.swift */; };
@@ -253,6 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */,
+				CFD1096228603BBF00F3DD71 /* WebRTC in Frameworks */,
 				B2CB6E1E43D96243E8AB06DB /* Pods_ARSystem.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -682,6 +684,7 @@
 			);
 			name = ARSystem;
 			packageProductDependencies = (
+				CFD1096128603BBF00F3DD71 /* WebRTC */,
 			);
 			productName = ARMeshNavigation;
 			productReference = 26AAA1ED2563C802008FE5EB /* ARSystem.app */;
@@ -711,6 +714,7 @@
 			);
 			mainGroup = 26AAA1E42563C802008FE5EB;
 			packageReferences = (
+				CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */,
 			);
 			productRefGroup = 26AAA1EE2563C802008FE5EB /* Products */;
 			projectDirPath = "";
@@ -1102,6 +1106,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC";
+			requirement = {
+				branch = latest;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CFD1096128603BBF00F3DD71 /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 26AAA1E52563C802008FE5EB /* Project object */;
 }

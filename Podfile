@@ -9,7 +9,7 @@ target 'ARSystem' do
   pod 'Matft'
   pod 'SSZipArchive'
   # pod 'WebRTC-lib'
-  pod 'WebRTC'
+  # pod 'WebRTC'
   
   pod 'FirebaseFirestore'
   pod 'FirebaseCore'

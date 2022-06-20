@@ -710,7 +710,6 @@ PODS:
     - Realm (= 10.27.0)
   - SSZipArchive (2.4.3)
   - SVProgressHUD (2.2.5)
-  - WebRTC (63.11.20455)
 
 DEPENDENCIES:
   - FirebaseCore
@@ -720,7 +719,6 @@ DEPENDENCIES:
   - RealmSwift
   - SSZipArchive
   - SVProgressHUD
-  - WebRTC
 
 SPEC REPOS:
   trunk:
@@ -744,7 +742,6 @@ SPEC REPOS:
     - RealmSwift
     - SSZipArchive
     - SVProgressHUD
-    - WebRTC
 
 SPEC CHECKSUMS:
   abseil: ebe5b5529fb05d93a8bdb7951607be08b7fa71bc
@@ -767,8 +764,7 @@ SPEC CHECKSUMS:
   RealmSwift: 271de77b09a73c5e46ee3252283878153bd5d288
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
-  WebRTC: f2a6203584745fe53532633397557876b5d71640
 
-PODFILE CHECKSUM: c8d614693aeb82ffb4cd0052715fb201eeb5cdba
+PODFILE CHECKSUM: f8cc102807d32899750c1ac0c46c90e0efc0b415
 
 COCOAPODS: 1.11.3
