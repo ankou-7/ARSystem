@@ -26,6 +26,7 @@ class GPUCalculateTexture {
     var removeCount: [Int]
     
     var st = ""
+    var posi = ""
     
     // 使用者が単位を把握できるようにするため
     typealias MegaByte = UInt64
@@ -102,6 +103,14 @@ class GPUCalculateTexture {
                 print("Error: \(error)")
             }
             
+            
+            let posiPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/posi.txt")
+            do {
+                try posi.write(to: posiPath, atomically: false, encoding: .utf8)
+            } catch {
+                print("Error: \(error)")
+            }
+            
 //            var posiString = ""
 //            for json in results[section_num].cells[cell_num].models[ModelManagement.modelID].json {
 //                let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
@@ -137,6 +146,8 @@ class GPUCalculateTexture {
                                                      json_data!.projectionMatrix.w)
                 let matrix = projectionMatrix * viewMatrix
                 calcuMatrix.append(matrix)
+                
+                posi += "\(i) : \(json_data!.cameraPosition)\n"
                 
                 let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth/depth\(i).data")
                 //let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!

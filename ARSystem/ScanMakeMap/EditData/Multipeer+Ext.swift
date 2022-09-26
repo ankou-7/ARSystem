@@ -80,15 +80,19 @@ extension EditDataController {
     }
     
     func send_worldmapData() {
-//        guard let startData = try? NSKeyedArchiver.archivedData(withRootObject: "ワールドマップ送信開始" as NSString, requiringSecureCoding: true)
-//        else { return }
-//        try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-//        
-//        //スキャンのヒントになる画像
-//        try? self.session.send(results[section_num].cells[cell_num].models[current_model_num].worldimage!, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-//        
-//        //worldmap
-//        try? self.session.send(results[self.section_num].cells[self.cell_num].models[self.current_model_num].worlddata! as Data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
+        guard let startData = try? NSKeyedArchiver.archivedData(withRootObject: "ワールドマップ送信開始" as NSString, requiringSecureCoding: true)
+        else { return }
+        try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        
+        //スキャンのヒントになる画像
+        let worldImagePath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/worldImage.jpg")
+        let worldImageData = try! Data(contentsOf: worldImagePath)
+        try? self.session.send(worldImageData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        
+        //worldmap
+        let worldMapPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/worldMap.data")
+        let worldMapData = try! Data(contentsOf: worldMapPath)
+        try? self.session.send(worldMapData as Data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
     }
     
     func send_ObjectData(state: String, name: String, name_identify: String, type: String, info_data: Data) {

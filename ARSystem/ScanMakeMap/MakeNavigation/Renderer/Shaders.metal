@@ -153,7 +153,7 @@ vertex ParticleVertexOut particleVertex(uint vertexID [[vertex_id]],
     // prepare for output
     ParticleVertexOut out;
     out.position = projectedPosition;
-    out.pointSize = pointSize;
+    out.pointSize = 5.0f; //pointSize;
     out.color = float4(sampledColor, visibility);
     
     return out;
@@ -180,50 +180,38 @@ fragment ParticleFragmentOut particleFragment(ParticleVertexOut in [[stage_in]],
 
 ///////////
 vertex ParticleVertexOut particleVertex2(uint vertexID [[vertex_id]],
-                                         constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
-                                        constant ParticleUniforms *particleUniforms [[buffer(kParticleUniforms)]]) {
+                                         constant ParticleUniforms *particleUniforms [[buffer(kParticleUniforms)]]) {
     
-    // get point data
     const auto particleData = particleUniforms[vertexID];
     const auto position = particleData.position;
-    //const auto confidence = particleData.confidence;
     const auto sampledColor = particleData.color;
-    
-    // animate and project the point
-    float4 projectedPosition = uniforms.viewProjectionMatrix * float4(position, 1.0);
-
-    //const float pointSize = max(uniforms.particleSize / max(1.0, projectedPosition.z), 2.0);
-    //const float pointSize = 20.0; // ADDED
-    //const float pointSize = uniforms.particleSize;
-  
-    projectedPosition /= projectedPosition.w;
     
     // prepare for output
     ParticleVertexOut out;
-    out.position = projectedPosition; //float4(position,1.0);
-    out.pointSize = 10.0;
+    out.position = float4(position,1.0);
+    out.pointSize = 5.0f;
     out.color = float4(sampledColor, 1.0);
     
     return out;
 }
 
-fragment ParticleFragmentOut particleFragment2(ParticleVertexOut in [[stage_in]],
-                                 const float2 coords [[point_coord]]) {
-    // we draw within a circle
+fragment float4 particleFragment2(ParticleVertexOut in [[stage_in]],
+                                               const float2 coords [[point_coord]]) {
     //特徴点の形を四角形から円形にしている
     const float distSquared = length_squared(coords - float2(0.5));
     if (in.color.a == 0 || distSquared > 0.25) {
         discard_fragment(); //当該のピクセルを放棄
     }
-
-    ParticleFragmentOut out;
-
-    // scale depth values to a range compatible
-    // with depth buffer rendered by SceneKit
-    out.depth = 1.0 - in.position.z;
-    out.color = in.color;
-
-    return out;
+    
+//    ParticleFragmentOut out;
+//
+//    // scale depth values to a range compatible
+//    // with depth buffer rendered by SceneKit
+//    out.depth = 1.0 - in.position.z;
+//    out.color = in.color;
+//
+//    return out;
+    return in.color;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

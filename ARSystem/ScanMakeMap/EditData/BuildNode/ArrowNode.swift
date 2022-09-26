@@ -83,7 +83,7 @@ class ArrowNode: SCNNode {
         let distance = sqrt(endPointCoord.x * endPointCoord.x + endPointCoord.y * endPointCoord.y + endPointCoord.z * endPointCoord.z)
         //print(distance * 100)
         let num = Int((distance * 100 ) / 10)
-        let s: Float = 1/8
+        let s: Float = 1/4
         
         for i in 1..<num {
             let posi = SCNVector3((startPointCoord.x + Float(i) * endPointCoord.x * s) - (endPointCoord.x * 0.1),

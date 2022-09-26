@@ -184,6 +184,10 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <sceneKitView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" allowsCameraControl="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LbN-Tv-x37">
+                                <rect key="frame" x="558" y="636" width="240" height="300"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </sceneKitView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="bcH-QO-ftj"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -219,6 +223,7 @@
                         <outlet property="make_modelButton" destination="EuJ-yI-Phk" id="oEQ-pc-Fq9"/>
                         <outlet property="make_out_modelButton" destination="hZE-Ra-n7c" id="r7Q-lT-t4D"/>
                         <outlet property="mapping_label" destination="HRM-v7-R3h" id="84a-N1-eZS"/>
+                        <outlet property="modelView" destination="LbN-Tv-x37" id="1AT-s6-mMF"/>
                         <outlet property="numGridPoints_label" destination="i6n-Fu-Eel" id="XR4-Uk-emd"/>
                         <outlet property="numGridPoints_slider" destination="ncI-bY-CXq" id="xbd-lJ-MXe"/>
                         <outlet property="sceneView" destination="B50-O0-fH0" id="rXR-6U-xt3"/>

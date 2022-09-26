@@ -23,8 +23,8 @@ class MenuViewModel {
             description: "メッシュを非表示する"
         ),
         MenuItem (
-            title: "点群の非表示",
-            description: "点群を非表示する"
+            title: "点群の表示",
+            description: "点群を表示する"
         ),
         MenuItem (
             title: "原点の更新",
@@ -33,6 +33,10 @@ class MenuViewModel {
         MenuItem (
             title: "マッピングの支援の停止",
             description: "マッピングの可視化を停止するか"
+        ),
+        MenuItem (
+            title: "メッシュの表示",
+            description: "マッピング中にメッシュを表示するか"
         ),
     ]
     

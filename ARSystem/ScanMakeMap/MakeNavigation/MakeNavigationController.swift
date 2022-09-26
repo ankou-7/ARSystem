@@ -31,6 +31,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     let scene = SCNScene()
     var configuration = ARWorldTrackingConfiguration()
     
+    @IBOutlet weak var modelView: SCNView!
+    
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
     var pointCloud_flag = false
@@ -88,13 +90,17 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     var remap_flag = false
     var remapAnchors = [ARMeshAnchor]()
     
+    var mapping_mesh_flag = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         sceneView.delegate = self //delegateのセット
         sceneView.session.delegate = self
-        //sceneView.scene = scene
+        sceneView.scene = scene
         sceneView.debugOptions = .showWorldOrigin
+        
+        modelView.scene = scene
         
 //        //realm初期化
 //        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -136,7 +142,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.depth_pointCloudRenderer = depth_Renderer(
             session: self.sceneView.session,
             metalDevice: self.sceneView.device!,
-            sceneView: self.sceneView)
+            sceneView: self.sceneView,
+            modelView: self.modelView)
         self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
         //点群
@@ -146,6 +153,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
 //            sceneView: self.sceneView)
 //        self.pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
 //        self.pointCloudRenderer.numGridPoints = self.numGridPoints
+        
+//        self.pointCloudRenderer = Renderer(
+//            session: self.sceneView.session,
+//            metalDevice: self.sceneView.device!,
+//            sceneView: self.modelView)
+//        self.pointCloudRenderer.drawRectResized(size: self.modelView.bounds.size)
+//        self.pointCloudRenderer.numGridPoints = self.numGridPoints
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -154,6 +169,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
         // Pause the view's session
         sceneView.session.pause()
     }
@@ -223,11 +239,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     }
                     
                     //点群の表示
-                    //                if self.menu_array[2] == false {
-                    //                    self.exit_point_num = 1
-                    //                    self.pointCloud_flag = true
-                    //                }
-                    
+                    if self.menu_array[2] == true {
+                        self.exit_point_num = 1
+                        self.pointCloud_flag = true
+                    }
                     
                     
                     guard let frame = self.sceneView.session.currentFrame else {
@@ -247,6 +262,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
                             self.configuration.sceneReconstruction = .meshWithClassification
                         }
+                    }
+                    
+                    if self.menu_array[5] == true {
+                        self.mapping_mesh_flag = true
                     }
                     
                     //self.configuration.environmentTexturing = .automatic
@@ -754,18 +773,20 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         if parameta_flag == true {
             self.depth_pointCloudRenderer.draw100() //深度情報
-            
+
             if mappingSupportFlag == false {
                 self.depth_pointCloudRenderer.mapping100() //マッピング支援
-                
+
                 if remap_flag {
                     depth_pointCloudRenderer.meshAnchors = remapAnchors
                 }
             }
             
-            if pointCloud_flag == true {
-                //pointCloudRenderer.draw() //点群
-            }
+//            if pointCloud_flag == true {
+//                //pointCloudRenderer.draw() //点群
+//                self.depth_pointCloudRenderer.draw()
+//                //self.depth_pointCloudRenderer.point_draw()
+//            }
         }
         
     }
@@ -783,7 +804,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     knownAnchors[anchor.identifier] = node
                     node.name = "mesh"
                     meshAnchors_array.append(node.name!)
-                    //sceneView.scene.rootNode.addChildNode(node)
+                    
+                    if mapping_mesh_flag == true {
+                        print("メッシュ追加")
+                        sceneView.scene.rootNode.addChildNode(node)
+                    }
+                    
+                    //modelView.scene?.rootNode.addChildNode(node)
                 }
             }
         }
@@ -878,13 +905,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBAction func back(_ sender: Any) {
         timer.invalidate()
         
-        let transition = CATransition()
-        transition.duration = 0.25
-        transition.type = CATransitionType.push
-        transition.subtype = CATransitionSubtype.fromLeft
-        view.window!.layer.add(transition, forKey: kCATransition)
+//        let transition = CATransition()
+//        transition.duration = 0.25
+//        transition.type = CATransitionType.push
+//        transition.subtype = CATransitionSubtype.fromLeft
+//        view.window!.layer.add(transition, forKey: kCATransition)
         
-        self.dismiss(animated: false, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
 }
