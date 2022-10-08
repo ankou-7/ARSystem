@@ -111,6 +111,18 @@ class GPUCalculateTexture {
                 print("Error: \(error)")
             }
             
+//            var posiString = ""
+//            for json in results[section_num].cells[cell_num].models[ModelManagement.modelID].json {
+//                let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
+//                posiString += "\(json_data!.cameraPosition.x) \(json_data!.cameraPosition.y) \(json_data!.cameraPosition.z)\n"
+//            }
+//            let posiPath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/position.txt")
+//            do {
+//                try posiString.write(to: posiPath, atomically: false, encoding: .utf8)
+//            } catch {
+//                print("Error: \(error)")
+//            }
+            
         }
     }
     

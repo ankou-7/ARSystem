@@ -6,7 +6,11 @@
       "location" : "https://github.com/stasel/WebRTC",
       "state" : {
         "branch" : "latest",
+<<<<<<< HEAD
         "revision" : "0f5f7b40b7fa53ad46ccece1665dbca3897df766"
+=======
+        "revision" : "828bcf3bec1ef3fbbab57a5cbe2bad8c3a7580fa"
+>>>>>>> 29a089c2196ebd497fdc1deef77a2e44abf45df1
       }
     }
   ],
