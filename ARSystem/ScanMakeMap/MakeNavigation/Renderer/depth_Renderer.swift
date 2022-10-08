@@ -35,11 +35,16 @@ final class depth_Renderer {
     private let commandQueue2: MTLCommandQueue
     private lazy var unprojectPipelineState = makeUnprojectionPipelineState()!
     
+    private lazy var particlePipelineState = makeParticlePipelineState()!
     private lazy var depthPipelineState = makeDepthPipelineState()!
     private lazy var meshPipelineState = makeMeshPipelineState()!
     private lazy var meshPipelineState2 = makeMeshPipelineState2()!
     private var meshPipeline: MTLComputePipelineState!
     private var meshPipeline2: MTLComputePipelineState!
+    
+    private let modelView: SCNView
+    private let modellibrary: MTLLibrary
+    private let modelcommandQueue: MTLCommandQueue
 
     private lazy var textureCache = makeTextureCache()
     private var capturedImageTextureY: CVMetalTexture?
@@ -66,7 +71,8 @@ final class depth_Renderer {
 //    }()
 //    private var rgbUniformsBuffers = [MetalBuffer<RGBUniforms>]()
 
-    private lazy var pointCloudUniforms: PointCloudUniforms = {
+    //深度情報の点群格納用
+    private lazy var depthpointCloudUniforms: PointCloudUniforms = {
         var uniforms = PointCloudUniforms()
         uniforms.maxPoints = Int32(maxPoints)
         uniforms.confidenceThreshold = Int32(confidenceThreshold)
@@ -74,14 +80,26 @@ final class depth_Renderer {
         uniforms.cameraResolution = cameraResolution
         return uniforms
     }()
-    private var PointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
+    private var depthPointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
+    private var particlesDepthBuffer: MetalBuffer<DepthUniforms>
+    private var currentdepthPointIndex = 0
+    private var currentdepthPointCount = 0
 
-    // Particles buffer
+    //点群用
+    var point_maxPoints = 250000 //10_000_000
+    private lazy var pointCloudUniforms: PointCloudUniforms = {
+        var uniforms = PointCloudUniforms()
+        uniforms.maxPoints = Int32(point_maxPoints)
+        uniforms.confidenceThreshold = Int32(confidenceThreshold)
+        uniforms.particleSize = particleSize
+        uniforms.cameraResolution = cameraResolution
+        return uniforms
+    }()
+    private var PointCloudUniformsBuffers = [MetalBuffer<PointCloudUniforms>]()
     private var particlesBuffer: MetalBuffer<ParticleUniforms>
     private var currentPointIndex = 0
     private var currentPointCount = 0
     
-    private var particlesDepthBuffer: MetalBuffer<DepthUniforms>
     
     private var MeshBuffer: MetalBuffer<MeshUniforms>
     var MeshBuffers: [MetalBuffer<MeshUniforms>] = []
@@ -118,7 +136,7 @@ final class depth_Renderer {
     private let screenWidth: Int
     private let screenHeight: Int
 
-    init(session: ARSession, metalDevice device: MTLDevice, sceneView: ARSCNView) {
+    init(session: ARSession, metalDevice device: MTLDevice, sceneView: ARSCNView, modelView: SCNView) {
         print("point cloud Renderer initializing")
 
         self.session = session
@@ -130,16 +148,21 @@ final class depth_Renderer {
         commandQueue2 = device.makeCommandQueue()! //computeCommand用
         commandQueue = sceneView.commandQueue! //sceneView用
         
+        self.modelView = modelView
+        modellibrary = modelView.device!.makeDefaultLibrary()!
+        modelcommandQueue = modelView.device!.makeCommandQueue()!
+        
         self.screenWidth = Int(sceneView.bounds.width)
         self.screenHeight = Int(sceneView.bounds.height)
 
         // initialize our buffers
         for _ in 0 ..< maxInFlightBuffers {
 //            rgbUniformsBuffers.append(.init(device: device, count: 1, index: 0))
+            depthPointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
             PointCloudUniformsBuffers.append(.init(device: device, count: 1, index: kPointCloudUniforms.rawValue))
             AnchorUniformasBuffers.append(.init(device: device, count: 1, index: 6))
         }
-        particlesBuffer = .init(device: device, count: Int(maxPoints), index: kParticleUniforms.rawValue)
+        particlesBuffer = .init(device: device, count: Int(point_maxPoints), index: kParticleUniforms.rawValue)
         particlesDepthBuffer = .init(device: device, count: Int(maxPoints), index: kParticleUniforms.rawValue)
         MeshBuffer = .init(device: device, count: 999_999, index: 5)
         
@@ -204,16 +227,21 @@ final class depth_Renderer {
         let viewMatrixInversed = viewMatrix.inverse
         let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: viewportSize, zNear: 0.001, zFar: 0)
 
+        depthpointCloudUniforms.viewProjectionMatrix = projectionMatrix * viewMatrix
+        depthpointCloudUniforms.localToWorld = viewMatrixInversed * rotateToARCamera
+        depthpointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
+        
         pointCloudUniforms.viewProjectionMatrix = projectionMatrix * viewMatrix
         pointCloudUniforms.localToWorld = viewMatrixInversed * rotateToARCamera
         pointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
     }
     
     //MARK: -計算
-    func draw100() {
+    func draw100(){
         guard let currentFrame = session.currentFrame,
               let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = sceneView.currentRenderCommandEncoder else {
+              let renderEncoder = sceneView.currentRenderCommandEncoder
+        else {
                 return
         }
 
@@ -230,7 +258,7 @@ final class depth_Renderer {
 
         // handle buffer rotating
         currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
-        PointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
+        depthPointCloudUniformsBuffers[currentBufferIndex][0] = depthpointCloudUniforms
 
         if updateDepthTextures(frame: currentFrame) {
             accumulateDepthPoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
@@ -241,7 +269,7 @@ final class depth_Renderer {
     
     func accumulateDepthPoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
 
-        pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
+        depthpointCloudUniforms.pointCloudCurrentIndex = Int32(currentdepthPointIndex)
 
         var retainingTextures = [depthTexture, confidenceTexture]
         commandBuffer.addCompletedHandler { buffer in
@@ -250,21 +278,21 @@ final class depth_Renderer {
 
         renderEncoder.setDepthStencilState(relaxedStencilState)
         renderEncoder.setRenderPipelineState(depthPipelineState)
-        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
+        renderEncoder.setVertexBuffer(depthPointCloudUniformsBuffers[currentBufferIndex])
         renderEncoder.setVertexBuffer(particlesDepthBuffer)
         renderEncoder.setVertexBuffer(gridPointsBuffer)
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
         renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
 
-        currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % Int(maxPoints)
-        currentPointCount = min(currentPointCount + gridPointsBuffer.count, Int(maxPoints))
+        currentdepthPointIndex = (currentdepthPointIndex + gridPointsBuffer.count) % Int(maxPoints)
+        currentdepthPointCount = min(currentdepthPointCount + gridPointsBuffer.count, Int(maxPoints))
 
         lastCameraTransform = frame.camera.transform
     }
     
     //depthデータ取得用
-    func depthData() -> Data {
+    func depthData() -> (Data, Bool) {
 //        print(particlesDepthBuffer.count)
         //print(particlesDepthBuffer[100])
 //        print(particlesDepthBuffer[100].confidence)
@@ -273,10 +301,15 @@ final class depth_Renderer {
 //        }
         
         var depth_array: [depthPosition] = []
-        for i in 0..<currentPointCount {
+        for i in 0..<currentdepthPointCount {
             let point = particlesDepthBuffer[i]
             //depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
             depth_array.append(depthPosition(x: point.position.x, y: point.position.y, z: point.position.z))
+        }
+        //print(depth_array.count)
+        var result = false
+        if depth_array.count > 0 {
+            result = true
         }
 
         let depthData = try! JSONEncoder().encode(depth_array)
@@ -288,8 +321,105 @@ final class depth_Renderer {
 //        }
 //        let depthData = Data(bytes: depth_array, count: MemoryLayout<SCNVector3>.size * depth_array.count)
         
-        return depthData
+        return (depthData, result)
     }
+    
+    //MARK: - 点群用
+    func draw() {
+        //print("draw")
+        guard let currentFrame = session.currentFrame,
+            let commandBuffer = commandQueue.makeCommandBuffer(),
+            let renderEncoder = sceneView.currentRenderCommandEncoder else {
+                return
+        }
+        
+        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        commandBuffer.addCompletedHandler { [weak self] commandBuffer in
+            if let self = self {
+                self.inFlightSemaphore.signal()
+            }
+        }
+        
+        // update frame data
+        update(frame: currentFrame)
+        updateCapturedImageTextures(frame: currentFrame)
+        
+        // handle buffer rotating
+        currentBufferIndex = (currentBufferIndex + 1) % maxInFlightBuffers
+        PointCloudUniformsBuffers[currentBufferIndex][0] = pointCloudUniforms
+        
+        if updateDepthTextures(frame: currentFrame) {
+            accumulatePoints(frame: currentFrame, commandBuffer: commandBuffer, renderEncoder: renderEncoder)
+        }
+       
+        //取得した特徴点（色付き）の表示
+//        renderEncoder.setDepthStencilState(depthStencilState)
+//        renderEncoder.setRenderPipelineState(particlePipelineState)
+//        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
+//        renderEncoder.setVertexBuffer(particlesBuffer)
+//        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
+//        if particlesBuffer.count > 12 {
+//            for i in 0...10 {
+//                print(particlesBuffer[i])
+//            }
+//        }
+        
+        commandBuffer.commit()
+    }
+    
+    func point_draw() {
+        guard let modelcommandBuffer = modelcommandQueue.makeCommandBuffer(),
+              let renderCommandEncoder = modelView.currentRenderCommandEncoder
+        else {
+            return
+        }
+        
+        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        modelcommandBuffer.addCompletedHandler { [weak self] commandBuffer in
+            if let self = self {
+                self.inFlightSemaphore.signal()
+            }
+        }
+        
+        renderCommandEncoder.setRenderPipelineState(particlePipelineState)
+        renderCommandEncoder.setVertexBuffer(particlesBuffer)
+        renderCommandEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
+        
+        modelcommandBuffer.commit()
+    }
+    
+    private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
+      
+        pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
+        
+        var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
+        commandBuffer.addCompletedHandler { buffer in
+            retainingTextures.removeAll()
+        }
+        
+        renderEncoder.setDepthStencilState(relaxedStencilState)
+        renderEncoder.setRenderPipelineState(unprojectPipelineState)
+        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
+        renderEncoder.setVertexBuffer(particlesBuffer)
+        renderEncoder.setVertexBuffer(gridPointsBuffer)
+        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
+        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
+        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
+        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
+        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
+        
+        currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % point_maxPoints
+        currentPointCount = min(currentPointCount + gridPointsBuffer.count, point_maxPoints)
+      
+        lastCameraTransform = frame.camera.transform
+    }
+    
+    
+    //modelViewへの描画
+    
+    
+    
+    //MARK: -
     
     func depth_point() -> [SCNVector3] {
         var depth_array: [SCNVector3] = []
@@ -541,6 +671,8 @@ final class depth_Renderer {
         //print("Rendering : \(meshAnchors.count)")
         
         //print("imgPlaceMatrix : \(imgPlaceMatrix.count)")
+        
+        //メッシュの該当部分のピクセルを削除
         if imgPlaceMatrix.count > 0 {
             let calcuUniformsBuffer = device.makeBuffer(bytes: imgPlaceMatrix, length: MemoryLayout<float4x4>.stride * imgPlaceMatrix.count, options: [])
             renderEncoder.setVertexBuffer(calcuUniformsBuffer, offset: 0, index: 4)
@@ -568,7 +700,7 @@ final class depth_Renderer {
             
         }
         
-        
+        //赤いエフェクト表示
         renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(meshPipelineState10)
         let size = vertexData.count * MemoryLayout<Float>.size
@@ -599,6 +731,39 @@ private extension depth_Renderer {
         descriptor.colorAttachments[0].pixelFormat = sceneView.colorPixelFormat
 
         return try? device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
+    func makeParticlePipelineState() -> MTLRenderPipelineState? {
+//        guard let vertexFunction = library.makeFunction(name: "particleVertex"),
+//            let fragmentFunction = library.makeFunction(name: "particleFragment") else {
+//                return nil
+//        }
+//
+//        let descriptor = MTLRenderPipelineDescriptor()
+//        descriptor.vertexFunction = vertexFunction
+//        descriptor.fragmentFunction = fragmentFunction
+//        //descriptor.depthAttachmentPixelFormat = renderDestination.depthStencilPixelFormat
+//        //descriptor.colorAttachments[0].pixelFormat = renderDestination.colorPixelFormat
+//        descriptor.depthAttachmentPixelFormat = sceneView.depthPixelFormat
+//        descriptor.colorAttachments[0].pixelFormat = sceneView.colorPixelFormat
+//        descriptor.colorAttachments[0].isBlendingEnabled = true
+//        descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+//        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+//        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+//
+//        return try? device.makeRenderPipelineState(descriptor: descriptor)
+        
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = modellibrary.makeFunction(name: "particleVertex2")
+        descriptor.fragmentFunction = modellibrary.makeFunction(name: "particleFragment2")
+        descriptor.depthAttachmentPixelFormat = modelView.depthPixelFormat
+        descriptor.colorAttachments[0].pixelFormat = modelView.colorPixelFormat
+        descriptor.colorAttachments[0].isBlendingEnabled = true
+        descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        
+        return try? modelView.device!.makeRenderPipelineState(descriptor: descriptor)
     }
     
     func makeDepthPipelineState() -> MTLRenderPipelineState? {

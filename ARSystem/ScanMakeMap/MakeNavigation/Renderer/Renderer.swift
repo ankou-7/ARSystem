@@ -280,6 +280,7 @@ final class Renderer {
     }
     
     func draw() {
+        print("draw")
         guard let currentFrame = session.currentFrame,
             let commandBuffer = commandQueue.makeCommandBuffer(),
             let renderEncoder = sceneView.currentRenderCommandEncoder else {

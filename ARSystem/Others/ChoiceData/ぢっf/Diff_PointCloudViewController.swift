@@ -114,11 +114,11 @@ class Diff_PointCloudViewController: UIViewController, ARSCNViewDelegate, UIPopo
         //let imageHeight = 3765
         
         //選択した特徴点マッチングのための画像表示
-        imageview1.image = UIImage(data: results[section_num].cells[cell_num].models[model_name1_num].pic[picture1_num].pic_data!)
-        imageview2.image = UIImage(data: results[section_num].cells[cell_num].models[model_name2_num].pic[picture2_num].pic_data!)
-        
-        json_data1 = try? decoder.decode(json_pointcloudUniforms.self, from:results[section_num].cells[cell_num].models[model_name1_num].json[picture1_num].json_data!)
-        json_data2 = try? decoder.decode(json_pointcloudUniforms.self, from: results[section_num].cells[cell_num].models[model_name2_num].json[picture2_num].json_data!)
+//        imageview1.image = UIImage(data: results[section_num].cells[cell_num].models[model_name1_num].pic[picture1_num].pic_data!)
+//        imageview2.image = UIImage(data: results[section_num].cells[cell_num].models[model_name2_num].pic[picture2_num].pic_data!)
+//
+//        json_data1 = try? decoder.decode(json_pointcloudUniforms.self, from:results[section_num].cells[cell_num].models[model_name1_num].json[picture1_num].json_data!)
+//        json_data2 = try? decoder.decode(json_pointcloudUniforms.self, from: results[section_num].cells[cell_num].models[model_name2_num].json[picture2_num].json_data!)
         
         point3_button.isHidden = true
         
@@ -151,83 +151,83 @@ class Diff_PointCloudViewController: UIViewController, ARSCNViewDelegate, UIPopo
     }
     
     @IBAction func tap_use_depth(_ sender: UIButton) {
-        let start1 = Date()
-        let start_all = Date()
-        
-        imageview1.isHidden = true
-        imageview2.isHidden = true
-
-        let image1 = UIImage(data: results[section_num].cells[cell_num].models[model_name1_num].pic[picture1_num].pic_data!)
-        let image2 = UIImage(data: results[section_num].cells[cell_num].models[model_name2_num].pic[picture2_num].pic_data!)
-
-        //特徴点マッチングによる対応点探索
-        openCV.detectPoints(image1, image2)
-        imageview3.image = openCV.image()
-
-        pointsArray = openCV.pointsArray() as? Array<CGPoint>
-        pointsArray2 = openCV.pointsArray2() as? Array<CGPoint>
-        print(pointsArray!)
-        print(pointsArray2!)
-
-        print("特徴マッチング完了")
-        
-        matrix_1 = depth_make_3d_points(json: json_data1!, depthArray: depth_data1, pointsArray: pointsArray, f_b: 0)
-        matrix_2 = depth_make_3d_points(json: json_data2!, depthArray: depth_data2, pointsArray: pointsArray2, f_b: 1)
-        
-        let (R_matrix, t_matrix) = ICPMatching(matrix_1: matrix_2, matrix_2: matrix_1)
-        let matrix_3 = Matft.matmul(R_matrix, matrix_1.transpose()).transpose() + t_matrix.transpose()
-        make_3d_nodes3(matrix: matrix_3, f_b: 2)
-        
-        let elapsed1 = Date().timeIntervalSince(start1)
-        print("画像での位置合わせの実行時間：\(elapsed1)")
-
-        regist_points = regist(points: points1, R_matrix: R_matrix, t_matrix: t_matrix)
-        make_matlab_points(points: regist_points, name: "depth_points3")
-        DispatchQueue.main.async {
-            self.point3_button.isHidden = false
-        }
-        
-//        //差分化処理
-//        let start2 = Date()
-//        let (x_min, x_max, y_min, y_max, z_min, z_max) = xyz_min_max(points: regist_points)
+//        let start1 = Date()
+//        let start_all = Date()
 //
-//        let new_points2 = remove_points(x_min: x_min, x_max: x_max, y_min: y_min, y_max: y_max, z_min: z_min, z_max: z_max, points: points2)
+//        imageview1.isHidden = true
+//        imageview2.isHidden = true
 //
-//        diff_voxcel_grid(x_min: x_min, x_max: x_max, y_min: y_min, y_max: y_max, z_min: z_min, z_max: z_max, points1: regist_points, points2: new_points2)
+//        let image1 = UIImage(data: results[section_num].cells[cell_num].models[model_name1_num].pic[picture1_num].pic_data!)
+//        let image2 = UIImage(data: results[section_num].cells[cell_num].models[model_name2_num].pic[picture2_num].pic_data!)
 //
-//        let elapsed2 = Date().timeIntervalSince(start2)
-//        print("差分化処理の実行時間：\(elapsed2)")
-        
-        let elapsed_all = Date().timeIntervalSince(start_all)
-        print("全体の実行時間：\(elapsed_all)")
+//        //特徴点マッチングによる対応点探索
+//        openCV.detectPoints(image1, image2)
+//        imageview3.image = openCV.image()
+//
+//        pointsArray = openCV.pointsArray() as? Array<CGPoint>
+//        pointsArray2 = openCV.pointsArray2() as? Array<CGPoint>
+//        print(pointsArray!)
+//        print(pointsArray2!)
+//
+//        print("特徴マッチング完了")
+//
+//        matrix_1 = depth_make_3d_points(json: json_data1!, depthArray: depth_data1, pointsArray: pointsArray, f_b: 0)
+//        matrix_2 = depth_make_3d_points(json: json_data2!, depthArray: depth_data2, pointsArray: pointsArray2, f_b: 1)
+//
+//        let (R_matrix, t_matrix) = ICPMatching(matrix_1: matrix_2, matrix_2: matrix_1)
+//        let matrix_3 = Matft.matmul(R_matrix, matrix_1.transpose()).transpose() + t_matrix.transpose()
+//        make_3d_nodes3(matrix: matrix_3, f_b: 2)
+//
+//        let elapsed1 = Date().timeIntervalSince(start1)
+//        print("画像での位置合わせの実行時間：\(elapsed1)")
+//
+//        regist_points = regist(points: points1, R_matrix: R_matrix, t_matrix: t_matrix)
+//        make_matlab_points(points: regist_points, name: "depth_points3")
+//        DispatchQueue.main.async {
+//            self.point3_button.isHidden = false
+//        }
+//
+////        //差分化処理
+////        let start2 = Date()
+////        let (x_min, x_max, y_min, y_max, z_min, z_max) = xyz_min_max(points: regist_points)
+////
+////        let new_points2 = remove_points(x_min: x_min, x_max: x_max, y_min: y_min, y_max: y_max, z_min: z_min, z_max: z_max, points: points2)
+////
+////        diff_voxcel_grid(x_min: x_min, x_max: x_max, y_min: y_min, y_max: y_max, z_min: z_min, z_max: z_max, points1: regist_points, points2: new_points2)
+////
+////        let elapsed2 = Date().timeIntervalSince(start2)
+////        print("差分化処理の実行時間：\(elapsed2)")
+//
+//        let elapsed_all = Date().timeIntervalSince(start_all)
+//        print("全体の実行時間：\(elapsed_all)")
     }
     
     @IBAction func start_button(_ sender: Any) {
-        if mode_number != 4 {
-            start = Date()
-            
-            imageview1.isHidden = true
-            imageview2.isHidden = true
-
-            let image1 = UIImage(data: results[section_num].cells[cell_num].models[model_name1_num].pic[picture1_num].pic_data!)
-            let image2 = UIImage(data: results[section_num].cells[cell_num].models[model_name2_num].pic[picture2_num].pic_data!)
-
-            //特徴点マッチングによる対応点探索
-            openCV.detectPoints(image1, image2)
-            imageview3.image = openCV.image()
-
-            pointsArray = openCV.pointsArray() as? Array<CGPoint>
-            pointsArray2 = openCV.pointsArray2() as? Array<CGPoint>
-            print(pointsArray!)
-            print(pointsArray2!)
-
-            print("特徴マッチング完了")
-
-            make_3dPoints(meshname: "\(model_name_1!).scn", json_data: json_data1!, pointsArray: pointsArray!, f_b: 0)
-        }
-        else {
-            play_mode(f_b: 100, mode_number: mode_number)
-        }
+//        if mode_number != 4 {
+//            start = Date()
+//
+//            imageview1.isHidden = true
+//            imageview2.isHidden = true
+//
+////            let image1 = UIImage(data: results[section_num].cells[cell_num].models[model_name1_num].pic[picture1_num].pic_data!)
+////            let image2 = UIImage(data: results[section_num].cells[cell_num].models[model_name2_num].pic[picture2_num].pic_data!)
+//
+//            //特徴点マッチングによる対応点探索
+//            openCV.detectPoints(image1, image2)
+//            imageview3.image = openCV.image()
+//
+//            pointsArray = openCV.pointsArray() as? Array<CGPoint>
+//            pointsArray2 = openCV.pointsArray2() as? Array<CGPoint>
+//            print(pointsArray!)
+//            print(pointsArray2!)
+//
+//            print("特徴マッチング完了")
+//
+//            make_3dPoints(meshname: "\(model_name_1!).scn", json_data: json_data1!, pointsArray: pointsArray!, f_b: 0)
+//        }
+//        else {
+//            play_mode(f_b: 100, mode_number: mode_number)
+//        }
     }
     
     @IBAction func Menu_button(_ sender: UIButton) {

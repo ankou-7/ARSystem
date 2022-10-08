@@ -10,16 +10,20 @@ import ARKit
 import RealmSwift
 
 class BuildTextureMeshNode: SCNNode {
-    private var result: List<anchor_data>
+    private var models: Navi_Modelname //List<anchor_data>
     private var texImage: UIImage
     
     let decoder = JSONDecoder()
     let tex_node = SCNNode()
     
-    init(result: List<anchor_data>, texImage: UIImage) {
-        self.result = result
+    private var url: URL!
+    
+    init(models: Navi_Modelname, texImage: UIImage) {
+        self.models = models
         self.texImage = texImage
         super.init()
+        
+        url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         
         buildTexMesh()
         tex_node.name = "meshNode"
@@ -27,18 +31,25 @@ class BuildTextureMeshNode: SCNNode {
     }
     
     func buildTexMesh() {
-        for i in 0..<result.count {
-            let vertexData = result[i].vertices!
-            let normalData = result[i].normals!
-            let count = result[i].vertice_count
+        
+        for i in 0..<models.meshNum {
+            let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords/texcoords\(i).data")
+            let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex/vertex\(i).data")
+            let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals/normals\(i).data")
+            let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces/faces\(i).data")
             
-            let faces = (try? decoder.decode([Int32].self, from: result[i].faces))!
-            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: result[i].texcoords))!
+            let vertexData = try! Data(contentsOf: vertexPath) //result[i].vertices!
+            let normalData = try! Data(contentsOf: normalsPath) //result[i].normals!
+            
+            let faces = (try? decoder.decode([Int32].self, from: try! Data(contentsOf: facesPath)))!
+            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: try! Data(contentsOf: texcoordsPath)))!
+            
+            let count = faces.count
             
 //            print("vertexData\(i) : \(vertexData)")
 //            print("normalData\(i) : \(normalData)")
-//            print("faceData\(i) : \(result[i].faces!)")
-//            print("texData\(i) : \(result[i].texcoords!)")
+//            print("faceData\(i) : \(faces)")
+//            print("texData\(i) : \(texcoords)")
             
             let verticeSource = SCNGeometrySource(
                 data: vertexData,

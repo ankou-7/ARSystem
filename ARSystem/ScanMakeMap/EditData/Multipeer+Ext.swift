@@ -55,28 +55,28 @@ extension EditDataController {
     
     func send_meshData() {
         print("送信")
-        guard let startData = try? NSKeyedArchiver.archivedData(withRootObject: "メッシュ送信開始:\(anchors.count)" as NSString, requiringSecureCoding: true)
-        else { return }
-        try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-        
-        //テクスチャData
-        try? self.session.send(results[section_num].cells[cell_num].models[current_model_num].texture_pic!, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-        //メッシュData
-        for i in 0..<anchors.count {
-            let vertexData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices!
-            let normalData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals!
-            let count = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count
-            let facesData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces!
-            let texcoordsData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords!
-            
-            guard let countData = try? NSKeyedArchiver.archivedData(withRootObject: "\(count)" as NSString, requiringSecureCoding: true)
-            else { return }
-            try? self.session.send(countData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-            try? self.session.send(vertexData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
-            try? self.session.send(normalData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
-            try? self.session.send(facesData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
-            try? self.session.send(texcoordsData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
-        }
+//        guard let startData = try? NSKeyedArchiver.archivedData(withRootObject: "メッシュ送信開始:\(anchors.count)" as NSString, requiringSecureCoding: true)
+//        else { return }
+//        try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+//
+//        //テクスチャData
+//        try? self.session.send(results[section_num].cells[cell_num].models[current_model_num].texture_pic!, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+//        //メッシュData
+//        for i in 0..<anchors.count {
+//            let vertexData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertices!
+//            let normalData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].normals!
+//            let count = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].vertice_count
+//            let facesData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].faces!
+//            let texcoordsData = results[section_num].cells[cell_num].models[current_model_num].mesh_anchor[i].texcoords!
+//
+//            guard let countData = try? NSKeyedArchiver.archivedData(withRootObject: "\(count)" as NSString, requiringSecureCoding: true)
+//            else { return }
+//            try? self.session.send(countData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+//            try? self.session.send(vertexData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
+//            try? self.session.send(normalData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
+//            try? self.session.send(facesData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
+//            try? self.session.send(texcoordsData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable) //
+//        }
     }
     
     func send_worldmapData() {
@@ -85,10 +85,14 @@ extension EditDataController {
         try? self.session.send(startData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
         
         //スキャンのヒントになる画像
-        try? self.session.send(results[section_num].cells[cell_num].models[current_model_num].worldimage!, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
+        let worldImagePath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/worldImage.jpg")
+        let worldImageData = try! Data(contentsOf: worldImagePath)
+        try? self.session.send(worldImageData, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
         
         //worldmap
-        try? self.session.send(results[self.section_num].cells[self.cell_num].models[self.current_model_num].worlddata! as Data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
+        let worldMapPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/worldMap.data")
+        let worldMapData = try! Data(contentsOf: worldMapPath)
+        try? self.session.send(worldMapData as Data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
     }
     
     func send_ObjectData(state: String, name: String, name_identify: String, type: String, info_data: Data) {

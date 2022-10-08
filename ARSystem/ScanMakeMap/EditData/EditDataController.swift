@@ -11,8 +11,8 @@ import ARKit
 import RealmSwift
 import MultipeerConnectivity
 import SVProgressHUD
-import Firebase
-import ZipArchive
+import FirebaseFirestore
+import SSZipArchive
 
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
 
@@ -22,12 +22,14 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var cell_num: Int!
     var models: Navi_Modelname!
     
+    @IBOutlet weak var parametaCount_label: UILabel!
+    
     var Ex_section_num: Int?
     var Ex_cell_num: Int?
     @IBOutlet weak var ExChangeButton: UIButton!
     var cameraNode = SCNNode()
     
-    let num: CGFloat = 5.0 //画像のサイズの縮尺率
+    let num: CGFloat = 2.0 //画像のサイズの縮尺率 //266枚
     var current_model_num = 0 //現在表示しているモデルの番号を格納
     var database_model_num = 1 //読み込んだcellの中に格納されているモデル数
 
@@ -40,6 +42,11 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     var picCount: Int!
     var yoko: Float!
     var tate: Float!
+    
+    var url: URL! = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+    
+    var imageWidth: CGFloat!
+    var imageHeight: CGFloat!
     
     var anchors: [ARMeshAnchor] = []
     
@@ -91,14 +98,16 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         models = results[section_num].cells[cell_num].models[current_model_num]
         database_model_num = results[section_num].cells[cell_num].models.count
         
-        print(results[section_num].cells[cell_num].models)
+        print(models)
+        print(models.dayString)
         
+        parametaCount_label.text = "パラメータ数：\(models.parametaNum)個"
+         
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Loading･･･")
         
         sceneView.delegate = self
         sceneView.scene = scene
-        //sceneView.allowsCameraControl = true
         sceneView.scene?.rootNode.addChildNode(LightNode())
         cameraNode = CameraNode()
         sceneView.scene?.rootNode.addChildNode(cameraNode)
@@ -109,11 +118,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             modelname_label.isHidden = true
         }
         
-        picCount = models.pic.count
-        yoko = 17.0
-        tate = ceil(Float(picCount)/yoko)
-        
-        //pinch gesuture
+        //pinch gesutureの設定
         let pinch = UIPinchGestureRecognizer(
             target: self,
             action: #selector(type(of: self).scenePinchGesture(_:))
@@ -132,11 +137,6 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         
         self.colabStopButton.isHidden = true
         self.makeArrowButton.isHidden = true
-        
-        print(results[section_num].cells[cell_num].models.count)
-        if results[section_num].cells[cell_num].models.count < 2 {
-            self.ExChangeButton.isHidden = true
-        }
         
         //通信用設定
         self.peerID = MCPeerID(displayName: UIDevice.current.name)
@@ -163,28 +163,15 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-        for i in 0..<picCount {
-            let uiimage = UIImage(data: models.pic[i].pic_data!)
-            uiimage_array.append(uiimage!)
-        }
-        //16384以下にする必要あり
-        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_pic = imageData
-        }
+//        let realm = try! Realm()
+//        try! realm.write {
+//            models.texture_bool = 0
+//        }
+        //print(models)
+        //print(models.mesh_anchor.count)
         
-        for i in 0..<models.mesh_anchor.count {
-            let mesh_data = models.mesh_anchor[i].mesh
-            //print("meshData\(i) : \(mesh_data)")
-            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                anchors.append(meshAnchor)
-            }
-        }
-        
-        print(try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: models.mesh_anchor[0].mesh!)!)
+        //モデルを表示
+        buildSetup()
         
         //firestoreを監視
 //        let dataStore = Firestore.firestore()
@@ -205,261 +192,101 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //                    }
 //                }
 //            }
-
+    }
+    
+    func buildSetup() {
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
-            if models.texture_bool == 0 {
-                let meshNode = BuildMeshNode(anchors: anchors)
-                meshNode.name = "meshNode"
-                sceneView.scene?.rootNode.addChildNode(meshNode)
-                SVProgressHUD.dismiss()
-            } else if models.texture_bool != 0 {
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
-                sceneView.scene?.rootNode.addChildNode(texmeshNode)
-                SVProgressHUD.dismiss()
-            }
-        })
-    }
-    
-    @IBAction func TapedSaveButton(_ sender: UIButton) {
-        sceneView.scene?.rootNode.childNode(withName: "meshNode", recursively: false)?.removeFromParentNode()
-        DispatchQueue.main.async {
-            SVProgressHUD.show()
-            self.savePicDocument()
-            //self.saveWorldDataDocument()
-            self.saveDocument()
+        picCount = models.parametaNum //pic.count
+        //print(models.pic)
+        print("パラメータ数：\(picCount!)")
+        
+        let picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic/pic0.jpg")
+        let width = (UIImage(data: try! Data(contentsOf: picPath))?.size.width)! / num
+        print(width)
+        
+        
+        yoko = Float(floor(16384.0 / width)) //17.0
+        tate = ceil(Float(picCount)/yoko)
+        print(tate!, yoko!)
+        
+        uiimage_array = []
+        for i in 0..<picCount {
+            let per_picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic/pic\(i).jpg")
+            let uiimage = UIImage(data: try! Data(contentsOf: per_picPath))
+            uiimage_array.append(uiimage!)
         }
-    }
-    
-    @IBAction func ReadAndBuild(_ sender: UIButton) {
-        SVProgressHUD.show()
-        zipReadFireStore() { [self] in
-            print("build処理開始")
-            buildNode()
+        
+        
+        let texpicPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/texpic.jpg")
+        if models.texBool == false {
+            //16384以下にする必要あり
+            imageWidth = UIImage(data: try! Data(contentsOf: picPath))!.size.width
+            imageHeight = UIImage(data: try! Data(contentsOf: picPath))!.size.height
+            print(imageWidth!, imageHeight!)
+            
+            
+            new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+            imageView.image = new_uiimage
+            
+            print(new_uiimage.size)
+            let uiImage = new_uiimage
+            let imageData = uiImage!.jpegData(compressionQuality: 0.5)
+            let realm = try! Realm()
+//            try! realm.write {
+//                models.texture_pic = imageData
+//            }
+            
+            do {
+                try imageData!.write(to: texpicPath)
+                try! realm.write {
+                    models.texBool = true
+                }
+                print("テクスチャデータ保存成功")
+            } catch {
+                print("テクスチャデータ保存失敗", error)
+            }
+        } else {
+            new_uiimage = UIImage(data: try! Data(contentsOf: texpicPath))
+            imageView.image = new_uiimage
+        }
+            
+        anchors = []
+        for i in 0..<models.meshNum { //mesh_anchor.count {
+            //let mesh_data = models.mesh_anchor[i].mesh
+            
+            let per_meshPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/mesh/mesh\(i).data")
+            let mesh_data = try! Data(contentsOf: per_meshPath)
+            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data) {
+                anchors.append(meshAnchor)
+            }
+        }
+        
+        if models.texture_bool == 0 {
+            let meshNode = BuildMeshNode(anchors: anchors)
+            meshNode.name = "meshNode"
+            sceneView.scene?.rootNode.addChildNode(meshNode)
+            SVProgressHUD.dismiss()
+        } else if models.texture_bool != 0 {
+            texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
             sceneView.scene?.rootNode.addChildNode(texmeshNode)
             SVProgressHUD.dismiss()
         }
     }
     
-    func savePicDocument() {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            //フォルダ作成
-            let directory = url.appendingPathComponent("pic", isDirectory: true)
-            do {
-                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("失敗した")
-            }
-            
-            let archivePath = url.appendingPathComponent("pic/pic.zip")
-            let targetFilePaths = ["\(url.appendingPathComponent("pic/pic.data").path)"]
-            let data = [models.texture_pic]
-            if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
-                print("zip化失敗")
-            } else {
-                print("zip化成功")
-                let dataStore = Firestore.firestore()
-                dataStore.collection("\(section_num!)\(cell_num!)").document("pic").setData([
-                    "data": try! Data(contentsOf: archivePath)
-                ]) { err in
-                    if let err = err {
-                        print("Error writing document: \(err)")
-                    } else {
-                        //print("zipPicをFireStoreに書き込み完了")
-                    }
-                }
-            }
-        }
+    //クラウドへの保存
+    let dataStore = Firestore.firestore()
+    
+    @IBAction func taped_SavetoCloud(_ sender: UIButton) {
+//        //worldmap,worldimage,teximageの保存
+//        let fileName = ["worldMap", "worldImage", "texpic"]
+//        let texfileName = ["texcoords", "vertex", "normals", "faces"]
+//        save_mapData_to_Cloud(name: "worldMap")
+//        save_mapData_to_Cloud(name: "worldImage")
+//        save_mapData_to_Cloud(name: "texpic")
+//        //save_texData_to_Cloud(fileName: texfileName)
+        print("データのクラウド化完了")
     }
     
-    func saveWorldDataDocument() {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            //フォルダ作成
-            let directory = url.appendingPathComponent("world", isDirectory: true)
-            do {
-                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("失敗した")
-            }
-            
-            let archivePath = url.appendingPathComponent("world/world.zip")
-            let targetFilePaths = ["\(url.appendingPathComponent("world/world.data").path)"]
-            let data = [models.worlddata]
-            if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
-                print("zip化失敗")
-            } else {
-                print("zip化成功")
-                let dataStore = Firestore.firestore()
-                dataStore.collection("\(section_num!)\(cell_num!)").document("world").setData([
-                    "data": try! Data(contentsOf: archivePath)
-                ]) { err in
-                    if let err = err {
-                        print("Error writing document: \(err)")
-                    } else {
-                        //print("zipPicをFireStoreに書き込み完了")
-                    }
-                }
-            }
-        }
-    }
-    
-    func saveDocument() {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            for num in 0..<models.mesh_anchor.count {
-                //フォルダ作成
-                let directory = url.appendingPathComponent("\(num)", isDirectory: true)
-                do {
-                    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-                } catch {
-                    print("失敗した")
-                }
-                
-                let archivePath = url.appendingPathComponent("\(num)/mesh.zip")
-                let targetFilePaths = ["\(url.appendingPathComponent("\(num)/mesh.data").path)",
-                                       "\(url.appendingPathComponent("\(num)/texcoords.data").path)",
-                                       "\(url.appendingPathComponent("\(num)/vertices.data").path)",
-                                       "\(url.appendingPathComponent("\(num)/normals.data").path)",
-                                       "\(url.appendingPathComponent("\(num)/faces.data").path)"]
-                let data = [models.mesh_anchor[num].mesh, models.mesh_anchor[num].texcoords, models.mesh_anchor[num].vertices, models.mesh_anchor[num].normals, models.mesh_anchor[num].faces]
-                
-                if !toZips(data: data, archivePath: archivePath.path, targetFilePaths: targetFilePaths) {
-                    print("zip化失敗")
-                } else {
-                    //print("zip\(num) : 成功")
-                    zipSaveFireStore(num: num, archivePath: archivePath)
-                }
-            }
-        }
-    }
-    
-    func zipSaveFireStore(num: Int, archivePath: URL) {
-        let dataStore = Firestore.firestore()
-        dataStore.collection("\(section_num!)\(cell_num!)").document("data\(num)").setData([
-            "data": try! Data(contentsOf: archivePath)
-        ]) { err in
-            //DispatchQueue.main.async {
-                if let err = err {
-                    print("Error writing document: \(err)")
-                } else {
-                    //print("zipをFireStoreに書き込み完了")
-                    if num == self.models.mesh_anchor.count - 1 {
-                        SVProgressHUD.dismiss()
-                        print("書き込み終了")
-                    }
-                }
-            //}
-        }
-    }
-    
-    func zipReadFireStore(completionHandler: @escaping () -> ()) {
-        let dataStore = Firestore.firestore()
-        dataStore.collection("\(section_num!)\(cell_num!)").getDocuments() { (querySnapshot, err) in
-            if let err = err {
-                print("Error getting documents: \(err)")
-            } else {
-                for (i, document) in querySnapshot!.documents.enumerated() {
-                    //print(document)
-                    let data = document.data()["data"]! as! Data
-                    
-                    //保存
-                    guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                        fatalError("フォルダURL取得エラー")
-                    }
-                    let path_file_name = dirURL.appendingPathComponent( "zip\(i).zip" )
-                    let unzipURL = dirURL.appendingPathComponent("unzip\(i)")
-                    
-                    try? data.write(to: path_file_name)
-                    //解凍処理
-                    let unzip = SSZipArchive.unzipFile(atPath: path_file_name.path, toDestination: unzipURL.path)
-                    if unzip {
-                        //print("解凍成功")
-                    }
-                    
-                }
-                completionHandler()
-            }
-        }
-    }
-    
-    func buildNode() {
-        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("フォルダURL取得エラー")
-        }
-        
-        //let picURL = dirURL.appendingPathComponent("pic/pic.data")
-        //let pic = UIImage(data: try! Data(contentsOf: picURL))
-        
-        var pic: UIImage!
-        let docRef = Firestore.firestore().collection("\(section_num!)\(cell_num!)").document("pic")
-        docRef.getDocument { (document, error) in
-            if let document = document, document.exists {
-                let data = document.get("data") as! Data //data()!["data"]! as! Data
-                pic = UIImage(data: data)
-                print("pic読み込み")
-            } else {
-                print("Document does not exist")
-            }
-        }
-        
-        for i in 0..<models.mesh_anchor.count {
-            let verticesURL = dirURL.appendingPathComponent("unzip\(i)/vertices.data")
-            let normalsURL = dirURL.appendingPathComponent("unzip\(i)/normals.data")
-            let facesURL = dirURL.appendingPathComponent("unzip\(i)/faces.data")
-            let texcoordsURL = dirURL.appendingPathComponent("unzip\(i)/texcoords.data")
-            
-            let vertexData = try! Data(contentsOf: verticesURL)
-            let normalData = try! Data(contentsOf: normalsURL)
-            
-            let faces = (try? decoder.decode([Int32].self, from: try! Data(contentsOf: facesURL)))!
-            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: try! Data(contentsOf: texcoordsURL)))!
-            let count = faces.count
-            
-            let verticeSource = SCNGeometrySource(
-                data: vertexData,
-                semantic: SCNGeometrySource.Semantic.vertex,
-                vectorCount: count,
-                usesFloatComponents: true,
-                componentsPerVector: 3,
-                bytesPerComponent: MemoryLayout<Float>.size,
-                dataOffset: 0,
-                dataStride: MemoryLayout<SIMD3<Float>>.size
-            )
-            let normalSource = SCNGeometrySource(
-                data: normalData,
-                semantic: SCNGeometrySource.Semantic.normal,
-                vectorCount: count,
-                usesFloatComponents: true,
-                componentsPerVector: 3,
-                bytesPerComponent: MemoryLayout<Float>.size,
-                dataOffset: MemoryLayout<Float>.size * 3,
-                dataStride: MemoryLayout<SIMD3<Float>>.size
-            )
-            let faceSource = SCNGeometryElement(indices: faces, primitiveType: .triangles)
-            let textureCoordinates = SCNGeometrySource(textureCoordinates: texcoords)
-
-            let nodeGeometry = SCNGeometry(sources: [verticeSource, normalSource, textureCoordinates], elements: [faceSource])
-            nodeGeometry.firstMaterial?.diffuse.contents = pic
-            
-            let node = SCNNode(geometry: nodeGeometry)
-            texmeshNode.addChildNode(node)
-        }
-    }
-    
-    //複数のファイルのzip化
-    private func toZips(data: [Data?], archivePath: String, targetFilePaths: [String]) -> Bool {
-        for (i,path) in targetFilePaths.enumerated() {
-            FileManager.default.createFile(atPath: path, contents: data[i], attributes: nil)
-        }
-        return SSZipArchive.createZipFile(atPath: archivePath, withFilesAtPaths: targetFilePaths)
-    }
-    
-    //単一ファイルのzip化
-    private func toZip(data: Data, archivePath: String, targetFilePaths: [String]) -> Bool {
-        targetFilePaths.forEach { path in
-            FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
-        }
-        return SSZipArchive.createZipFile(atPath: archivePath, withFilesAtPaths: targetFilePaths)
-    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -467,7 +294,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     @IBAction func tap_colorNode(_ sender: UIButton) {
         delete_mesh()
-        texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+        texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
         sceneView.scene?.rootNode.addChildNode(texmeshNode)
     }
     
@@ -811,15 +638,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         let realm = try! Realm()
         try! realm.write {
             models.texture_bool = 0
-            models.mesh_anchor.removeAll()
-        }
-        
-        for anchor in anchors {
-            guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
-            else{ return }
-            try! realm.write {
-                models.mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
-            }
+            models.texBool = false
         }
         
         delete_mesh()
@@ -848,7 +667,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         }
     }
     
-    //Metalを用いたテクスチャ割り当て
+    //GPU(Metal)を用いたテクスチャ割り当て
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Calculating")
@@ -858,10 +677,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                                                       H: Int(sceneView.bounds.height),
                                                       tate: Int(tate), yoko: Int(yoko),
                                                       funcString: texString)
-            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, picCount: models.pic.count, models: models, calculateParameta: calculateParameta)
+            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: [])
             GPUCalculateTexture.makeGPUTexture() { [self] in
                 delete_mesh()
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
@@ -878,15 +697,36 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                                                       H: Int(sceneView.bounds.height),
                                                       tate: Int(tate), yoko: Int(yoko),
                                                       funcString: texString)
-            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta)
+            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta, cameraNode: cameraNode, sceneView: sceneView)
             CPUCalculateTexture.makeCPUTexture() { [self] in
                 delete_mesh()
-                texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
         })
     }
+    
+    //hittest
+    @IBAction func tap_makeTexture_hittest(_ sender: UIButton) {
+        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "Calculating")
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                      W: Int(sceneView.bounds.width),
+                                                      H: Int(sceneView.bounds.height),
+                                                      tate: Int(tate), yoko: Int(yoko),
+                                                      funcString: texString)
+            let CPUCalculateTexture = CPUCalculateTexture(anchors: anchors, models: models, picCount: picCount, calculateParameta: calculateParameta, cameraNode: cameraNode, sceneView: sceneView)
+            CPUCalculateTexture.makeCPUTexture3() { [self] in
+                delete_mesh()
+                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
+                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+                SVProgressHUD.dismiss()
+            }
+        })
+    }
+    
     
     //MARK: - コラボレーション用
     @IBAction func serchBrowser(_ sender: UIButton) {
@@ -930,102 +770,216 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     
     func model_kirikae_hyouji() {
         delete_mesh()
-        
-        picCount = models.pic.count
-        yoko = 17.0
-        tate = ceil(Float(picCount)/yoko)
-        
-        uiimage_array = []
-        for i in 0..<picCount {
-            let uiimage = UIImage(data: models.pic[i].pic_data!)
-            uiimage_array.append(uiimage!)
-        }
-        //16384以下にする必要あり
-        new_uiimage = TextureImage(W: (2880 / num) * CGFloat(yoko), H: (3840 / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
-        let uiImage = new_uiimage
-        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
-        let realm = try! Realm()
-        try! realm.write {
-            models.texture_pic = imageData
-        }
-        
-        anchors = []
-        for i in 0..<models.mesh_anchor.count {
-            let mesh_data = models.mesh_anchor[i].mesh
-            if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                anchors.append(meshAnchor)
-            }
-        }
-        
-        if models.texture_bool == 0 {
-            let meshNode = BuildMeshNode(anchors: anchors)
-            meshNode.name = "meshNode"
-            sceneView.scene?.rootNode.addChildNode(meshNode)
-            SVProgressHUD.dismiss()
-        } else if models.texture_bool != 0 {
-            texmeshNode = BuildTextureMeshNode(result: models.mesh_anchor, texImage: new_uiimage)
-            sceneView.scene?.rootNode.addChildNode(texmeshNode)
-            SVProgressHUD.dismiss()
-        }
+        buildSetup()
     }
     
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    var Tapped_ExButtonCount = -1
-    @IBAction func changeImage_model(_ sender: UIButton) {
-        print("modelNum : \(ModelManagement.modelID)")
-        let ExModels = results[section_num!].cells[cell_num!].models[0]
-        
-        Tapped_ExButtonCount += 1
-        if Tapped_ExButtonCount == ExModels.pic.count {
-            Tapped_ExButtonCount = 0
+    //MARK: - 評価実験用
+    
+    @IBOutlet weak var parametaLabel: UILabel!
+    @IBOutlet weak var filenameLabel: UILabel!
+    var except_parametacount = 0
+    var filenameNum = 1
+    
+    
+    @IBOutlet weak var exceptStateLabel: UILabel!
+    var exceptflag = false
+    var radius = 0
+    @IBOutlet weak var radiusLabel: UILabel!
+    
+    @IBAction func exceptStateSwitch(_ sender: UISwitch) {
+        if sender.isOn {
+            exceptflag = true
+            exceptStateLabel.text = "近傍"
+        } else {
+            exceptflag = false
+            exceptStateLabel.text = "ランダム"
         }
-        print("Tapped_ExButtonCount : \(Tapped_ExButtonCount)")
-        
-        imageView.image = UIImage(data: ExModels.pic[Tapped_ExButtonCount].pic_data)
-        
-        let json_data = try? decoder.decode(MakeMap_parameta.self, from: ExModels.json[Tapped_ExButtonCount].json_data!)
-        //print(json_data)
-        
-        let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
-                                        json_data!.cameraPosition.y,
-                                        json_data!.cameraPosition.z)
-        let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
-                                           json_data!.cameraEulerAngles.y,
-                                            json_data!.cameraEulerAngles.z)
-        let move = SCNAction.move(to: cameraPosition, duration: 0)
-        let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
-        cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
-            DispatchQueue.main.async {
-                self.savePic_toDocument(num: self.Tapped_ExButtonCount)
-                print("camera移動")
-            }
-        })
-        
     }
     
-    func savePic_toDocument(num: Int) {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let archivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/pic\(num).jpg")
-
-            let imageData = results[section_num!].cells[cell_num!].models[ModelManagement.modelID].pic[num].pic_data
-            do {
-                try imageData!.write(to: archivePath)
-            } catch {
-                print("Failed to save the image:", error)
+    @IBAction func decideParameta(_ sender: UISlider) {
+        let value = Int(round(sender.value))
+        except_parametacount = value
+        parametaLabel.text = "除外パラメータ：\(value)個"
+    }
+    
+    @IBAction func filenameSlider(_ sender: UISlider) {
+        let value = Int(round(sender.value))
+        filenameNum = value
+        filenameLabel.text = "ファイル番号：\(value)個"
+    }
+    
+    @IBAction func decideRadiusSlider(_ sender: UISlider) {
+        let value = Int(round(sender.value))
+        radius = value
+        radiusLabel.text = "半径r = \(value)cm"
+    }
+    
+    func makeRemoveArray() -> [Int] {
+        var remove: [Int] = []
+//
+//        if exceptflag == false {
+//            print("ランダム")
+//            while(true) {
+//                if remove.count == except_parametacount {
+//                    break
+//                }
+//
+//                let n = Int.random(in: 0..<models.pic.count)
+//                if remove.firstIndex(of: n) == nil {
+//                    remove.append(n)
+//                }
+//            }
+//        } else {
+//            print("近傍")
+//            //ランダムにパラメータを１つ選択
+//            let n = Int.random(in: 0..<models.pic.count)
+//            remove.append(n)
+//            let json = models.json[n].json_data
+//            let json_data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json!)
+//            let posi = json_data!.cameraPosition
+//
+//            //選択したパラメータから半径r内のパラメータを探索
+//            for (i, json) in models.json.enumerated() {
+//                if i != n {
+//                    let data = try? JSONDecoder().decode(MakeMap_parameta.self, from: json.json_data!)
+//                    let posi2 = data!.cameraPosition
+//                    let distance = sqrt((posi.x - posi2.x)*(posi.x - posi2.x) +
+//                                        (posi.y - posi2.y)*(posi.y - posi2.y) +
+//                                        (posi.z - posi2.z)*(posi.z - posi2.z))
+//                    //print(distance)
+//                    if distance < Float(radius)/100.0 {
+//                        remove.append(i)
+//                    }
+//                }
+//            }
+//        }
+//
+//        print(remove)
+//
+        return remove
+    }
+    
+    @IBAction func reBuild(_ sender: UIButton) {
+//        Tapped_ExButtonCount = -1
+//
+//        //除外するパラメータのインデックスが格納された配列
+//        let remove = makeRemoveArray()
+//
+//        //全てのパラメータ画像をoriginディレクトリに保存
+//        saveOriginPic_toDocument()
+//
+//        picCount = models.pic.count - remove.count
+//        let width = (UIImage(data: models.pic[0].pic_data!)?.size.width)! / num
+//        yoko = Float(floor(16384.0 / width)) //17.0
+//        tate = ceil(Float(picCount)/yoko)
+//
+//        uiimage_array = []
+//        for i in 0..<models.pic.count {
+//            if remove.firstIndex(of: i) == nil {
+//                let uiimage = UIImage(data: models.pic[i].pic_data!)
+//                uiimage_array.append(uiimage!)
+//            }
+//        }
+//
+//        //16384以下にする必要あり
+//        imageWidth = UIImage(data: models.pic[0].pic_data!)?.size.width
+//        imageHeight = UIImage(data: models.pic[0].pic_data!)?.size.height
+//        new_uiimage = TextureImage(W: (imageWidth! / num) * CGFloat(yoko), H: (imageHeight! / num) * CGFloat(tate), array: uiimage_array, yoko: yoko, num: num).makeTexture()
+//        imageView.image = new_uiimage
+//        let uiImage = new_uiimage
+//        let imageData = uiImage!.jpegData(compressionQuality: 0.25)
+//        let realm = try! Realm()
+//        try! realm.write {
+//            models.texture_pic = imageData
+//        }
+//
+//        SVProgressHUD.show()
+//        SVProgressHUD.show(withStatus: "Calculating")
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+//            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+//                                                      W: Int(sceneView.bounds.width),
+//                                                      H: Int(sceneView.bounds.height),
+//                                                      tate: Int(tate), yoko: Int(yoko),
+//                                                      funcString: texString)
+//            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: remove)
+//            GPUCalculateTexture.noLog_makeGPUTexture() { [self] in
+//                delete_mesh()
+//                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
+//                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+//                SVProgressHUD.dismiss()
+//            }
+//        })
+    }
+    
+    var Tapped_ExButtonCount = -1
+    
+    @IBAction func changeImage_model(_ sender: UIButton) {
+        //print("modelNum : \(ModelManagement.modelID)")
+        //for _ in ExModels.pic {
+        ChangeCamera()
+        //}
+    }
+    
+    func ChangeCamera() {
+        
+        DispatchQueue.global().sync { [self] in
+            //DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
+            //for _ in ExModels.pic {
+            Tapped_ExButtonCount += 1
+            if Tapped_ExButtonCount == models.parametaNum {
+                print("終了")
+                Tapped_ExButtonCount = 0
             }
-
-            let uiImage = sceneView.snapshot()
-            let screenimageData = uiImage.jpegData(compressionQuality: 1.0)
-
-            let scarchivePath = url.appendingPathComponent("\(results[section_num].cells[cell_num].cellName)-\(ModelManagement.modelID)/scpic\(num).jpeg")
-            do {
-                try screenimageData!.write(to: scarchivePath)
-            } catch {
-                print("Failed to save the image:", error)
-            }
+            print("Tapped_ExButtonCount : \(Tapped_ExButtonCount)")
+            
+            let picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic/pic\(Tapped_ExButtonCount).jpg")
+            imageView.image = UIImage(data: try! Data(contentsOf: picPath))
+            
+            let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json/json\(Tapped_ExButtonCount).data")
+            let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
+            //print(json_data)
+            
+            let cameraPosition = SCNVector3(json_data!.cameraPosition.x,
+                                            json_data!.cameraPosition.y,
+                                            json_data!.cameraPosition.z)
+            let cameraEulerAngles = SCNVector3(json_data!.cameraEulerAngles.x,
+                                               json_data!.cameraEulerAngles.y,
+                                               json_data!.cameraEulerAngles.z)
+            let move = SCNAction.move(to: cameraPosition, duration: 0)
+            let rotation = SCNAction.rotateTo(x: CGFloat(cameraEulerAngles.x), y: CGFloat(cameraEulerAngles.y), z: CGFloat(cameraEulerAngles.z), duration: 0)
+            
+            self.cameraNode.runAction(SCNAction.group([move, rotation]), completionHandler: {
+                DispatchQueue.main.async {
+                    //DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: { [] in
+                    //カメラ視点のモデル画像を保存
+                    self.save_model_Pic_to_Document(num: self.Tapped_ExButtonCount)
+                    print("camera移動")
+                }
+            })
+            //}
+        }
+    }
+    
+    func save_model_Pic_to_Document(num: Int) {
+        let directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/pic/model_pic", isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            print("失敗した")
+        }
+        
+        let uiImage = sceneView.snapshot()
+        let screenimageData = uiImage.jpegData(compressionQuality: 0.5)
+        
+        let scarchivePath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/pic/model_pic/m_pic\(num).jpg")
+        do {
+            try screenimageData!.write(to: scarchivePath)
+        } catch {
+            print("Failed to save the image:", error)
         }
     }
     

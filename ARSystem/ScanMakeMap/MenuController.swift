@@ -43,13 +43,13 @@ class MenuController: UIViewController {
         let vc = storyboard.instantiateViewController(withIdentifier: "MakeNavigationController") as! MakeNavigationController
         vc.modalPresentationStyle = .fullScreen
         
-        let transition = CATransition()
-        transition.duration = 0.25
-        transition.type = CATransitionType.push
-        transition.subtype = CATransitionSubtype.fromRight
-        view.window!.layer.add(transition, forKey: kCATransition)
+//        let transition = CATransition()
+//        transition.duration = 0.25
+//        transition.type = CATransitionType.push
+//        transition.subtype = CATransitionSubtype.fromRight
+//        view.window!.layer.add(transition, forKey: kCATransition)
         
-        self.present(vc, animated: false, completion: nil)
+        self.present(vc, animated: true, completion: nil)
         //self.navigationController?.pushViewController(vc, animated: true)//遷移する
     }
     
@@ -63,7 +63,7 @@ class MenuController: UIViewController {
     }
     
     func to_ColabVRViewController() {
-        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
+        let storyboard = UIStoryboard(name: "CollaboVR", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ColabVRViewController") as! ColabVRViewController
         vc.modalPresentationStyle = .fullScreen
         
@@ -85,7 +85,7 @@ class MenuController: UIViewController {
     
     
     func to_ColabARViewController() {
-        let storyboard = UIStoryboard(name: "EditData", bundle: nil)
+        let storyboard = UIStoryboard(name: "CollaboAR", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ColabARViewController") as! ColabARViewController
         vc.modalPresentationStyle = .fullScreen
         

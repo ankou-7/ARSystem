@@ -53,6 +53,8 @@ class CalculateRenderer {
         pipeline = try! device.makeComputePipelineState(function: function)
         
         anchorUniformsBuffer = .init(device: device, count: 1, index: 9)
+        
+        makeDirectory()
     }
     
     func drawRectResized(size: CGSize) {
@@ -65,8 +67,8 @@ class CalculateRenderer {
         encoder.setComputePipelineState(pipeline)
         
         face_count = anchors[num].geometry.faces.count
-        print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
-        print("id数(面の数:ポリゴン数)：\(anchors[num].geometry.faces.count)")
+//        print("頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
+//        print("id数(面の数:ポリゴン数)：\(anchors[num].geometry.faces.count)")
         sumPolygon += anchors[num].geometry.faces.count
         
         //main処理
@@ -155,7 +157,6 @@ class CalculateRenderer {
 //        print("count：\(tryCount)")
         //print(texcoords)
         
-        
         for t in texcoords {
             if t == SIMD2<Float>(0.0, 0.0) {
                 texCount += 1
@@ -167,6 +168,24 @@ class CalculateRenderer {
         return 1
     }
     
+    //テクスチャ座標の計算時にデータ保存用のディレクトリを作成する関数
+    func makeDirectory() {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let texcoords_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords", isDirectory: true)
+            let vertex_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex", isDirectory: true)
+            let normals_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals", isDirectory: true)
+            let faces_directory = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: texcoords_directory, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(at: vertex_directory, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(at: normals_directory, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(at: faces_directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("失敗した")
+            }
+        }
+    }
+    
     func save_model(num: Int) {
         let texcoordsData = try! JSONEncoder().encode(texcoords)
         let facesData = try! JSONEncoder().encode(faces)
@@ -175,12 +194,28 @@ class CalculateRenderer {
         
         let realm = try! Realm()
         try! realm.write {
-            models.mesh_anchor[num].texcoords = texcoordsData
-            models.mesh_anchor[num].vertices = vertexData
-            models.mesh_anchor[num].normals = normalsData
-            models.mesh_anchor[num].faces = facesData
-            models.mesh_anchor[num].vertice_count = face_count * 3
+//            models.mesh_anchor[num].texcoords = texcoordsData
+//            models.mesh_anchor[num].vertices = vertexData
+//            models.mesh_anchor[num].normals = normalsData
+//            models.mesh_anchor[num].faces = facesData
+//            models.mesh_anchor[num].vertice_count = face_count * 3
             models.texture_bool = 3
+        }
+        
+        guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        else { return }
+        let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords/texcoords\(num).data")
+        let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex/vertex\(num).data")
+        let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals/normals\(num).data")
+        let facesPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/faces/faces\(num).data")
+        do {
+            try texcoordsData.write(to: texcoordsPath)
+            try vertexData.write(to: vertexPath)
+            try normalsData.write(to: normalsPath)
+            try facesData.write(to: facesPath)
+            print("GPU計算データ\(num)保存成功")
+        } catch {
+            print("GPU計算データ\(num)保存失敗", error)
         }
     }
 }

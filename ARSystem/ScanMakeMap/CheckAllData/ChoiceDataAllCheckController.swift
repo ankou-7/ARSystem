@@ -39,7 +39,7 @@ class ChoiceDataAllCheckController: UIViewController, UITableViewDelegate, UITab
         let results = realm.objects(Navi_SectionTitle.self)
         
         let pictureImage = cell.viewWithTag(1) as! UIImageView
-        pictureImage.image = UIImage(data: results[section_num].cells[cell_num].models[indexPath.row].worldimage!)
+        //pictureImage.image = UIImage(data: results[section_num].cells[cell_num].models[indexPath.row].worldimage!)
         let modelName = cell.viewWithTag(2) as! UILabel
         modelName.text = results[section_num].cells[cell_num].models[indexPath.row].modelname
         let dayLabel = cell.viewWithTag(3) as! UILabel

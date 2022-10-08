@@ -16,9 +16,9 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: SCNView!
     let scene = SCNScene()
     
-    let results = try! Realm().objects(Data_parameta.self)
-    private var models: Data_parameta!
-    private var picCount: Int!
+    //let results = try! Realm().objects(Data_parameta.self)
+    //private var models = try! Realm().objects(Navityu.self)
+    var picCount: Int!
     private var imageArray = [UIImage]()
     private var texImage: UIImage!
     private var calcuMatrix: [float4x4] = []
@@ -28,6 +28,9 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
     var calculateParameta: calculateParameta!
     private var checkRenderer: CheckRenderer!
     private let tex_node = SCNNode()
+    
+    var url: URL!
+    var recording_count: Int!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,24 +43,31 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
         sceneView.allowsCameraControl = true
         sceneView.scene?.rootNode.addChildNode(LightNode())
         
-        models = results[0]
-        picCount = models.pic.count
+        url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         for i in 0..<picCount {
-            let uiimage = UIImage(data: models.pic[i].pic_data!)
+            let per_picPath = url.appendingPathComponent("保存前/\(recording_count!)/pic/pic\(i).data")
+            let uiimage = UIImage(data: try! Data(contentsOf: per_picPath))
             imageArray.append(uiimage!)
         }
-        let num = 3.0
-        texImage = TextureImage(W: (2880 / num) * CGFloat(calculateParameta.yoko), H: (3840 / num) * CGFloat(calculateParameta.tate), array: imageArray, yoko: Float(calculateParameta.yoko), num: num).makeTexture()
+        
+        let num = 2.0
+
+        let picPath = url.appendingPathComponent("保存前/\(recording_count!)/pic/pic0.data")
+        let imageWidth = UIImage(data: try! Data(contentsOf: picPath))!.size.width
+        let imageHeight = UIImage(data: try! Data(contentsOf: picPath))!.size.height
+        texImage = TextureImage(W: (imageWidth / num) * CGFloat(calculateParameta.yoko),
+                                H: (imageHeight / num) * CGFloat(calculateParameta.tate),
+                                array: imageArray,
+                                yoko: Float(calculateParameta.yoko), num: num).makeTexture()
         
         make_calcuParameta()
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
             makeTexture()
-            
         })
     }
     
@@ -81,11 +91,25 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    
+    @IBAction func tapped_snapshot(_ sender: UIButton) {
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let archivePath = url.appendingPathComponent("モデル.jpg")
+            let imageData = sceneView.snapshot().jpegData(compressionQuality: 1.0)
+            do {
+                try imageData!.write(to: archivePath)
+            } catch {
+                print("Failed to save the image:", error)
+            }
+        }
+    }
+    
     func make_calcuParameta() {
         let decoder = JSONDecoder()
         
         for i in 0..<picCount {
-            let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
+            let jsonPath = url.appendingPathComponent("保存前/\(recording_count!)/json/json\(i).data")
+            let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
             
             let viewMatrix = simd_float4x4(json_data!.viewMatrix.x,
                                            json_data!.viewMatrix.y,
@@ -98,8 +122,9 @@ class CheckDataViewController: UIViewController, ARSCNViewDelegate {
             let matrix = projectionMatrix * viewMatrix
             calcuMatrix.append(matrix)
             
-            let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
-            depth.append(contentsOf: depth_array)
+            let depthPath = url.appendingPathComponent("保存前/\(recording_count!)/depth/depth\(i).data")
+            let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
+            depth.append(contentsOf: depth_array!)
         }
     }
 }

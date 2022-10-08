@@ -181,18 +181,18 @@ class VRViewController: UIViewController {
         //メッシュ表示
         sceneView.scene = scene
         
-        if results.count > 0 {
-            let models = results[0].cells[0].models[0]
-            for i in 0..<models.mesh_anchor.count {
-                let mesh_data = models.mesh_anchor[i].mesh
-                if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
-                    anchors.append(meshAnchor)
-                }
-            }
-            let meshNode = BuildMeshNode(anchors: anchors)
-            meshNode.name = "meshNode"
-            sceneView.scene?.rootNode.addChildNode(meshNode)
-        }
+//        if results.count > 0 {
+//            let models = results[0].cells[0].models[0]
+//            for i in 0..<models.mesh_anchor.count {
+//                let mesh_data = models.mesh_anchor[i].mesh
+//                if let meshAnchor = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARMeshAnchor.self, from: mesh_data!) {
+//                    anchors.append(meshAnchor)
+//                }
+//            }
+//            let meshNode = BuildMeshNode(anchors: anchors)
+//            meshNode.name = "meshNode"
+//            sceneView.scene?.rootNode.addChildNode(meshNode)
+//        }
     }
     
     @IBAction func sendDidTap(_ sender: UIButton) {
@@ -211,31 +211,31 @@ class VRViewController: UIViewController {
 //        }
         
         //メッシュData
-        for i in 0..<anchors.count {
-            let vertexData = models.mesh_anchor[i].vertices!
-            let normalData = models.mesh_anchor[i].normals!
-            //let counts = models.mesh_anchor[i].vertice_count
-            let facesData = models.mesh_anchor[i].faces!
-            let texcoordsData = models.mesh_anchor[i].texcoords!
-            
-            guard let countData = try? NSKeyedArchiver.archivedData(withRootObject: "頂点数:\(models.mesh_anchor[i].vertice_count)" as NSString, requiringSecureCoding: true)
-            else { return }
-//            guard let countData = "\(count)".data(using: .utf8) else {
-//                return
-//            }
-            print("/////////////////////")
-            print(models.mesh_anchor[i].vertice_count)
-            print(vertexData)
-            print(normalData)
-            print(facesData)
-            print(texcoordsData)
-            
-            self.webRTCClient.sendData(countData)
-            self.webRTCClient.sendData(vertexData)
-            self.webRTCClient.sendData(normalData)
-            self.webRTCClient.sendData(facesData)
-            self.webRTCClient.sendData(texcoordsData)
-        }
+//        for i in 0..<anchors.count {
+//            let vertexData = models.mesh_anchor[i].vertices!
+//            let normalData = models.mesh_anchor[i].normals!
+//            //let counts = models.mesh_anchor[i].vertice_count
+//            let facesData = models.mesh_anchor[i].faces!
+//            let texcoordsData = models.mesh_anchor[i].texcoords!
+//
+//            guard let countData = try? NSKeyedArchiver.archivedData(withRootObject: "頂点数:\(models.mesh_anchor[i].vertice_count)" as NSString, requiringSecureCoding: true)
+//            else { return }
+////            guard let countData = "\(count)".data(using: .utf8) else {
+////                return
+////            }
+//            print("/////////////////////")
+//            print(models.mesh_anchor[i].vertice_count)
+//            print(vertexData)
+//            print(normalData)
+//            print(facesData)
+//            print(texcoordsData)
+//
+//            self.webRTCClient.sendData(countData)
+//            self.webRTCClient.sendData(vertexData)
+//            self.webRTCClient.sendData(normalData)
+//            self.webRTCClient.sendData(facesData)
+//            self.webRTCClient.sendData(texcoordsData)
+//        }
         
         guard let finishData = try? NSKeyedArchiver.archivedData(withRootObject: "送信終了)" as NSString, requiringSecureCoding: true) else {
             return

@@ -10,14 +10,11 @@
 		260D431427CE3F160020039E /* CheckData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 260D431327CE3F160020039E /* CheckData.storyboard */; };
 		260D431627CE3FD80020039E /* CheckDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260D431527CE3FD80020039E /* CheckDataViewController.swift */; };
 		260D431827CE4D690020039E /* CheckRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260D431727CE4D690020039E /* CheckRenderer.swift */; };
-		261334F5283770A900947DEB /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 261334F4283770A900947DEB /* Realm */; };
-		261334F7283770A900947DEB /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 261334F6283770A900947DEB /* RealmSwift */; };
 		262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */; };
 		2632F45425F04193006B7366 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45325F04193006B7366 /* Shaders.metal */; };
 		2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45925F0420A006B7366 /* MetalBuffer.swift */; };
 		2632F46225F04482006B7366 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F46125F04482006B7366 /* Helpers.swift */; };
 		2632F47D25F05BC8006B7366 /* EditDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F47C25F05BC8006B7366 /* EditDataController.swift */; };
-		263B9F602837485E0012929C /* Matft in Frameworks */ = {isa = PBXBuildFile; productRef = 263B9F5F2837485E0012929C /* Matft */; };
 		26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */; };
 		2682062F25C3F7BC00519E42 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2682062E25C3F7BC00519E42 /* Renderer.swift */; };
 		26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA1F02563C802008FE5EB /* AppDelegate.swift */; };
@@ -35,7 +32,6 @@
 		26AAA26C2563CAC9008FE5EB /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AAA26B2563CAC9008FE5EB /* art.scnassets */; };
 		B2CB6E1E43D96243E8AB06DB /* Pods_ARSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6A1ACF34415CD790884183E /* Pods_ARSystem.framework */; };
 		CF0250DA26380953003790E8 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0250D926380953003790E8 /* ObjectDataSource.swift */; };
-		CF0BAFE5281C5CD2004086C8 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = CF0BAFE4281C5CD2004086C8 /* WebRTC */; };
 		CF0BAFE8281C739B004086C8 /* VRView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF0BAFE7281C739B004086C8 /* VRView.storyboard */; };
 		CF0BAFEC281C7C9C004086C8 /* VRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BAFEB281C7C9C004086C8 /* VRViewController.swift */; };
 		CF0BAFF4281C8594004086C8 /* WebSocketProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BAFED281C8593004086C8 /* WebSocketProvider.swift */; };
@@ -65,9 +61,12 @@
 		CF0F166D272C7C9700E6F9ED /* AddTextureModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */; };
 		CF0F166F272C835900E6F9ED /* SCNGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0F166E272C835900E6F9ED /* SCNGeometry.swift */; };
 		CF13205827223CD400277339 /* ObjectOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF13205727223CD400277339 /* ObjectOrigin.swift */; };
+		CF216BAB28557B790099F607 /* CollaboVR.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF216BAA28557B790099F607 /* CollaboVR.storyboard */; };
+		CF216BAD28557C900099F607 /* CollaboAR.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF216BAC28557C900099F607 /* CollaboAR.storyboard */; };
+		CF2210A8283D41EF00AA5C83 /* ChoiceData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF2210A7283D41EF00AA5C83 /* ChoiceData.storyboard */; };
+		CF2210AA283D42C200AA5C83 /* ChoiceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2210A9283D42C200AA5C83 /* ChoiceData.swift */; };
 		CF27A964269D7A5600F62D3A /* CIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */; };
 		CF2D296A26C82D14004A7F84 /* ChangeModePopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */; };
-		CF2E4D6C282F96BF004CCA41 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = CF2E4D6B282F96BF004CCA41 /* ZipArchive */; };
 		CF30EF48262BAF5000C13B66 /* PopOver.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF30EF47262BAF5000C13B66 /* PopOver.storyboard */; };
 		CF30EF5B262C9C6600C13B66 /* SwitchPopOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF5A262C9C6600C13B66 /* SwitchPopOver.swift */; };
 		CF30EF60262C9CC000C13B66 /* MenuDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF30EF5F262C9CC000C13B66 /* MenuDataSource.swift */; };
@@ -84,6 +83,7 @@
 		CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */; };
 		CF3D80B4262B9618007904E6 /* CheckDataChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */; };
 		CF3E928427532A670029C166 /* depth_Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3E928327532A670029C166 /* depth_Renderer.swift */; };
+		CF642827284DF85C00B17107 /* Data_to_Cloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF642826284DF85B00B17107 /* Data_to_Cloud.swift */; };
 		CF666309283457CA0012F0DB /* CameraNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF666308283457CA0012F0DB /* CameraNode.swift */; };
 		CF688B942736844A00F863AF /* StructInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF688B932736844A00F863AF /* StructInfo.swift */; };
 		CF6BC31C262AE65300E9B083 /* AddDataCellChoice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */; };
@@ -106,6 +106,7 @@
 		CF966169280FD32E00D4C8BA /* GPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966168280FD32E00D4C8BA /* GPUCalculateTexture.swift */; };
 		CF96616B2810021F00D4C8BA /* CPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */; };
 		CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */; };
+		CFD1096228603BBF00F3DD71 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = CFD1096128603BBF00F3DD71 /* WebRTC */; };
 		CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */; };
 		CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */; };
 		CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9926C5121700E51949 /* ChoicePictureAllCheckController.swift */; };
@@ -113,9 +114,6 @@
 		CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69EA026C7B69F00E51949 /* Diff_PointCloud.storyboard */; };
 		CFD69EA326C7B71000E51949 /* Diff_PointCloudViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69EA226C7B71000E51949 /* Diff_PointCloudViewController.swift */; };
 		CFD8ADB0282CABD100B51766 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CFD8ADAF282CABD000B51766 /* GoogleService-Info.plist */; };
-		CFD8ADBE282CCE0C00B51766 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CFD8ADBD282CCE0C00B51766 /* FirebaseAnalytics */; };
-		CFD8ADC0282CCE0C00B51766 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = CFD8ADBF282CCE0C00B51766 /* FirebaseDatabase */; };
-		CFD8ADC2282CCE0C00B51766 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CFD8ADC1282CCE0C00B51766 /* FirebaseFirestore */; };
 		CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE717EA281130C200B55073 /* ViewManagement.swift */; };
 /* End PBXBuildFile section */
 
@@ -194,6 +192,10 @@
 		CF0F166C272C7C9700E6F9ED /* AddTextureModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTextureModelController.swift; sourceTree = "<group>"; };
 		CF0F166E272C835900E6F9ED /* SCNGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNGeometry.swift; sourceTree = "<group>"; };
 		CF13205727223CD400277339 /* ObjectOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOrigin.swift; sourceTree = "<group>"; };
+		CF216BAA28557B790099F607 /* CollaboVR.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CollaboVR.storyboard; sourceTree = "<group>"; };
+		CF216BAC28557C900099F607 /* CollaboAR.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CollaboAR.storyboard; sourceTree = "<group>"; };
+		CF2210A7283D41EF00AA5C83 /* ChoiceData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChoiceData.storyboard; sourceTree = "<group>"; };
+		CF2210A9283D42C200AA5C83 /* ChoiceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceData.swift; sourceTree = "<group>"; };
 		CF27A963269D7A5600F62D3A /* CIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Utils.swift"; sourceTree = "<group>"; };
 		CF2D296926C82D14004A7F84 /* ChangeModePopOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeModePopOver.swift; sourceTree = "<group>"; };
 		CF30EF47262BAF5000C13B66 /* PopOver.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopOver.storyboard; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 		CF3D80AE262B954D007904E6 /* CheckAllData.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CheckAllData.storyboard; sourceTree = "<group>"; };
 		CF3D80B3262B9618007904E6 /* CheckDataChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckDataChoiceController.swift; sourceTree = "<group>"; };
 		CF3E928327532A670029C166 /* depth_Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = depth_Renderer.swift; sourceTree = "<group>"; };
+		CF642826284DF85B00B17107 /* Data_to_Cloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data_to_Cloud.swift; sourceTree = "<group>"; };
 		CF666308283457CA0012F0DB /* CameraNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraNode.swift; sourceTree = "<group>"; };
 		CF688B932736844A00F863AF /* StructInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructInfo.swift; sourceTree = "<group>"; };
 		CF6BC31B262AE65300E9B083 /* AddDataCellChoice.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddDataCellChoice.storyboard; sourceTree = "<group>"; };
@@ -250,16 +253,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				263B9F602837485E0012929C /* Matft in Frameworks */,
-				CFD8ADBE282CCE0C00B51766 /* FirebaseAnalytics in Frameworks */,
 				CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */,
-				CF0BAFE5281C5CD2004086C8 /* WebRTC in Frameworks */,
-				CF2E4D6C282F96BF004CCA41 /* ZipArchive in Frameworks */,
-				CFD8ADC2282CCE0C00B51766 /* FirebaseFirestore in Frameworks */,
-				261334F5283770A900947DEB /* Realm in Frameworks */,
+				CFD1096228603BBF00F3DD71 /* WebRTC in Frameworks */,
 				B2CB6E1E43D96243E8AB06DB /* Pods_ARSystem.framework in Frameworks */,
-				261334F7283770A900947DEB /* RealmSwift in Frameworks */,
-				CFD8ADC0282CCE0C00B51766 /* FirebaseDatabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,13 +316,7 @@
 				CF0BAFE7281C739B004086C8 /* VRView.storyboard */,
 				CF0BAFEB281C7C9C004086C8 /* VRViewController.swift */,
 				CF0BB066281D8025004086C8 /* VideoView.swift */,
-				CF0BB065281D7689004086C8 /* Video */,
-				CF0BAFF0281C8593004086C8 /* Config.swift */,
-				CF0BAFF2281C8594004086C8 /* Message.swift */,
-				CF0BAFEE281C8593004086C8 /* SignalingClient.swift */,
-				CF0BAFF3281C8594004086C8 /* WebRTCClient.swift */,
-				CF0BB006281D15F3004086C8 /* WebSocketProvider */,
-				CF0BB005281D1592004086C8 /* Ex */,
+				CF25A2DC2859DB7700DC7C35 /* WebRTC */,
 			);
 			path = CollaboWebRTC;
 			sourceTree = "<group>";
@@ -402,6 +392,47 @@
 			path = MakeMap;
 			sourceTree = "<group>";
 		};
+		CF216BA828557B330099F607 /* AR */ = {
+			isa = PBXGroup;
+			children = (
+				CF8804A827BF0BC700146230 /* ColabARViewController.swift */,
+				CF216BAC28557C900099F607 /* CollaboAR.storyboard */,
+			);
+			path = AR;
+			sourceTree = "<group>";
+		};
+		CF216BA928557B460099F607 /* VR */ = {
+			isa = PBXGroup;
+			children = (
+				CF8804A627BECAD500146230 /* ColabVRViewController.swift */,
+				CF216BAA28557B790099F607 /* CollaboVR.storyboard */,
+			);
+			path = VR;
+			sourceTree = "<group>";
+		};
+		CF2210A6283D41C900AA5C83 /* ReMap */ = {
+			isa = PBXGroup;
+			children = (
+				CF2210A7283D41EF00AA5C83 /* ChoiceData.storyboard */,
+				CF2210A9283D42C200AA5C83 /* ChoiceData.swift */,
+			);
+			path = ReMap;
+			sourceTree = "<group>";
+		};
+		CF25A2DC2859DB7700DC7C35 /* WebRTC */ = {
+			isa = PBXGroup;
+			children = (
+				CF0BB065281D7689004086C8 /* Video */,
+				CF0BAFF0281C8593004086C8 /* Config.swift */,
+				CF0BAFF2281C8594004086C8 /* Message.swift */,
+				CF0BAFEE281C8593004086C8 /* SignalingClient.swift */,
+				CF0BAFF3281C8594004086C8 /* WebRTCClient.swift */,
+				CF0BB006281D15F3004086C8 /* WebSocketProvider */,
+				CF0BB005281D1592004086C8 /* Ex */,
+			);
+			path = WebRTC;
+			sourceTree = "<group>";
+		};
 		CF30EF46262BAF0A00C13B66 /* AllPopOver */ = {
 			isa = PBXGroup;
 			children = (
@@ -465,6 +496,7 @@
 				CF966148280D9F5900D4C8BA /* SCNGeometry+Ext.swift */,
 				CF3D808E262B8C64007904E6 /* Renderer */,
 				260D431227CE3EC90020039E /* CheckData */,
+				CF2210A6283D41C900AA5C83 /* ReMap */,
 				CF6BC314262AE43700E9B083 /* AddDataToCell */,
 			);
 			path = MakeNavigation;
@@ -488,6 +520,7 @@
 			isa = PBXGroup;
 			children = (
 				CF3D80A2262B90F2007904E6 /* EditData.storyboard */,
+				CF642826284DF85B00B17107 /* Data_to_Cloud.swift */,
 				26AAA2282563C995008FE5EB /* EditDataChoiceController.swift */,
 				2632F47C25F05BC8006B7366 /* EditDataController.swift */,
 				CF96615E280F360800D4C8BA /* TextureImage.swift */,
@@ -549,9 +582,9 @@
 		CF96614F280DA8A300D4C8BA /* Collaboration */ = {
 			isa = PBXGroup;
 			children = (
+				CF216BA928557B460099F607 /* VR */,
+				CF216BA828557B330099F607 /* AR */,
 				CF0BAFE6281C6F6A004086C8 /* CollaboWebRTC */,
-				CF8804A627BECAD500146230 /* ColabVRViewController.swift */,
-				CF8804A827BF0BC700146230 /* ColabARViewController.swift */,
 			);
 			path = Collaboration;
 			sourceTree = "<group>";
@@ -651,14 +684,7 @@
 			);
 			name = ARSystem;
 			packageProductDependencies = (
-				CF0BAFE4281C5CD2004086C8 /* WebRTC */,
-				CFD8ADBD282CCE0C00B51766 /* FirebaseAnalytics */,
-				CFD8ADBF282CCE0C00B51766 /* FirebaseDatabase */,
-				CFD8ADC1282CCE0C00B51766 /* FirebaseFirestore */,
-				CF2E4D6B282F96BF004CCA41 /* ZipArchive */,
-				263B9F5F2837485E0012929C /* Matft */,
-				261334F4283770A900947DEB /* Realm */,
-				261334F6283770A900947DEB /* RealmSwift */,
+				CFD1096128603BBF00F3DD71 /* WebRTC */,
 			);
 			productName = ARMeshNavigation;
 			productReference = 26AAA1ED2563C802008FE5EB /* ARSystem.app */;
@@ -688,11 +714,7 @@
 			);
 			mainGroup = 26AAA1E42563C802008FE5EB;
 			packageReferences = (
-				CF0BAFE3281C5CD2004086C8 /* XCRemoteSwiftPackageReference "WebRTC" */,
-				CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				CF2E4D6A282F96BF004CCA41 /* XCRemoteSwiftPackageReference "ZipArchive" */,
-				263B9F5E2837485B0012929C /* XCRemoteSwiftPackageReference "Matft" */,
-				261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */,
+				CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */,
 			);
 			productRefGroup = 26AAA1EE2563C802008FE5EB /* Products */;
 			projectDirPath = "";
@@ -720,12 +742,15 @@
 				CF0DBC3426923BC2006E2E19 /* Make3DModel.storyboard in Resources */,
 				CFD69EA126C7B69F00E51949 /* Diff_PointCloud.storyboard in Resources */,
 				CF0F1669272C62D100E6F9ED /* MakeMap.storyboard in Resources */,
+				CF216BAD28557C900099F607 /* CollaboAR.storyboard in Resources */,
+				CF2210A8283D41EF00AA5C83 /* ChoiceData.storyboard in Resources */,
 				CF3D80AF262B954D007904E6 /* CheckAllData.storyboard in Resources */,
 				CF30EF89262D980200C13B66 /* MapExpansionReceive.storyboard in Resources */,
 				26AAA1FA2563C804008FE5EB /* Assets.xcassets in Resources */,
 				260D431427CE3F160020039E /* CheckData.storyboard in Resources */,
 				CF3D80A3262B90F2007904E6 /* EditData.storyboard in Resources */,
 				CFD8ADB0282CABD100B51766 /* GoogleService-Info.plist in Resources */,
+				CF216BAB28557B790099F607 /* CollaboVR.storyboard in Resources */,
 				CF3D8081262B8803007904E6 /* MakeNavigation.storyboard in Resources */,
 				26AAA1F82563C802008FE5EB /* Main.storyboard in Resources */,
 				CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */,
@@ -804,6 +829,7 @@
 				26AAA2492563C998008FE5EB /* EditDataChoiceController.swift in Sources */,
 				260D431627CE3FD80020039E /* CheckDataViewController.swift in Sources */,
 				CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */,
+				CF642827284DF85C00B17107 /* Data_to_Cloud.swift in Sources */,
 				CF8D977B2683106000D6002A /* OpenCVManager.mm in Sources */,
 				CF0BB067281D8025004086C8 /* VideoView.swift in Sources */,
 				CFD69E9C26C66D7E00E51949 /* PictureChoiceController.swift in Sources */,
@@ -823,6 +849,7 @@
 				CF666309283457CA0012F0DB /* CameraNode.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
+				CF2210AA283D42C200AA5C83 /* ChoiceData.swift in Sources */,
 				CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */,
 				CF966163280F4E9200D4C8BA /* BuildTextureMeshNode.swift in Sources */,
 				CF30EF65262CB39D00C13B66 /* CheckDataController.swift in Sources */,
@@ -1015,7 +1042,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/ARSystem/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1043,7 +1070,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/ARSystem/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1081,23 +1108,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		263B9F5E2837485B0012929C /* XCRemoteSwiftPackageReference "Matft" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jjjkkkjjj/Matft";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.9;
-			};
-		};
-		CF0BAFE3281C5CD2004086C8 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+		CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/stasel/WebRTC";
 			requirement = {
@@ -1105,64 +1116,13 @@
 				kind = branch;
 			};
 		};
-		CF2E4D6A282F96BF004CCA41 /* XCRemoteSwiftPackageReference "ZipArchive" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ZipArchive/ZipArchive";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-		CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		261334F4283770A900947DEB /* Realm */ = {
+		CFD1096128603BBF00F3DD71 /* WebRTC */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		261334F6283770A900947DEB /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 261334F3283770A900947DEB /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
-		263B9F5F2837485E0012929C /* Matft */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 263B9F5E2837485B0012929C /* XCRemoteSwiftPackageReference "Matft" */;
-			productName = Matft;
-		};
-		CF0BAFE4281C5CD2004086C8 /* WebRTC */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CF0BAFE3281C5CD2004086C8 /* XCRemoteSwiftPackageReference "WebRTC" */;
+			package = CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */;
 			productName = WebRTC;
-		};
-		CF2E4D6B282F96BF004CCA41 /* ZipArchive */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CF2E4D6A282F96BF004CCA41 /* XCRemoteSwiftPackageReference "ZipArchive" */;
-			productName = ZipArchive;
-		};
-		CFD8ADBD282CCE0C00B51766 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		CFD8ADBF282CCE0C00B51766 /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		CFD8ADC1282CCE0C00B51766 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CFD8ADBC282CCE0C00B51766 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

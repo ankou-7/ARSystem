@@ -22,6 +22,7 @@ class Navi_SectionTitle: Object {
 
 class Navi_CellTitle: Object {
     @objc dynamic var cellName: String = ""
+    @objc dynamic var dayString: String = ""
     
     let models = List<Navi_Modelname>()
 }
@@ -29,21 +30,25 @@ class Navi_CellTitle: Object {
 class Navi_Modelname: Object {
     @objc dynamic var modelname: String = ""
     @objc dynamic var dayString: String = ""
-    @objc dynamic var worlddata: Data!
-    @objc dynamic var worldimage: Data!
+//    @objc dynamic var worlddata: Data!
+//    @objc dynamic var worldimage: Data!
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
+    
+    @objc dynamic var parametaNum: Int = 0
+    @objc dynamic var meshNum: Int = 0
+    @objc dynamic var texBool: Bool = false
     
     let obj = List<ObjectInfo>()
     @objc dynamic var add_obj_count: Int = 0
     
-    let pic = List<pic_data>()
-    let json = List<json_data>()
-    let depth = List<depth_data>()
-    
-    @objc dynamic var texture_pic: Data!
+//    let pic = List<pic_data>()
+//    let json = List<json_data>()
+//    let depth = List<depth_data>()
+//
+//    @objc dynamic var texture_pic: Data!
     @objc dynamic var texture_bool: Int = 0
-    let mesh_anchor = List<anchor_data>()
+//    let mesh_anchor = List<anchor_data>()
 }
 
 class ObjectInfo: Object {
@@ -63,6 +68,9 @@ class Navityu: Object {
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
     @objc dynamic var exit_parameta: Int = 0
+    
+    @objc dynamic var parametaNum: Int = 0
+    @objc dynamic var meshNum: Int = 0
 }
 
 //内部パラメータ用

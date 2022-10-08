@@ -94,15 +94,15 @@ class RealtimePointCloudController: UIViewController, ARSCNViewDelegate, ARSessi
     }
     
     @IBAction func tap_ReOrigine(_ sender: UIButton) {
-        let worlddata = results[self.section_num].cells[self.cell_num].models[self.model_name1_num].worlddata
+        //let worlddata = results[self.section_num].cells[self.cell_num].models[self.model_name1_num].worlddata
         //WoeldMap復元
-        if let worldMap = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: worlddata!) {
-            configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
-            configuration.frameSemantics = .smoothedSceneDepth
-            configuration.initialWorldMap = worldMap //保存したWorldMapで再開する
-            self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
-            
-        }
+//        if let worldMap = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: worlddata!) {
+//            configuration.planeDetection = [.horizontal, .vertical] //平面検出の有効化
+//            configuration.frameSemantics = .smoothedSceneDepth
+//            configuration.initialWorldMap = worldMap //保存したWorldMapで再開する
+//            self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+//
+//        }
     }
     
     @IBAction func tap_start_p(_ sender: UIButton) {

@@ -82,36 +82,50 @@ class EditDataChoiceController: UIViewController, UITableViewDelegate, UITableVi
             
             //データベースから指定したセルを削除し，更新
             //documents内のファイル削除
-            for i in 0..<results[indexPath.section].cells[indexPath.row].models.count {
-                let objName = results[indexPath.section].cells[indexPath.row].models[i].modelname
+            for _ in 0..<results[indexPath.section].cells[indexPath.row].models.count {
                 
-                let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-                let documentsDirectory = paths[0]
+                let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+                let archivePath = url!.appendingPathComponent("\(results[indexPath.section].cells[indexPath.row].dayString)")
+                do {
+                    try FileManager.default.removeItem(at: archivePath)
+                } catch {
+                    print("ファイル削除失敗")
+                }
                 
-                if results[indexPath.section].cells[indexPath.row].models[i].exit_mesh == 1 {
-                    do {
-                        let modelname: String? =  "\(documentsDirectory)/\(objName).scn"
-                        try FileManager.default.removeItem(atPath: modelname!)
-                    }catch {
-                        print("ファイル削除失敗")
-                    }
-                }
-                if results[indexPath.section].cells[indexPath.row].models[i].exit_point == 1 {
-                    do {
-                        let txtname: String? = "\(documentsDirectory)/\(objName).txt"
-                        let dataname: String? = "\(documentsDirectory)/\(objName).data"
-                        try FileManager.default.removeItem(atPath: txtname!)
-                        try FileManager.default.removeItem(atPath: dataname!)
-                    }catch {
-                        print("ファイル削除失敗")
-                    }
-                }
+//                if results[indexPath.section].cells[indexPath.row].models[i].exit_mesh == 1 {
+//                    do {
+//                        let modelname: String? =  "\(documentsDirectory)/\(objName).scn"
+//                        try FileManager.default.removeItem(atPath: modelname!)
+//                    }catch {
+//                        print("ファイル削除失敗")
+//                    }
+//                }
+//                if results[indexPath.section].cells[indexPath.row].models[i].exit_point == 1 {
+//                    do {
+//                        let txtname: String? = "\(documentsDirectory)/\(objName).txt"
+//                        let dataname: String? = "\(documentsDirectory)/\(objName).data"
+//                        try FileManager.default.removeItem(atPath: txtname!)
+//                        try FileManager.default.removeItem(atPath: dataname!)
+//                    }catch {
+//                        print("ファイル削除失敗")
+//                    }
+//                }
             }
         
             //データベースからcell削除
-            try! Realm().write {
-                results[indexPath.section].cells.remove(at: indexPath.row)
+//            try! Realm().write {
+//                results[indexPath.section].cells.remove(at: indexPath.row)
+//            }
+            
+            let realm = try! Realm()
+            do{
+              try realm.write{
+                realm.delete(results[indexPath.section].cells[indexPath.row])
+              }
+            }catch {
+              print("Error \(error)")
             }
+            
             //print(realm.objects(Navi_SectionTitle.self))
             
             //データベース更新
