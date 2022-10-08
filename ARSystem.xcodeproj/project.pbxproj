@@ -15,6 +15,7 @@
 		2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45925F0420A006B7366 /* MetalBuffer.swift */; };
 		2632F46225F04482006B7366 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F46125F04482006B7366 /* Helpers.swift */; };
 		2632F47D25F05BC8006B7366 /* EditDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F47C25F05BC8006B7366 /* EditDataController.swift */; };
+		26559F4A28F220AB003633FE /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 26559F4928F220AB003633FE /* WebRTC */; };
 		26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */; };
 		2682062F25C3F7BC00519E42 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2682062E25C3F7BC00519E42 /* Renderer.swift */; };
 		26AAA1F12563C802008FE5EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AAA1F02563C802008FE5EB /* AppDelegate.swift */; };
@@ -106,7 +107,6 @@
 		CF966169280FD32E00D4C8BA /* GPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF966168280FD32E00D4C8BA /* GPUCalculateTexture.swift */; };
 		CF96616B2810021F00D4C8BA /* CPUCalculateTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF96616A2810021F00D4C8BA /* CPUCalculateTexture.swift */; };
 		CF9DC4F4271E34EF00AC0C66 /* RealtimePointCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC4F3271E34EF00AC0C66 /* RealtimePointCloudController.swift */; };
-		CFD1096228603BBF00F3DD71 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = CFD1096128603BBF00F3DD71 /* WebRTC */; };
 		CFD69E9626C50DDB00E51949 /* ChoicePictureData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFD69E9526C50DDB00E51949 /* ChoicePictureData.storyboard */; };
 		CFD69E9826C50E3A00E51949 /* CheckPictureChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9726C50E3A00E51949 /* CheckPictureChoiceController.swift */; };
 		CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD69E9926C5121700E51949 /* ChoicePictureAllCheckController.swift */; };
@@ -254,7 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */,
-				CFD1096228603BBF00F3DD71 /* WebRTC in Frameworks */,
+				26559F4A28F220AB003633FE /* WebRTC in Frameworks */,
 				B2CB6E1E43D96243E8AB06DB /* Pods_ARSystem.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -684,7 +684,7 @@
 			);
 			name = ARSystem;
 			packageProductDependencies = (
-				CFD1096128603BBF00F3DD71 /* WebRTC */,
+				26559F4928F220AB003633FE /* WebRTC */,
 			);
 			productName = ARMeshNavigation;
 			productReference = 26AAA1ED2563C802008FE5EB /* ARSystem.app */;
@@ -714,7 +714,7 @@
 			);
 			mainGroup = 26AAA1E42563C802008FE5EB;
 			packageReferences = (
-				CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */,
+				26559F4828F220AB003633FE /* XCRemoteSwiftPackageReference "WebRTC" */,
 			);
 			productRefGroup = 26AAA1EE2563C802008FE5EB /* Products */;
 			projectDirPath = "";
@@ -1108,9 +1108,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+		26559F4828F220AB003633FE /* XCRemoteSwiftPackageReference "WebRTC" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stasel/WebRTC";
+			repositoryURL = "https://github.com/stasel/WebRTC.git";
 			requirement = {
 				branch = latest;
 				kind = branch;
@@ -1119,9 +1119,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CFD1096128603BBF00F3DD71 /* WebRTC */ = {
+		26559F4928F220AB003633FE /* WebRTC */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CFD1096028603BBF00F3DD71 /* XCRemoteSwiftPackageReference "WebRTC" */;
+			package = 26559F4828F220AB003633FE /* XCRemoteSwiftPackageReference "WebRTC" */;
 			productName = WebRTC;
 		};
 /* End XCSwiftPackageProductDependency section */
