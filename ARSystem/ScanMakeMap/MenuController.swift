@@ -7,6 +7,8 @@
 
 import UIKit
 
+//import practice
+
 class MenuController: UIViewController {
     
     @IBOutlet weak var button: UIButton!
@@ -14,6 +16,8 @@ class MenuController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //practice().sallyMethod()
         
         let items = UIMenu(options: .displayInline, children: [
             UIAction(title: "ARコラボレーション", image: .none, handler: { _ in

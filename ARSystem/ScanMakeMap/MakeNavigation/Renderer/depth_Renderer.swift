@@ -86,12 +86,17 @@ final class depth_Renderer {
     private var currentdepthPointCount = 0
 
     //点群用
-    var point_maxPoints = 250000 //10_000_000
+    var point_maxPoints = 2500_000 //10_000_000 //250000
+    var numPPoints: Int = 3000
+    private lazy var gridPPointsBuffer = MetalBuffer<Float2>(device: device,
+                                                            array: makeGridPPoints(),
+                                                            index: kGridPoints.rawValue, options: [])
+    
     private lazy var pointCloudUniforms: PointCloudUniforms = {
         var uniforms = PointCloudUniforms()
         uniforms.maxPoints = Int32(point_maxPoints)
         uniforms.confidenceThreshold = Int32(confidenceThreshold)
-        uniforms.particleSize = particleSize
+        uniforms.particleSize = 5.0//particleSize
         uniforms.cameraResolution = cameraResolution
         return uniforms
     }()
@@ -236,8 +241,8 @@ final class depth_Renderer {
         pointCloudUniforms.cameraIntrinsicsInversed = cameraIntrinsicsInversed
     }
     
-    //MARK: -計算
-    func draw100(){
+    //MARK: -depth計算
+    func draw_depth(){
         guard let currentFrame = session.currentFrame,
               let commandBuffer = commandQueue.makeCommandBuffer(),
               let renderEncoder = sceneView.currentRenderCommandEncoder
@@ -291,14 +296,8 @@ final class depth_Renderer {
         lastCameraTransform = frame.camera.transform
     }
     
-    //depthデータ取得用
-    func depthData() -> (Data, Bool) {
-//        print(particlesDepthBuffer.count)
-        //print(particlesDepthBuffer[100])
-//        print(particlesDepthBuffer[100].confidence)
-//        for i in 0...30 {
-//            print(MeshBuffer[i])
-//        }
+    //MARK: - depthデータ取得用
+    func get_depthData() -> (Data, Bool) {
         
         var depth_array: [depthPosition] = []
         for i in 0..<currentdepthPointCount {
@@ -306,7 +305,6 @@ final class depth_Renderer {
             //depth_array.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: 255, g: 255, b: 255))
             depth_array.append(depthPosition(x: point.position.x, y: point.position.y, z: point.position.z))
         }
-        //print(depth_array.count)
         var result = false
         if depth_array.count > 0 {
             result = true
@@ -314,14 +312,108 @@ final class depth_Renderer {
 
         let depthData = try! JSONEncoder().encode(depth_array)
         
-//        var depth_array: [SCNVector3] = []
-//        for i in 0..<currentPointCount {
-//            let point = particlesDepthBuffer[i]
-//            depth_array.append(SCNVector3(x: point.position.x, y: point.position.y, z: point.position.z))
-//        }
-//        let depthData = Data(bytes: depth_array, count: MemoryLayout<SCNVector3>.size * depth_array.count)
-        
         return (depthData, result)
+    }
+    
+    //MARK: - 画像データ取得用
+    func get_imgData() -> (Data, Bool) {
+        let uiImage = sceneView.snapshot() //(1668.0, 2300.0)
+        guard let imageData = uiImage.jpegData(compressionQuality: 0.5) else { //0.25) //toJPEGData()
+            return (Data(), false)
+        }
+        return (imageData, true)
+    }
+    
+    //MARK: - jsonデータ取得用(カメラパラメータ等)
+    var pre_eulerAngles = SCNVector3(0,0,0)
+    
+    func get_jsonData() -> (Data, Bool) {
+        guard let frame = self.sceneView.session.currentFrame else {
+            fatalError("Couldn't get the current ARFrame")
+            return (Data(), false)
+        }
+        //2D → 3D変換用の内部パラメータ
+        let camera = frame.camera
+        
+        let cameraIntrinsics = camera.intrinsics.inverse
+        let flipYZ = simd_float4x4(
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, 1] )
+        let viewMatrix = camera.viewMatrix(for: orientation)
+        let viewMatrixInverse = viewMatrix.inverse * flipYZ
+        
+        let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: self.sceneView.bounds.size, zNear: 0.001, zFar: 1000.0)
+        
+        imgPlaceMatrix.append(projectionMatrix * viewMatrix)
+        
+        var json_data = Data()
+        
+        guard let camera = self.sceneView.pointOfView else {
+            return (Data(), false)
+        }
+        let cameraPosition = camera.position
+        let cameraEulerAngles = camera.eulerAngles
+        //let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
+        pre_eulerAngles = camera.eulerAngles
+        
+        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
+        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
+        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+        
+        let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
+        let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
+        
+        let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
+        
+        let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
+        let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
+        let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
+        let out_vec_size: Float = sqrt(a * a + b * b + c * c)
+        
+        let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
+        
+        let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
+        //print(inner * 180.0 / .pi )
+        //180の時にメッシュと並行
+        //90の時にメッシュと垂直
+        
+        let entity = MakeMap_parameta(cameraPosition:
+                                        Vector3Entity(x: cameraPosition.x,
+                                                      y: cameraPosition.y,
+                                                      z: cameraPosition.z),
+                                      cameraEulerAngles:
+                                        Vector3Entity(x: cameraEulerAngles.x,
+                                                      y: cameraEulerAngles.y,
+                                                      z: cameraEulerAngles.z),
+                                      cameraVector:
+                                        Vector3Entity(x: tani_out_vec.x,
+                                                      y: tani_out_vec.y,
+                                                      z: tani_out_vec.z),
+                                      Intrinsics:
+                                        Vector33Entity(x: cameraIntrinsics.columns.0,
+                                                       y: cameraIntrinsics.columns.1,
+                                                       z: cameraIntrinsics.columns.2),
+                                      ViewMatrixInverse:
+                                        Vector44Entity(x: viewMatrixInverse.columns.0,
+                                                       y: viewMatrixInverse.columns.1,
+                                                       z: viewMatrixInverse.columns.2,
+                                                       w: viewMatrixInverse.columns.3),
+                                      viewMatrix:
+                                        Vector44Entity(x: viewMatrix.columns.0,
+                                                       y: viewMatrix.columns.1,
+                                                       z: viewMatrix.columns.2,
+                                                       w: viewMatrix.columns.3),
+                                      projectionMatrix:
+                                        Vector44Entity(x: projectionMatrix.columns.0,
+                                                       y: projectionMatrix.columns.1,
+                                                       z: projectionMatrix.columns.2,
+                                                       w: projectionMatrix.columns.3))
+        
+        json_data = try! JSONEncoder().encode(entity)
+        
+        return (json_data, true)
     }
     
     //MARK: - 点群用
@@ -353,18 +445,48 @@ final class depth_Renderer {
         }
        
         //取得した特徴点（色付き）の表示
-//        renderEncoder.setDepthStencilState(depthStencilState)
-//        renderEncoder.setRenderPipelineState(particlePipelineState)
-//        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
-//        renderEncoder.setVertexBuffer(particlesBuffer)
-//        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
-//        if particlesBuffer.count > 12 {
-//            for i in 0...10 {
-//                print(particlesBuffer[i])
-//            }
-//        }
+        renderEncoder.setDepthStencilState(depthStencilState)
+        renderEncoder.setRenderPipelineState(particlePipelineState)
+        renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
+        renderEncoder.setVertexBuffer(particlesBuffer)
+        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: currentPointCount)
+        if particlesBuffer.count > 12 {
+            for i in 0...10 {
+                print(particlesBuffer[i])
+            }
+        }
         
         commandBuffer.commit()
+    }
+    
+    func savePointsToFile(fileName: String) {
+        print("ポイント保存開始")
+        var fileToWrite = ""
+        var vertice_data: [PointCloudVertex] = []
+        
+        for i in 0..<currentPointCount {
+            let point = particlesBuffer[i]
+            let colors = point.color
+            vertice_data.append(PointCloudVertex(x: point.position.x, y: point.position.y, z: point.position.z, r: colors.x, g: colors.y, b: colors.z))
+        }
+        
+        fileToWrite += String(currentPointCount)
+        
+        if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let targetDataFilePath = documentDirectoryFileURL.appendingPathComponent("\(fileName).data")
+            let targetTextFilePath = documentDirectoryFileURL.appendingPathComponent("\(fileName).txt")
+            
+            let vertexData = try! JSONEncoder().encode(vertice_data)
+            
+            do {
+                try vertexData.write(to: targetDataFilePath)
+                try fileToWrite.write(to: targetTextFilePath, atomically: true, encoding: String.Encoding.ascii)
+            } catch {
+                print("Failed to write file", error)
+            }
+            print("保存完了")
+        }
+
     }
     
     func point_draw() {
@@ -401,15 +523,15 @@ final class depth_Renderer {
         renderEncoder.setRenderPipelineState(unprojectPipelineState)
         renderEncoder.setVertexBuffer(PointCloudUniformsBuffers[currentBufferIndex])
         renderEncoder.setVertexBuffer(particlesBuffer)
-        renderEncoder.setVertexBuffer(gridPointsBuffer)
+        renderEncoder.setVertexBuffer(gridPPointsBuffer)
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
-        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
+        renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPPointsBuffer.count)
         
-        currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % point_maxPoints
-        currentPointCount = min(currentPointCount + gridPointsBuffer.count, point_maxPoints)
+        currentPointIndex = (currentPointIndex + gridPPointsBuffer.count) % point_maxPoints
+        currentPointCount = min(currentPointCount + gridPPointsBuffer.count, point_maxPoints)
       
         lastCameraTransform = frame.camera.transform
     }
@@ -589,7 +711,6 @@ final class depth_Renderer {
                 print("---------------------------------------------------------------------------------")
                 print(knownAnchors)
                 
-                
                 encoder.setBuffer(anchor.geometry.vertices.buffer, offset: 0, index: 0)
                 encoder.setBuffer(anchor.geometry.faces.buffer, offset: 0, index: 1)
                 
@@ -645,7 +766,7 @@ final class depth_Renderer {
     var meshAnchors = [ARMeshAnchor]()
     var imgPlaceMatrix = [float4x4]()
     
-    func mapping100() {
+    func draw_mapping() {
         guard let currentFrame = session.currentFrame,
               let commandBuffer = commandQueue.makeCommandBuffer(),
               let renderEncoder = sceneView.currentRenderCommandEncoder else {
@@ -859,6 +980,25 @@ private extension depth_Renderer {
     func makeGridPoints() -> [Float2] {
         let gridArea = cameraResolution.x * cameraResolution.y
         let spacing = sqrt(gridArea / Float(numPoints))
+        let deltaX = Int(round(cameraResolution.x / spacing))
+        let deltaY = Int(round(cameraResolution.y / spacing))
+
+        var points = [Float2]()
+        for gridY in 0 ..< deltaY {
+            let alternatingOffsetX = Float(gridY % 2) * spacing / 2
+            for gridX in 0 ..< deltaX {
+                let cameraPoint = Float2(alternatingOffsetX + (Float(gridX) + 0.5) * spacing, (Float(gridY) + 0.5) * spacing)
+
+                points.append(cameraPoint)
+            }
+        }
+
+        return points
+    }
+    
+    func makeGridPPoints() -> [Float2] {
+        let gridArea = cameraResolution.x * cameraResolution.y
+        let spacing = sqrt(gridArea / Float(numPPoints))
         let deltaX = Int(round(cameraResolution.x / spacing))
         let deltaY = Int(round(cameraResolution.y / spacing))
 

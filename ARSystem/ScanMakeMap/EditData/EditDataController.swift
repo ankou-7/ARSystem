@@ -14,6 +14,8 @@ import SVProgressHUD
 import FirebaseFirestore
 import SSZipArchive
 
+import GPUTextureCalculate
+
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
 
     //MARK: - 変数の設定
@@ -200,6 +202,8 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         //print(models.pic)
         print("パラメータ数：\(picCount!)")
         
+        DocumentsData.getDataCount(name: "\(models.dayString)/\(current_model_num)/pic")
+        
         let picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic/pic0.jpg")
         let width = (UIImage(data: try! Data(contentsOf: picPath))?.size.width)! / num
         print(width)
@@ -311,10 +315,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     }
     
     func load_pointCloud() {
-        let modelname = models.modelname
         if let documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last{
             if models.exit_point == 1 {
-                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(modelname).data")
+                let data_model_name = documentDirectoryFileURL.appendingPathComponent("\(models.dayString)/\(current_model_num)/points/points.data")
                 guard let data = try? Data(contentsOf: data_model_name) else {
                     fatalError("ファイル読み込みエラー")
                 }
@@ -672,20 +675,34 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Calculating")
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
-            let calculateParameta = calculateParameta(device: self.sceneView.device!,
-                                                      W: Int(sceneView.bounds.width),
-                                                      H: Int(sceneView.bounds.height),
-                                                      tate: Int(tate), yoko: Int(yoko),
-                                                      funcString: texString)
-            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: [])
-            GPUCalculateTexture.makeGPUTexture() { [self] in
+//            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+//                                                      W: Int(sceneView.bounds.width),
+//                                                      H: Int(sceneView.bounds.height),
+//                                                      tate: Int(tate), yoko: Int(yoko),
+//                                                      funcString: texString)
+//            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: [])
+            
+            //テクスチャ計算ようのフレームワーク
+            let GPUCalculateTexture = GPUTextureCalculate(sceneView: sceneView, anchors: anchors,
+                                                          models_dayString: models.dayString, models_parametaNum: models.parametaNum,
+                                                          tate: Int(tate), yoko: Int(yoko),funcString: texString,
+                                                          modelID: ModelManagement.modelID)
+            GPUCalculateTexture.make_calcuParameta()
+            
+            GPUCalculateTexture.noLog_makeGPUTexture { [self] in
                 delete_mesh()
+                let realm = try! Realm()
+                try! realm.write {
+                    models.texture_bool = 3
+                }
                 texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
+            
         })
     }
+    
     
     //CPUでのテクスチャ割り当て
     @IBAction func tap_makeTexture3(_ sender: UIButton) {

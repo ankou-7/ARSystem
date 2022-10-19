@@ -189,19 +189,19 @@ class AddDataCellChoiceController: UIViewController, UITableViewDelegate, UITabl
 //                }
             }
             if navityu_results[i].exit_point == 1 {
-                do {
-                    print("point書き込み")
-                    let old_txtname: String? = "\(documentsDirectory)/\(navityu_results[i].modelname).txt"
-                    let new_txtname: String? =  "\(documentsDirectory)/\(objName).txt"
-                    
-                    let old_mesh_modelname: String? = "\(documentsDirectory)/\(navityu_results[i].modelname).data"
-                    let new_mesh_modelname: String? =  "\(documentsDirectory)/\(objName).data"
-                    try FileManager.default.moveItem(atPath: old_txtname!, toPath: new_txtname!)
-                    try FileManager.default.moveItem(atPath: old_mesh_modelname!, toPath: new_mesh_modelname!)
-                } catch {
-                    //fatalError()
-                    print("point書き込み失敗")
-                }
+//                do {
+//                    print("point書き込み")
+//                    let old_txtname: String? = "\(documentsDirectory)/\(navityu_results[i].modelname).txt"
+//                    let new_txtname: String? =  "\(documentsDirectory)/\(objName).txt"
+//
+//                    let old_mesh_modelname: String? = "\(documentsDirectory)/\(navityu_results[i].modelname).data"
+//                    let new_mesh_modelname: String? =  "\(documentsDirectory)/\(objName).data"
+//                    try FileManager.default.moveItem(atPath: old_txtname!, toPath: new_txtname!)
+//                    try FileManager.default.moveItem(atPath: old_mesh_modelname!, toPath: new_mesh_modelname!)
+//                } catch {
+//                    //fatalError()
+//                    print("point書き込み失敗")
+//                }
             }
             
             try! realm.write {

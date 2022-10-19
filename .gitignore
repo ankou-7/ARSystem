@@ -1,3 +1,5 @@
 opencv2.framework/
 Pods/
 HandTracker.framework/
+GPUTextureCalculate.framework/
+MappingSupport.framework/

@@ -57,6 +57,7 @@ struct ParticleUniforms {
 
 struct DepthUniforms {
     simd_float3 position;
+    //simd_float3 color;
     float confidence;
 };
 

@@ -30,8 +30,6 @@ class Navi_CellTitle: Object {
 class Navi_Modelname: Object {
     @objc dynamic var modelname: String = ""
     @objc dynamic var dayString: String = ""
-//    @objc dynamic var worlddata: Data!
-//    @objc dynamic var worldimage: Data!
     @objc dynamic var exit_mesh: Int = 0
     @objc dynamic var exit_point: Int = 0
     
@@ -41,11 +39,7 @@ class Navi_Modelname: Object {
     
     let obj = List<ObjectInfo>()
     @objc dynamic var add_obj_count: Int = 0
-    
-//    let pic = List<pic_data>()
-//    let json = List<json_data>()
-//    let depth = List<depth_data>()
-//
+
 //    @objc dynamic var texture_pic: Data!
     @objc dynamic var texture_bool: Int = 0
 //    let mesh_anchor = List<anchor_data>()

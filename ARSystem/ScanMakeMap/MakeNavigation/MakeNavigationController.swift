@@ -15,11 +15,9 @@ import Photos
 import AssetsLibrary
 import SVProgressHUD
 
+import MappingSupport
+
 class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ARCoachingOverlayViewDelegate {
-    
-    //    //画面遷移した際のsectionとcellの番号を格納
-    //    var section_num = Int()
-    //    var cell_num = Int()
     
     var url: URL!
     
@@ -34,7 +32,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var modelView: SCNView!
     
     private var pointCloudRenderer: Renderer!
-    private var depth_pointCloudRenderer: depth_Renderer!
+    //private var depth_pointCloudRenderer: depth_Renderer!
+    var depth_pointCloudRenderer: MappingSupport.depth_Renderer!
     var pointCloud_flag = false
     var numGridPoints = 1000
     @IBOutlet weak var numGridPoints_label: UILabel!
@@ -101,7 +100,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.debugOptions = .showWorldOrigin
         
         modelView.scene = scene
-        
+
 //        //realm初期化
 //        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
 //            let realm = try! Realm(fileURL: url.appendingPathComponent("try.realm"))
@@ -116,7 +115,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             realm.delete(realm.objects(Data_parameta.self))
         }
         
-        removeDirectory()
+        DocumentsData.removeDirectory(name: saveFilename)
         
         let viewModel = MenuViewModel()
         for _ in 1...viewModel.count {
@@ -139,11 +138,16 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.session.run(configuration)
         
         //深度情報，マッピング支援
-        self.depth_pointCloudRenderer = depth_Renderer(
-            session: self.sceneView.session,
-            metalDevice: self.sceneView.device!,
-            sceneView: self.sceneView,
-            modelView: self.modelView)
+//        self.depth_pointCloudRenderer = depth_Renderer(
+//            session: self.sceneView.session,
+//            metalDevice: self.sceneView.device!,
+//            sceneView: self.sceneView,
+//            modelView: self.modelView)
+        
+        self.depth_pointCloudRenderer = MappingSupport.depth_Renderer(session: self.sceneView.session,
+                                                                      metalDevice: self.sceneView.device!,
+                                                                      sceneView: self.sceneView)
+
         self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
         //点群
@@ -231,7 +235,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     self.mesh_flag = true //メッシュの取得，更新
                     
                     //データ保存用のディレクトリ作成
-                    self.makeDirectory(num: self.recording_count)
+                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/pic")
+                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/json")
+                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/depth")
+                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/mesh")
+                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/points")
                     
                     if self.recording_count == 0 {
                         self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
@@ -243,7 +251,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         self.exit_point_num = 1
                         self.pointCloud_flag = true
                     }
-                    
                     
                     guard let frame = self.sceneView.session.currentFrame else {
                         fatalError("Couldn't get the current ARFrame")
@@ -301,8 +308,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 self.parameta_flag = true
                 self.parametaCount = 0
                 self.meshCount = 0
-                
-                
                 self.lastCameraTransform = self.sceneView.session.currentFrame?.camera.transform
                 
                 //マッピング支援の停止
@@ -315,24 +320,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             }
         }
         isRecording = !isRecording
-    }
-    
-    //マップの新規作成時にデータ保存用のディレクトリを作成する関数
-    func makeDirectory(num: Int) {
-        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let pic_directory = url.appendingPathComponent("\(saveFilename)/\(num)/pic", isDirectory: true)
-            let json_directory = url.appendingPathComponent("\(saveFilename)/\(num)/json", isDirectory: true)
-            let depth_directory = url.appendingPathComponent("\(saveFilename)/\(num)/depth", isDirectory: true)
-            let mesh_directory = url.appendingPathComponent("\(saveFilename)/\(num)/mesh", isDirectory: true)
-            do {
-                try FileManager.default.createDirectory(at: pic_directory, withIntermediateDirectories: true, attributes: nil)
-                try FileManager.default.createDirectory(at: json_directory, withIntermediateDirectories: true, attributes: nil)
-                try FileManager.default.createDirectory(at: depth_directory, withIntermediateDirectories: true, attributes: nil)
-                try FileManager.default.createDirectory(at: mesh_directory, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("失敗した")
-            }
-        }
     }
     
     @objc func Alert() {
@@ -366,7 +353,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     }
     
     @IBAction func to_CheckDataViewController(_ sender: UIButton) {
-
         //self.mesh_flag = false
         self.mapping_flag = false
         self.parameta_flag = false
@@ -414,7 +400,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         //データ保存用のディレクトリ作成
         saveFilename = "\(results[choice_section].cells[choice_cell].dayString)"
-        makeDirectory(num: modelNum)
+        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/pic")
+        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/json")
+        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/depth")
+        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/mesh")
+        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/points")
         
         //modelNumに合わせて変更
         recording_count = modelNum
@@ -484,116 +474,25 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     @objc func update() {
         
-        if parameta_flag == true {
-            //print("update")
-            guard let frame = self.sceneView.session.currentFrame else {
-                fatalError("Couldn't get the current ARFrame")
-            }
-            if shouldAccumulate(frame: frame) {
+        if parameta_flag, shouldAccumulate(frame: sceneView.session.currentFrame!) {
+            //depth,img,jsonデータを取得（データがない時はfalseを返す）
+            let (depthData, depthBool) = depth_pointCloudRenderer.get_depthData()
+            let (imgData, imgBool) = depth_pointCloudRenderer.get_imgData()
+            let (jsonData, jsonBool) = depth_pointCloudRenderer.get_jsonData()
+            
+            if mapping_flag, depthBool, imgBool, jsonBool {
                 
-                jpeg_count += 1
-                
-                //2D → 3D変換用の内部パラメータ
-                let camera = frame.camera
-                
-                let cameraIntrinsics = camera.intrinsics.inverse
-                let flipYZ = simd_float4x4(
-                    [1, 0, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 0, -1, 0],
-                    [0, 0, 0, 1] )
-                let viewMatrix = camera.viewMatrix(for: orientation)
-                let viewMatrixInverse = viewMatrix.inverse * flipYZ
-                
-                let projectionMatrix = camera.projectionMatrix(for: orientation, viewportSize: self.sceneView.bounds.size, zNear: 0.001, zFar: 1000.0)
-                //print(camera.imageResolution)
-                //print(self.sceneView.bounds.size)
-                
-                var json_data = Data()
-                
-                if let camera = self.sceneView.pointOfView {
-                    let cameraPosition = camera.position
-                    let cameraEulerAngles = camera.eulerAngles
-                    //let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
-                    pre_eulerAngles = camera.eulerAngles
+                DispatchQueue.global().async { [self] in
                     
-                    let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
-                    let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
-                    let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/pic/pic\(parametaCount).jpg", Data: imgData)
+                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/json/json\(parametaCount).data", Data: jsonData)
+                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/depth/depth\(parametaCount).data", Data: depthData)
                     
-                    let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
-                    let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
+                    lastCameraTransform = sceneView.session.currentFrame?.camera.transform
                     
-                    let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
-                    
-                    let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
-                    let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
-                    let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
-                    let out_vec_size: Float = sqrt(a * a + b * b + c * c)
-                    
-                    let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
-                    
-                    let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
-                    //print(inner * 180.0 / .pi )
-                    //180の時にメッシュと並行
-                    //90の時にメッシュと垂直
-                    
-                    //RGB画像
-//                    let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage)
-//                    let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!)) //(1440.0, 1920.0)
-                    let uiImage = sceneView.snapshot() //(1668.0, 2300.0)
-                    //print(uiImage.size)
-                    
-                    let imageData = uiImage.jpegData(compressionQuality: 0.5)//0.25) //toJPEGData()
-                    
-                    let entity = MakeMap_parameta(cameraPosition:
-                                                    Vector3Entity(x: cameraPosition.x,
-                                                                  y: cameraPosition.y,
-                                                                  z: cameraPosition.z),
-                                                  cameraEulerAngles:
-                                                    Vector3Entity(x: cameraEulerAngles.x,
-                                                                  y: cameraEulerAngles.y,
-                                                                  z: cameraEulerAngles.z),
-                                                  cameraVector:
-                                                    Vector3Entity(x: tani_out_vec.x,
-                                                                  y: tani_out_vec.y,
-                                                                  z: tani_out_vec.z),
-                                                  Intrinsics:
-                                                    Vector33Entity(x: cameraIntrinsics.columns.0,
-                                                                   y: cameraIntrinsics.columns.1,
-                                                                   z: cameraIntrinsics.columns.2),
-                                                  ViewMatrixInverse:
-                                                    Vector44Entity(x: viewMatrixInverse.columns.0,
-                                                                   y: viewMatrixInverse.columns.1,
-                                                                   z: viewMatrixInverse.columns.2,
-                                                                   w: viewMatrixInverse.columns.3),
-                                                  viewMatrix:
-                                                    Vector44Entity(x: viewMatrix.columns.0,
-                                                                   y: viewMatrix.columns.1,
-                                                                   z: viewMatrix.columns.2,
-                                                                   w: viewMatrix.columns.3),
-                                                  projectionMatrix:
-                                                    Vector44Entity(x: projectionMatrix.columns.0,
-                                                                   y: projectionMatrix.columns.1,
-                                                                   z: projectionMatrix.columns.2,
-                                                                   w: projectionMatrix.columns.3))
-                    
-                    json_data = try! JSONEncoder().encode(entity)
-                    
-                    //深度情報のデータを取得（データがない時はfalseを返す）
-                    let (depthData, bool) = depth_pointCloudRenderer.depthData()
-                    
-                    if mapping_flag == true && bool == true {
-                        depth_pointCloudRenderer.imgPlaceMatrix.append(projectionMatrix * viewMatrix)
-                        
-                        DispatchQueue.global().async { [self] in
-                            save_jpeg(filename: "保存前", jpegData: imageData!, jsonData: json_data, depthData: depthData)
-                            
-                            DispatchQueue.main.async {
-                                self.parametaCount += 1
-                                self.takeParametaCountLabel.text = "取得パラメータ数：\(self.parametaCount)"
-                            }
-                        }
+                    DispatchQueue.main.async {
+                        self.parametaCount += 1
+                        self.takeParametaCountLabel.text = "取得パラメータ数：\(self.parametaCount)"
                     }
                 }
             }
@@ -604,6 +503,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     private let cameraTranslationThreshold: Float = pow(0.02, 2)
     var lastCameraTransform: simd_float4x4!
     
+    //デバイスの移動が小さければfalse
     private func shouldAccumulate(frame: ARFrame) -> Bool {
         //return true
         let cameraTransform = frame.camera.transform
@@ -611,37 +511,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         || distance_squared(cameraTransform.columns.3, lastCameraTransform.columns.3) >= cameraTranslationThreshold
         
         return shouldAccum
-    }
-    
-    //jpegデータ保存
-    func save_jpeg(filename: String, jpegData: Data, jsonData: Data, depthData: Data) {
-//        let realm = try! Realm()
-//            let results = realm.objects(Data_parameta.self)
-//            try! realm.write {
-//                results[self.recording_count].pic.append(pic_data(value: ["pic_name": "rgb_\(filename)",
-//                                                                          "pic_data": jpegData]))
-//
-//                results[self.recording_count].json.append(json_data(value: ["json_name": "\(filename)",
-//                                                                            "json_data": jsonData]))
-//
-//                results[self.recording_count].depth.append(depth_data(value: ["depth_name": "\(filename)",
-//                                                                              "depth_data": depthData]))
-//            }
-                
-        //ディレクトリ内にデータを保存
-        //let picPath = url.appendingPathComponent("\(saveFilename)/\(recording_count)/pic/pic\(parametaCount).data")
-        let picPath = url.appendingPathComponent("\(saveFilename)/\(recording_count)/pic/pic\(parametaCount).jpg")
-        let jsonPath = url.appendingPathComponent("\(saveFilename)/\(recording_count)/json/json\(parametaCount).data")
-        let depthPath = url.appendingPathComponent("\(saveFilename)/\(recording_count)/depth/depth\(parametaCount).data")
-        do {
-            try jpegData.write(to: picPath)
-            try jsonData.write(to: jsonPath)
-            try depthData.write(to: depthPath)
-        } catch {
-            print("データ保存失敗", error)
-        }
-        
-        lastCameraTransform = sceneView.session.currentFrame?.camera.transform
     }
     
     func Make_mesh_obj() {
@@ -652,62 +521,37 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let date = Date()
         let format = DateFormatter()
         format.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-        let dayString = format.string(from: date)
-        print( "現在時刻： ", format.string(from: date) )
+        print("現在時刻： ", format.string(from: date))
         
-        let objName = "NaviModel\(results.count)"
+        savePoints()
         
         if menu_array[1] == false {
-//            let realm = try! Realm()
-//            let results = realm.objects(Data_parameta.self)
-//            try! Realm().write {
-//                results[self.recording_count].mesh_anchor.removeAll()
-//            }
             
             guard let anchors = sceneView.session.currentFrame?.anchors else { return }
             let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
             meshCount = meshAnchors.count
             for (i, anchor) in meshAnchors.enumerated() {
                 
-                guard let mesh_data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
+                guard let meshData = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                 else{ return }
-                
-//                    let results = realm.objects(Data_parameta.self)
-//                    try! realm.write {
-//                        results[self.recording_count].mesh_anchor.append(anchor_data(value: ["mesh": mesh_data]))
-//                    }
                     
-                //ディレクトリにメッシュデータを保存
-                let meshPath = url.appendingPathComponent("\(saveFilename)/\(recording_count)/mesh/mesh\(i).data")
-                do {
-                    try mesh_data.write(to: meshPath)
-                } catch {
-                    print("メッシュデータ保存失敗", error)
-                }
+                //メッシュデータを保存
+                DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/mesh/mesh\(i).data", Data: meshData)
                     
             }
         }
         
-        sceneView.session.getCurrentWorldMap { [self]worldMap, error in
+        sceneView.session.getCurrentWorldMap { [self] worldMap, error in
             if let map = worldMap {
-                if let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
+                if let worldData = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
                     
                     //データをドキュメント内に保存
-                    let worldmapPath = url.appendingPathComponent("保存前/\(recording_count)/worldMap.data")
-                    let worldimagePath = url.appendingPathComponent("保存前/\(recording_count)/worldImage.jpg")
-                    do {
-                        try data.write(to: worldmapPath) //ARWorldMap
-                        try current_imageData!.write(to: worldimagePath)
-                    } catch {
-                        print("Failed to save the image:", error)
-                    }
-                    
+                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/worldMap.data", Data: worldData)
+                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/worldImage.jpg", Data: current_imageData!)
                     
                     try! realm.write {
-                        realm.add(Navityu(value: ["modelname": objName,
-                                                  "dayString": dayString,
-                                                  //"worlddata": data,
-                                                  //"worldimage": self.current_imageData!,
+                        realm.add(Navityu(value: ["modelname": "NaviModel\(results.count)",
+                                                  "dayString": format.string(from: date),
                                                   "exit_mesh": self.exit_mesh_num,
                                                   "exit_point": self.exit_point_num,
                                                   "exit_parameta": self.exit_parameta,
@@ -743,6 +587,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         }
     }
     
+    func savePoints() {
+        //depth_pointCloudRenderer.savePointsToFile(fileName: "\(saveFilename)/\(recording_count)/points/points")
+    }
+    
     func finish_reMap() {
         let realm = try! Realm()
         let results = realm.objects(Navi_SectionTitle.self)
@@ -759,34 +607,22 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         self.dismiss(animated: false, completion: nil)
     }
     
-    //ディレクトリ削除
-    func removeDirectory() {
-        do {
-            try FileManager.default.removeItem(at: url.appendingPathComponent("保存前"))
-            print("ディレクトリ削除成功")
-        } catch _ {
-            print("ディレクトリ削除失敗（存在しない）")
-        }
-    }
-    
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
         
         if parameta_flag == true {
-            self.depth_pointCloudRenderer.draw100() //深度情報
+            self.depth_pointCloudRenderer.draw_depth() //深度情報
 
             if mappingSupportFlag == false {
-                self.depth_pointCloudRenderer.mapping100() //マッピング支援
+                self.depth_pointCloudRenderer.draw_mapping() //マッピング支援
 
                 if remap_flag {
                     depth_pointCloudRenderer.meshAnchors = remapAnchors
                 }
             }
             
-//            if pointCloud_flag == true {
-//                //pointCloudRenderer.draw() //点群
-//                self.depth_pointCloudRenderer.draw()
-//                //self.depth_pointCloudRenderer.point_draw()
-//            }
+            if pointCloud_flag == true {
+                //self.depth_pointCloudRenderer.draw()
+            }
         }
         
     }
@@ -796,7 +632,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             for anchor in anchors {
                 var sceneNode : SCNNode?
                 if let meshAnchor = anchor as? ARMeshAnchor {
-                    let meshGeo = SCNGeometry.fromAnchor(meshAnchor:meshAnchor)
+                    let meshGeo = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     sceneNode = SCNNode(geometry: meshGeo)
                 }
                 if let node = sceneNode {
@@ -846,19 +682,19 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var check_flag = false
     
-    func snapshot() -> UIImage {
-        //コンテキスト開始
-        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
-        //viewを書き出す
-        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
-        // imageにコンテキストの内容を書き出す
-        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-        //コンテキストを閉じる
-        UIGraphicsEndImageContext()
-        // imageをカメラロールに保存
-        //UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        return image
-    }
+//    func snapshot() -> UIImage {
+//        //コンテキスト開始
+//        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+//        //viewを書き出す
+//        self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
+//        // imageにコンテキストの内容を書き出す
+//        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+//        //コンテキストを閉じる
+//        UIGraphicsEndImageContext()
+//        // imageをカメラロールに保存
+//        //UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+//        return image
+//    }
     
     func to_CheckDataViewController() {
         check_flag = true
