@@ -90,6 +90,7 @@ class CheckRenderer {
         anchorUniformsBuffer[0].depthCount = Int32(128*96)
         anchorUniformsBuffer[0].screenWidth = Int32(calculateParameta.screenWidth)
         anchorUniformsBuffer[0].screenHeight = Int32(calculateParameta.screenHeight)
+        anchorUniformsBuffer[0].picNumCount = Int32(1) //仮
         encoder.setBuffer(anchorUniformsBuffer)
         
         //深度情報

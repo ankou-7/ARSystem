@@ -7,7 +7,6 @@
 
 import SceneKit
 import ARKit
-import RealmSwift
 
 class BuildTextureMeshNode: SCNNode {
     private var models: Navi_Modelname //List<anchor_data>
@@ -41,10 +40,28 @@ class BuildTextureMeshNode: SCNNode {
             let vertexData = try! Data(contentsOf: vertexPath) //result[i].vertices!
             let normalData = try! Data(contentsOf: normalsPath) //result[i].normals!
             
-            let faces = (try? decoder.decode([Int32].self, from: try! Data(contentsOf: facesPath)))!
-            let texcoords = (try? decoder.decode([SIMD2<Float>].self, from: try! Data(contentsOf: texcoordsPath)))!
             
-            let count = faces.count
+            var faces: [Int32]!
+            if ((try? decoder.decode([Int32].self, from: try! Data(contentsOf: facesPath))) != nil) {
+                faces = (try? decoder.decode([Int32].self, from: try! Data(contentsOf: facesPath)))
+            } else {
+                let facesData = try! Data(contentsOf: facesPath)
+                faces = [Int32](repeating: Int32(0), count: facesData.count / MemoryLayout<Int32>.stride)
+                faces = facesData.withUnsafeBytes {
+                    Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))
+                }
+            }
+            
+            var texcoords: [SIMD2<Float>]!
+            if ((try? decoder.decode([SIMD2<Float>].self, from: try! Data(contentsOf: texcoordsPath))) != nil) {
+                texcoords = (try? decoder.decode([SIMD2<Float>].self, from: try! Data(contentsOf: texcoordsPath)))
+            } else {
+                let texcoordsData = try! Data(contentsOf: texcoordsPath)
+                texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: faces.count)
+                texcoords = texcoordsData.withUnsafeBytes {
+                    Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
+                }
+            }
             
 //            print("vertexData\(i) : \(vertexData)")
 //            print("normalData\(i) : \(normalData)")
@@ -54,7 +71,7 @@ class BuildTextureMeshNode: SCNNode {
             let verticeSource = SCNGeometrySource(
                 data: vertexData,
                 semantic: SCNGeometrySource.Semantic.vertex,
-                vectorCount: count,
+                vectorCount: faces.count,
                 usesFloatComponents: true,
                 componentsPerVector: 3,
                 bytesPerComponent: MemoryLayout<Float>.size,
@@ -64,7 +81,7 @@ class BuildTextureMeshNode: SCNNode {
             let normalSource = SCNGeometrySource(
                 data: normalData,
                 semantic: SCNGeometrySource.Semantic.normal,
-                vectorCount: count,
+                vectorCount: faces.count,
                 usesFloatComponents: true,
                 componentsPerVector: 3,
                 bytesPerComponent: MemoryLayout<Float>.size,
@@ -83,7 +100,6 @@ class BuildTextureMeshNode: SCNNode {
         }
         print("load完了")
     }
-
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

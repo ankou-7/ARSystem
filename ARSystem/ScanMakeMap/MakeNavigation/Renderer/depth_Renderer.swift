@@ -318,9 +318,19 @@ final class depth_Renderer {
     //MARK: - 画像データ取得用
     func get_imgData() -> (Data, Bool) {
         let uiImage = sceneView.snapshot() //(1668.0, 2300.0)
-        guard let imageData = uiImage.jpegData(compressionQuality: 0.5) else { //0.25) //toJPEGData()
+        guard let imageData = uiImage.jpegData(compressionQuality: 0.5) else { //0.25)
             return (Data(), false)
         }
+        
+//        guard let frame = self.sceneView.session.currentFrame else {
+//            fatalError("Couldn't get the current ARFrame")
+//            return (Data(), false)
+//        }
+//        let ciImage = CIImage.init(cvImageBuffer: frame.capturedImage) //(1920.0, 1440.0)
+//        let uiImage = UIImage.init(ciImage: ciImage.oriented(CGImagePropertyOrientation(rawValue: 6)!))
+//        print(uiImage.size)
+//        let imageData = uiImage.jpegData(compressionQuality: 1.0)! //jpegData(compressionQuality: 0.5)! //
+        
         return (imageData, true)
     }
     

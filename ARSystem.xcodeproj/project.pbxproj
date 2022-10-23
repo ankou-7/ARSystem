@@ -10,6 +10,7 @@
 		260D431427CE3F160020039E /* CheckData.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 260D431327CE3F160020039E /* CheckData.storyboard */; };
 		260D431627CE3FD80020039E /* CheckDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260D431527CE3FD80020039E /* CheckDataViewController.swift */; };
 		260D431827CE4D690020039E /* CheckRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260D431727CE4D690020039E /* CheckRenderer.swift */; };
+		261FC49E2901E1320023B068 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 261FC49D2901E1320023B068 /* WebRTC */; };
 		262D694F275DEC6F00E7EE12 /* CalculateRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262D694E275DEC6F00E7EE12 /* CalculateRenderer.swift */; };
 		2632F45425F04193006B7366 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45325F04193006B7366 /* Shaders.metal */; };
 		2632F45A25F0420A006B7366 /* MetalBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F45925F0420A006B7366 /* MetalBuffer.swift */; };
@@ -17,8 +18,7 @@
 		2632F47D25F05BC8006B7366 /* EditDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2632F47C25F05BC8006B7366 /* EditDataController.swift */; };
 		2645C16A28F4214000F1FE93 /* GPUTextureCalculate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2645C16828F4213300F1FE93 /* GPUTextureCalculate.framework */; };
 		2645C16B28F4214100F1FE93 /* GPUTextureCalculate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2645C16828F4213300F1FE93 /* GPUTextureCalculate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		26559F4A28F220AB003633FE /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 26559F4928F220AB003633FE /* WebRTC */; };
-		2660EA9A28F8A4AB00BA13CE /* DocumentsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2660EA9928F8A4AB00BA13CE /* DocumentsData.swift */; };
+		2660EA9A28F8A4AB00BA13CE /* DataManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2660EA9928F8A4AB00BA13CE /* DataManagement.swift */; };
 		2660EA9D28F8AE3300BA13CE /* MappingSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2660EA9B28F8AE2900BA13CE /* MappingSupport.framework */; };
 		2660EA9E28F8AE3300BA13CE /* MappingSupport.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2660EA9B28F8AE2900BA13CE /* MappingSupport.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		26641EC8256C4BEA00FBBDF2 /* MarkerPopOverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */; };
@@ -149,7 +149,7 @@
 		2632F46625F0451E006B7366 /* smTest-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "smTest-Bridging-Header.h"; sourceTree = "<group>"; };
 		2632F47C25F05BC8006B7366 /* EditDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDataController.swift; sourceTree = "<group>"; };
 		2645C16828F4213300F1FE93 /* GPUTextureCalculate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GPUTextureCalculate.framework; sourceTree = "<group>"; };
-		2660EA9928F8A4AB00BA13CE /* DocumentsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsData.swift; sourceTree = "<group>"; };
+		2660EA9928F8A4AB00BA13CE /* DataManagement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManagement.swift; sourceTree = "<group>"; };
 		2660EA9B28F8AE2900BA13CE /* MappingSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MappingSupport.framework; sourceTree = "<group>"; };
 		26641EC7256C4BEA00FBBDF2 /* MarkerPopOverController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerPopOverController.swift; sourceTree = "<group>"; };
 		2682062E25C3F7BC00519E42 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
@@ -263,10 +263,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				261FC49E2901E1320023B068 /* WebRTC in Frameworks */,
 				2660EA9D28F8AE3300BA13CE /* MappingSupport.framework in Frameworks */,
 				2645C16A28F4214000F1FE93 /* GPUTextureCalculate.framework in Frameworks */,
 				CF0BB004281C8F8D004086C8 /* opencv2.framework in Frameworks */,
-				26559F4A28F220AB003633FE /* WebRTC in Frameworks */,
 				B2CB6E1E43D96243E8AB06DB /* Pods_ARSystem.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -284,12 +284,12 @@
 			path = CheckData;
 			sourceTree = "<group>";
 		};
-		2660EA9828F8A40D00BA13CE /* DocumentsData */ = {
+		2660EA9828F8A40D00BA13CE /* DataManagement */ = {
 			isa = PBXGroup;
 			children = (
-				2660EA9928F8A4AB00BA13CE /* DocumentsData.swift */,
+				2660EA9928F8A4AB00BA13CE /* DataManagement.swift */,
 			);
-			path = DocumentsData;
+			path = DataManagement;
 			sourceTree = "<group>";
 		};
 		26AAA1E42563C802008FE5EB = {
@@ -514,7 +514,7 @@
 				CF3D8080262B8803007904E6 /* MakeNavigation.storyboard */,
 				26AAA2352563C997008FE5EB /* MakeNavigationController.swift */,
 				CF966148280D9F5900D4C8BA /* SCNGeometry+Ext.swift */,
-				2660EA9828F8A40D00BA13CE /* DocumentsData */,
+				2660EA9828F8A40D00BA13CE /* DataManagement */,
 				CF3D808E262B8C64007904E6 /* Renderer */,
 				260D431227CE3EC90020039E /* CheckData */,
 				CF2210A6283D41C900AA5C83 /* ReMap */,
@@ -707,7 +707,7 @@
 			);
 			name = ARSystem;
 			packageProductDependencies = (
-				26559F4928F220AB003633FE /* WebRTC */,
+				261FC49D2901E1320023B068 /* WebRTC */,
 			);
 			productName = ARMeshNavigation;
 			productReference = 26AAA1ED2563C802008FE5EB /* ARSystem.app */;
@@ -737,7 +737,7 @@
 			);
 			mainGroup = 26AAA1E42563C802008FE5EB;
 			packageReferences = (
-				26559F4828F220AB003633FE /* XCRemoteSwiftPackageReference "WebRTC" */,
+				261FC49C2901E1320023B068 /* XCRemoteSwiftPackageReference "WebRTC" */,
 			);
 			productRefGroup = 26AAA1EE2563C802008FE5EB /* Products */;
 			projectDirPath = "";
@@ -872,7 +872,7 @@
 				CF666309283457CA0012F0DB /* CameraNode.swift in Sources */,
 				CF30EF76262D96EE00C13B66 /* MapExpansionChoiceController.swift in Sources */,
 				CFD69E9A26C5121700E51949 /* ChoicePictureAllCheckController.swift in Sources */,
-				2660EA9A28F8A4AB00BA13CE /* DocumentsData.swift in Sources */,
+				2660EA9A28F8A4AB00BA13CE /* DataManagement.swift in Sources */,
 				CF2210AA283D42C200AA5C83 /* ChoiceData.swift in Sources */,
 				CFE717EB281130C200B55073 /* ViewManagement.swift in Sources */,
 				CF966163280F4E9200D4C8BA /* BuildTextureMeshNode.swift in Sources */,
@@ -1132,7 +1132,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		26559F4828F220AB003633FE /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+		261FC49C2901E1320023B068 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/stasel/WebRTC.git";
 			requirement = {
@@ -1143,9 +1143,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		26559F4928F220AB003633FE /* WebRTC */ = {
+		261FC49D2901E1320023B068 /* WebRTC */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 26559F4828F220AB003633FE /* XCRemoteSwiftPackageReference "WebRTC" */;
+			package = 261FC49C2901E1320023B068 /* XCRemoteSwiftPackageReference "WebRTC" */;
 			productName = WebRTC;
 		};
 /* End XCSwiftPackageProductDependency section */

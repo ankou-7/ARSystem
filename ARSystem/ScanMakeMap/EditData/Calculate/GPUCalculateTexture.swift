@@ -14,7 +14,9 @@ class GPUCalculateTexture {
     
     private var sceneView: SCNView
     private var anchors: [ARMeshAnchor]
-    private var models: Navi_Modelname
+    var models_dayString: String
+    var models_parametaNum: Int
+    var modelID: Int
     private var calculateParameta: calculateParameta
     
     private var calcuMatrix = [float4x4]()
@@ -31,10 +33,12 @@ class GPUCalculateTexture {
     // 使用者が単位を把握できるようにするため
     typealias MegaByte = UInt64
     
-    init(sceneView: SCNView, anchors: [ARMeshAnchor], models: Navi_Modelname, calculateParameta: calculateParameta, removeCount: [Int]) {
+    init(sceneView: SCNView, anchors: [ARMeshAnchor], models_dayString: String, models_parametaNum: Int, modelID: Int, calculateParameta: calculateParameta, removeCount: [Int]) {
         self.sceneView = sceneView
         self.anchors = anchors
-        self.models = models
+        self.models_dayString = models_dayString
+        self.models_parametaNum = models_parametaNum
+        self.modelID = modelID
         self.calculateParameta = calculateParameta
         
         self.removeCount = removeCount
@@ -50,7 +54,8 @@ class GPUCalculateTexture {
         var time = ""
         print("calcu開始")
         
-        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+//        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+        self.calculateRenderer = CalculateRenderer(models_dayString: models_dayString, modelID: modelID, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
         self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
         for i in 0..<anchors.count {
@@ -82,13 +87,33 @@ class GPUCalculateTexture {
     
     func noLog_makeGPUTexture(completionHandler: @escaping () -> ()) {
         var flag = 0
+        let start = Date()
         
-        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+//        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+        self.calculateRenderer = CalculateRenderer(models_dayString: models_dayString, modelID: modelID, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
         self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
+        
+        // 並列で実行
+//        DispatchQueue.concurrentPerform(iterations: anchors.count) { index in
+//            print("-----------------------------------------")
+//            print("index: \(index)")
+//            flag += self.calculateRenderer.calcu5(num: index)
+//        }
+        
+        
+//        for i in 0..<anchors.count {
+//            DispatchQueue.global().async {
+//                print("-----------------------------------------")
+//                flag += self.calculateRenderer.calcu5(num: i)
+//            }
+//        }
+        
         for i in 0..<anchors.count {
+            print("-----------------------------------------")
             flag += self.calculateRenderer.calcu5(num: i)
         }
+        print("処理時間：\(Date().timeIntervalSince(start))")
         
         completionHandler()
     }
@@ -96,14 +121,14 @@ class GPUCalculateTexture {
     func saveDocument(text: String) {
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             
-            let archivePath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/バージョン3.txt")
+            let archivePath = url.appendingPathComponent("\(models_dayString)/\(modelID)/バージョン3.txt")
             do {
                 try text.write(to: archivePath, atomically: false, encoding: .utf8)
             } catch {
                 print("Error: \(error)")
             }
             
-            let posiPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/posi.txt")
+            let posiPath = url.appendingPathComponent("\(models_dayString)/\(modelID)/posi.txt")
             do {
                 try posi.write(to: posiPath, atomically: false, encoding: .utf8)
             } catch {
@@ -116,9 +141,9 @@ class GPUCalculateTexture {
     func make_calcuParameta() {
         let decoder = JSONDecoder()
         
-        for i in 0..<models.parametaNum { //pic.count {
+        for i in 0..<models_parametaNum { //pic.count {
             if removeCount.firstIndex(of: i) == nil {
-                let jsonPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/json/json\(i).data")
+                let jsonPath = url.appendingPathComponent("\(models_dayString)/\(modelID)/json/json\(i).data")
                 //let json_data = try? decoder.decode(MakeMap_parameta.self, from: models.json[i].json_data!)
                 let json_data = try? decoder.decode(MakeMap_parameta.self, from: try! Data(contentsOf: jsonPath))
                 
@@ -136,7 +161,7 @@ class GPUCalculateTexture {
                 var dis = sqrt((json_data!.cameraPosition.x * json_data!.cameraPosition.x) + (json_data!.cameraPosition.y * json_data!.cameraPosition.y) + (json_data!.cameraPosition.z * json_data!.cameraPosition.z))
                 posi += "\(i) : \(dis)\n"
                 
-                let depthPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/depth/depth\(i).data")
+                let depthPath = url.appendingPathComponent("\(models_dayString)/\(modelID)/depth/depth\(i).data")
                 //let depth_array = (try? decoder.decode([depthPosition].self, from: models.depth[i].depth_data!))!
                 let depth_array = try? decoder.decode([depthPosition].self, from: try! Data(contentsOf: depthPath))
                 depth.append(contentsOf: depth_array!)

@@ -15,7 +15,7 @@ import Photos
 import AssetsLibrary
 import SVProgressHUD
 
-import MappingSupport
+//import MappingSupport
 
 class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ARCoachingOverlayViewDelegate {
     
@@ -32,8 +32,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     @IBOutlet weak var modelView: SCNView!
     
     private var pointCloudRenderer: Renderer!
-    //private var depth_pointCloudRenderer: depth_Renderer!
-    var depth_pointCloudRenderer: MappingSupport.depth_Renderer!
+    private var depth_pointCloudRenderer: depth_Renderer!
+    //var depth_pointCloudRenderer: MappingSupport.depth_Renderer!
     var pointCloud_flag = false
     var numGridPoints = 1000
     @IBOutlet weak var numGridPoints_label: UILabel!
@@ -115,7 +115,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             realm.delete(realm.objects(Data_parameta.self))
         }
         
-        DocumentsData.removeDirectory(name: saveFilename)
+        DataManagement.removeDirectory(name: saveFilename)
         
         let viewModel = MenuViewModel()
         for _ in 1...viewModel.count {
@@ -138,15 +138,15 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         sceneView.session.run(configuration)
         
         //深度情報，マッピング支援
-//        self.depth_pointCloudRenderer = depth_Renderer(
-//            session: self.sceneView.session,
-//            metalDevice: self.sceneView.device!,
-//            sceneView: self.sceneView,
-//            modelView: self.modelView)
+        self.depth_pointCloudRenderer = depth_Renderer(
+            session: self.sceneView.session,
+            metalDevice: self.sceneView.device!,
+            sceneView: self.sceneView,
+            modelView: self.modelView)
         
-        self.depth_pointCloudRenderer = MappingSupport.depth_Renderer(session: self.sceneView.session,
-                                                                      metalDevice: self.sceneView.device!,
-                                                                      sceneView: self.sceneView)
+//        self.depth_pointCloudRenderer = MappingSupport.depth_Renderer(session: self.sceneView.session,
+//                                                                      metalDevice: self.sceneView.device!,
+//                                                                      sceneView: self.sceneView)
 
         self.depth_pointCloudRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
@@ -235,11 +235,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     self.mesh_flag = true //メッシュの取得，更新
                     
                     //データ保存用のディレクトリ作成
-                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/pic")
-                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/json")
-                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/depth")
-                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/mesh")
-                    DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/points")
+                    DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/pic")
+                    DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/json")
+                    DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/depth")
+                    DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/mesh")
+                    DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/points")
                     
                     if self.recording_count == 0 {
                         self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
@@ -400,11 +400,11 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
         //データ保存用のディレクトリ作成
         saveFilename = "\(results[choice_section].cells[choice_cell].dayString)"
-        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/pic")
-        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/json")
-        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/depth")
-        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/mesh")
-        DocumentsData.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/points")
+        DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/pic")
+        DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/json")
+        DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/depth")
+        DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/mesh")
+        DataManagement.makeDirectory(name: "\(self.saveFilename)/\(self.recording_count)/points")
         
         //modelNumに合わせて変更
         recording_count = modelNum
@@ -484,11 +484,12 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 
                 DispatchQueue.global().async { [self] in
                     
-                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/pic/pic\(parametaCount).jpg", Data: imgData)
-                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/json/json\(parametaCount).data", Data: jsonData)
-                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/depth/depth\(parametaCount).data", Data: depthData)
+                    DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/pic/pic\(parametaCount).jpg", Data: imgData)
                     
-                    lastCameraTransform = sceneView.session.currentFrame?.camera.transform
+                    //get_node()
+                    
+                    DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/json/json\(parametaCount).data", Data: jsonData)
+                    DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/depth/depth\(parametaCount).data", Data: depthData)
                     
                     DispatchQueue.main.async {
                         self.parametaCount += 1
@@ -497,6 +498,18 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 }
             }
         }
+    }
+    
+    func get_node() {
+        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
+        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
+        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+        
+        let hitResults = sceneView.hitTest(CGPoint(x: 400, y: 500), options: [:])
+        if hitResults.count > 0 {
+            print(hitResults[0].node.focusGroupIdentifier)
+        }
+
     }
     
     private let cameraRotationThreshold = cos(2 * .degreesToRadian)
@@ -530,14 +543,24 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             guard let anchors = sceneView.session.currentFrame?.anchors else { return }
             let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
             meshCount = meshAnchors.count
+            print(anchor_picNum)
+            
             for (i, anchor) in meshAnchors.enumerated() {
                 
                 guard let meshData = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
                 else{ return }
                     
                 //メッシュデータを保存
-                DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/mesh/mesh\(i).data", Data: meshData)
+                DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/mesh/mesh\(i).data", Data: meshData)
                     
+                if let num = anchor_picNum[anchor.identifier] {
+                    let st = num.map {String($0)}.joined(separator: "\n")
+                    do {
+                        try st.write(to: url.appendingPathComponent("\(saveFilename)/\(recording_count)/mesh/mesh\(i).txt"), atomically: false, encoding: .utf8)
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
             }
         }
         
@@ -546,8 +569,8 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 if let worldData = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
                     
                     //データをドキュメント内に保存
-                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/worldMap.data", Data: worldData)
-                    DocumentsData.saveData(name: "\(saveFilename)/\(recording_count)/worldImage.jpg", Data: current_imageData!)
+                    DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/worldMap.data", Data: worldData)
+                    DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/worldImage.jpg", Data: current_imageData!)
                     
                     try! realm.write {
                         realm.add(Navityu(value: ["modelname": "NaviModel\(results.count)",
@@ -576,12 +599,14 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             }
             
             //配置したmeshオブジェクトを削除
-            for name in self.meshAnchors_array {
-                if let node = self.sceneView.scene.rootNode.childNode(withName: name, recursively: false) {
+            guard let anchors = sceneView.session.currentFrame?.anchors else { return }
+            //let meshAnchors = anchors.compactMap { $0 as? ARMeshAnchor}
+            for anchor in anchors {
+                if let node = knownAnchors[anchor.identifier] {
                     node.removeFromParentNode()
+                    knownAnchors.removeValue(forKey: anchor.identifier)
                 }
             }
-            meshAnchors_array = []
             
             print(realm.objects(Navi_SectionTitle.self))
         }
@@ -627,19 +652,22 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         
     }
     
+    var anchor_picNum: [UUID: [Int]] = [:] //アンカーと画像を紐づける
+    
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         if mesh_flag {
             for anchor in anchors {
                 var sceneNode : SCNNode?
                 if let meshAnchor = anchor as? ARMeshAnchor {
-                    let meshGeo = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
-                    sceneNode = SCNNode(geometry: meshGeo)
+                    let meshGeometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
+                    sceneNode = SCNNode(geometry: meshGeometry)
                 }
                 if let node = sceneNode {
                     node.simdTransform = anchor.transform
                     knownAnchors[anchor.identifier] = node
-                    node.name = "mesh"
-                    meshAnchors_array.append(node.name!)
+                    //node.name = "mesh"
+                    //meshAnchors_array.append(node.name!)
+                    anchor_picNum[anchor.identifier] = [parametaCount]
                     
                     if mapping_mesh_flag == true {
                         print("メッシュ追加")
@@ -660,6 +688,10 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                     if let meshAnchor = anchor as? ARMeshAnchor {
                         
                         meshAnchors.append(meshAnchor) //updateされたメッシュ情報
+    
+                        if anchor_picNum[meshAnchor.identifier]?.firstIndex(of: parametaCount) == nil {
+                            anchor_picNum[meshAnchor.identifier]!.append(parametaCount)
+                        }
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }

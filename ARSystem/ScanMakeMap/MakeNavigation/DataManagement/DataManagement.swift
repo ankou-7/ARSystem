@@ -7,7 +7,7 @@
 
 import Foundation
 
-class DocumentsData {
+class DataManagement {
     
     //ディレクトリ作成
     static func makeDirectory(name: String) {

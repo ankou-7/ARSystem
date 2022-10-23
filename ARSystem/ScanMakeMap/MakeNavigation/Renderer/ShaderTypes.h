@@ -77,6 +77,7 @@ struct anchorUniforms {
     int depthCount;
     int screenWidth;
     int screenHeight;
+    int picNumCount;
 };
 
 struct MeshUniforms {

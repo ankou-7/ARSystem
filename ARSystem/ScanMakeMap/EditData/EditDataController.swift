@@ -14,7 +14,7 @@ import SVProgressHUD
 import FirebaseFirestore
 import SSZipArchive
 
-import GPUTextureCalculate
+//import GPUTextureCalculate
 
 class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, MCBrowserViewControllerDelegate, MCSessionDelegate {
 
@@ -165,10 +165,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
             objectName_array.append(s.name_identify)
         }
         
-//        let realm = try! Realm()
-//        try! realm.write {
-//            models.texture_bool = 0
-//        }
+        let realm = try! Realm()
+        try! realm.write {
+            models.texture_bool = 0
+        }
         //print(models)
         //print(models.mesh_anchor.count)
         
@@ -202,7 +202,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         //print(models.pic)
         print("パラメータ数：\(picCount!)")
         
-        DocumentsData.getDataCount(name: "\(models.dayString)/\(current_model_num)/pic")
+        DataManagement.getDataCount(name: "\(models.dayString)/\(current_model_num)/pic")
         
         let picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic/pic0.jpg")
         let width = (UIImage(data: try! Data(contentsOf: picPath))?.size.width)! / num
@@ -666,7 +666,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         if sender.isOn == true {
             texString = "calcu50"
         } else if sender.isOn == false {
-            texString = "calcu5"
+            texString = "choicePic_textureCalculate"//"calcu5"
         }
     }
     
@@ -674,21 +674,40 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBAction func tap_makeTexture_button(_ sender: UIButton) {
         SVProgressHUD.show()
         SVProgressHUD.show(withStatus: "Calculating")
+        
+//        let calculateParameta = calculateParameta(device: self.sceneView.device!,
+//                                                  W: Int(sceneView.bounds.width),
+//                                                  H: Int(sceneView.bounds.height),
+//                                                  tate: Int(tate), yoko: Int(yoko),
+//                                                  funcString: texString)
+//        let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models_dayString: models.dayString, models_parametaNum: models.parametaNum, modelID: ModelManagement.modelID, calculateParameta: calculateParameta, removeCount: [])
+//
+//        GPUCalculateTexture.noLog_makeGPUTexture { [self] in
+//            delete_mesh()
+////                let realm = try! Realm()
+////                try! realm.write {
+////                    models.texture_bool = 3
+////                }
+//                texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
+//                sceneView.scene?.rootNode.addChildNode(texmeshNode)
+//            SVProgressHUD.dismiss()
+//        }
+//
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: { [self] in
-//            let calculateParameta = calculateParameta(device: self.sceneView.device!,
-//                                                      W: Int(sceneView.bounds.width),
-//                                                      H: Int(sceneView.bounds.height),
-//                                                      tate: Int(tate), yoko: Int(yoko),
-//                                                      funcString: texString)
-//            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models: models, calculateParameta: calculateParameta, removeCount: [])
-            
+            let calculateParameta = calculateParameta(device: self.sceneView.device!,
+                                                      W: Int(sceneView.bounds.width),
+                                                      H: Int(sceneView.bounds.height),
+                                                      tate: Int(tate), yoko: Int(yoko),
+                                                      funcString: texString)
+            let GPUCalculateTexture = GPUCalculateTexture(sceneView: sceneView, anchors: anchors, models_dayString: models.dayString, models_parametaNum: models.parametaNum, modelID: ModelManagement.modelID, calculateParameta: calculateParameta, removeCount: [])
+
             //テクスチャ計算ようのフレームワーク
-            let GPUCalculateTexture = GPUTextureCalculate(sceneView: sceneView, anchors: anchors,
-                                                          models_dayString: models.dayString, models_parametaNum: models.parametaNum,
-                                                          tate: Int(tate), yoko: Int(yoko),funcString: texString,
-                                                          modelID: ModelManagement.modelID)
-            GPUCalculateTexture.make_calcuParameta()
-            
+//            let GPUCalculateTexture = GPUTextureCalculate(sceneView: sceneView, anchors: anchors,
+//                                                          models_dayString: models.dayString, models_parametaNum: models.parametaNum,
+//                                                          tate: Int(tate), yoko: Int(yoko),funcString: texString,
+//                                                          modelID: ModelManagement.modelID)
+//            GPUCalculateTexture.make_calcuParameta()
+
             GPUCalculateTexture.noLog_makeGPUTexture { [self] in
                 delete_mesh()
                 let realm = try! Realm()
@@ -699,7 +718,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()
             }
-            
+
         })
     }
     
