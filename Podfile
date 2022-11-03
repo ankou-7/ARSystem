@@ -8,8 +8,10 @@ target 'ARSystem' do
   pod 'RealmSwift'
   pod 'Matft'
   pod 'SSZipArchive'
-  # pod 'WebRTC-lib'
-  # pod 'WebRTC'
+  
+   pod 'WebRTC-lib'
+   #pod 'WebRTC'
+   pod 'Starscream'
   
   pod 'FirebaseFirestore'
   pod 'FirebaseCore'

@@ -72,7 +72,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     let billboardConstraint = SCNBillboardConstraint()
     
     var calculate: CalculateRenderer!
-    var texString: String = "calcu50"
+    var texString: String = "calcu50" //"textureCalculate"
     
     var axis: ObjectOrigin?
     var texmeshNode = SCNNode() {
@@ -202,9 +202,10 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         //print(models.pic)
         print("パラメータ数：\(picCount!)")
         
-        DataManagement.getDataCount(name: "\(models.dayString)/\(current_model_num)/pic")
+        //DataManagement.getDataCount(name: "\(models.dayString)/\(current_model_num)/pic")
         
         let picPath = url.appendingPathComponent("\(models.dayString)/\(current_model_num)/pic/pic0.jpg")
+        print(picPath)
         let width = (UIImage(data: try! Data(contentsOf: picPath))?.size.width)! / num
         print(width)
         
@@ -664,9 +665,9 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBAction func texture_switch(_ sender: UISwitch) {
         print(sender.isOn)
         if sender.isOn == true {
-            texString = "calcu50"
+            texString = "calcu50" //"textureCalculate"
         } else if sender.isOn == false {
-            texString = "choicePic_textureCalculate"//"calcu5"
+            texString = "choicePic_textureCalculate"//"calcu5" "calcu500" //
         }
     }
     
@@ -708,7 +709,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //                                                          modelID: ModelManagement.modelID)
 //            GPUCalculateTexture.make_calcuParameta()
 
-            GPUCalculateTexture.noLog_makeGPUTexture { [self] in
+            GPUCalculateTexture.makeGPUTexture { [self] in
                 delete_mesh()
                 let realm = try! Realm()
                 try! realm.write {

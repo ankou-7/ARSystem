@@ -34,6 +34,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     private var pointCloudRenderer: Renderer!
     private var depth_pointCloudRenderer: depth_Renderer!
     //var depth_pointCloudRenderer: MappingSupport.depth_Renderer!
+    
     var pointCloud_flag = false
     var numGridPoints = 1000
     @IBOutlet weak var numGridPoints_label: UILabel!
@@ -63,6 +64,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
     
     var jpeg_count = 0
     var parameta_flag = false
+    var deviceVec: SCNVector3!
     
     private let orientation = UIInterfaceOrientation.portrait
     @IBOutlet weak var depthImage: UIImageView!
@@ -112,7 +114,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
         let realm = try! Realm()
         try! realm.write {
             realm.delete(realm.objects(Navityu.self))
-            realm.delete(realm.objects(Data_parameta.self))
         }
         
         DataManagement.removeDirectory(name: saveFilename)
@@ -289,13 +290,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         self.sceneView.session.run(self.configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction])
                     }
                 
-                    //内部パラメータ保存用
-                    let realm = try! Realm()
-                    let results = realm.objects(Data_parameta.self)
-                    let objName = "NaviModel\(results.count)"
-                    try! realm.write {
-                        realm.add(Data_parameta(value: ["modelname": objName]))
-                    }
+//                    //内部パラメータ保存用
+//                    let realm = try! Realm()
+//                    let results = realm.objects(Data_parameta.self)
+//                    let objName = "NaviModel\(results.count)"
+//                    try! realm.write {
+//                        realm.add(Data_parameta(value: ["modelname": objName]))
+//                    }
                     self.exit_parameta = 1
                     
                 } else {
@@ -480,14 +481,13 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             let (imgData, imgBool) = depth_pointCloudRenderer.get_imgData()
             let (jsonData, jsonBool) = depth_pointCloudRenderer.get_jsonData()
             
+            deviceVec = depth_pointCloudRenderer.get_deviceVec() //デバイスの法線ベクトルを取得
+            
             if mapping_flag, depthBool, imgBool, jsonBool {
                 
                 DispatchQueue.global().async { [self] in
                     
                     DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/pic/pic\(parametaCount).jpg", Data: imgData)
-                    
-                    //get_node()
-                    
                     DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/json/json\(parametaCount).data", Data: jsonData)
                     DataManagement.saveData(name: "\(saveFilename)/\(recording_count)/depth/depth\(parametaCount).data", Data: depthData)
                     
@@ -498,18 +498,6 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                 }
             }
         }
-    }
-    
-    func get_node() {
-        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
-        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
-        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
-        
-        let hitResults = sceneView.hitTest(CGPoint(x: 400, y: 500), options: [:])
-        if hitResults.count > 0 {
-            print(hitResults[0].node.focusGroupIdentifier)
-        }
-
     }
     
     private let cameraRotationThreshold = cos(2 * .degreesToRadian)
@@ -659,6 +647,7 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
             for anchor in anchors {
                 var sceneNode : SCNNode?
                 if let meshAnchor = anchor as? ARMeshAnchor {
+                    //print(meshAnchor)
                     let meshGeometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     sceneNode = SCNNode(geometry: meshGeometry)
                 }
@@ -689,9 +678,38 @@ class MakeNavigationController: UIViewController, ARSCNViewDelegate, ARSessionDe
                         
                         meshAnchors.append(meshAnchor) //updateされたメッシュ情報
     
-                        if anchor_picNum[meshAnchor.identifier]?.firstIndex(of: parametaCount) == nil {
-                            anchor_picNum[meshAnchor.identifier]!.append(parametaCount)
+//                        guard let frame = self.sceneView.session.currentFrame else {
+//                            fatalError("Couldn't get the current ARFrame")
+//                            return
+//                        }
+//                        let camera = frame.camera.transform.columns.3
+//                        print(camera)
+                        
+                        let device = sceneView.pointOfView!
+                        let devicePosition = simd_float3(x: device.position.x, y: device.position.y, z: device.position.z)
+                        let diff = distance(devicePosition, node.simdWorldPosition)
+                        //print("diff:\(diff)")
+                        let meshVec = SCNVector3(x: (devicePosition.x - node.simdWorldPosition.x) / diff,
+                                                 y: (devicePosition.y - node.simdWorldPosition.y) / diff,
+                                                 z: (devicePosition.z - node.simdWorldPosition.z) / diff)
+
+                        if deviceVec != nil {
+//                            print("meshVec:\(meshVec)")
+//                            print("deviceVec:\(deviceVec!)")
+
+                            let inner = acos(deviceVec.x * meshVec.x + deviceVec.y * meshVec.y + deviceVec.z * meshVec.z)
+                            let angle = inner * 180.0 / .pi //180の時に並行，90の時に垂直
+                            print(angle)
+
+                            if anchor_picNum[meshAnchor.identifier]?.firstIndex(of: parametaCount) == nil && diff < 5.0 && angle > 100.0 {
+                                anchor_picNum[meshAnchor.identifier]!.append(parametaCount)
+                            }
+
                         }
+                        
+//                        if anchor_picNum[meshAnchor.identifier]?.firstIndex(of: parametaCount) == nil && diff < 5.0 {
+//                            anchor_picNum[meshAnchor.identifier]!.append(parametaCount)
+//                        }
                         
                         node.geometry = SCNGeometry.fromAnchor(meshAnchor: meshAnchor)
                     }

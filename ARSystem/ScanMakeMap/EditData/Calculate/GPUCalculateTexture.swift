@@ -55,17 +55,27 @@ class GPUCalculateTexture {
         print("calcu開始")
         
 //        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
-        self.calculateRenderer = CalculateRenderer(models_dayString: models_dayString, modelID: modelID, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+        self.calculateRenderer = CalculateRenderer(models_dayString: models_dayString, modelID: modelID, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
         self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
-        for i in 0..<anchors.count {
+        var i = 0
+        _ = anchors.map { anchor in
             print("-----------------------------------------")
             print("\(flag)回目")
-            flag += self.calculateRenderer.calcu5(num: i)
+            flag += self.calculateRenderer.calcu5(num: i, anchor: anchors[i])
             poly += "\(calculateRenderer.sumPolygon)\n"
             time += "\(Date().timeIntervalSince(start))\n"
-            print("メモリ使用量：\(String(describing: getMemoryUsed()))")
+            i+=1
         }
+        
+//        for i in 0..<anchors.count {
+//            print("-----------------------------------------")
+//            print("\(flag)回目")
+//            flag += self.calculateRenderer.calcu5(num: i, anchor: anchors[i])
+//            poly += "\(calculateRenderer.sumPolygon)\n"
+//            time += "\(Date().timeIntervalSince(start))\n"
+//            //print("メモリ使用量：\(String(describing: getMemoryUsed()))")
+//        }
         print("-----------------------------------------")
         print("calcu終了")
         print("処理時間：\(Date().timeIntervalSince(start))")
@@ -87,12 +97,11 @@ class GPUCalculateTexture {
     
     func noLog_makeGPUTexture(completionHandler: @escaping () -> ()) {
         var flag = 0
-        let start = Date()
         
-//        self.calculateRenderer = CalculateRenderer(models: models, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
-        self.calculateRenderer = CalculateRenderer(models_dayString: models_dayString, modelID: modelID, anchor: anchors, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
+        self.calculateRenderer = CalculateRenderer(models_dayString: models_dayString, modelID: modelID, calcuUniforms: calcuMatrix, depth: depth, calculateParameta: calculateParameta)
         self.calculateRenderer.drawRectResized(size: self.sceneView.bounds.size)
         
+        let start = Date()
         
         // 並列で実行
 //        DispatchQueue.concurrentPerform(iterations: anchors.count) { index in
@@ -111,7 +120,7 @@ class GPUCalculateTexture {
         
         for i in 0..<anchors.count {
             print("-----------------------------------------")
-            flag += self.calculateRenderer.calcu5(num: i)
+            flag += self.calculateRenderer.calcu5(num: i, anchor: anchors[i])
         }
         print("処理時間：\(Date().timeIntervalSince(start))")
         

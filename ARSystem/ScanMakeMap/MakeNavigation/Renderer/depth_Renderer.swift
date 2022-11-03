@@ -368,27 +368,6 @@ final class depth_Renderer {
         //let cameraEulerAngles = SCNVector3(camera.eulerAngles.x-pre_eulerAngles.x, camera.eulerAngles.y-pre_eulerAngles.y, camera.eulerAngles.z-pre_eulerAngles.z)
         pre_eulerAngles = camera.eulerAngles
         
-        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
-        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
-        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
-        
-        let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
-        let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
-        
-        let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
-        
-        let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
-        let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
-        let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
-        let out_vec_size: Float = sqrt(a * a + b * b + c * c)
-        
-        let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
-        
-        let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
-        //print(inner * 180.0 / .pi )
-        //180の時にメッシュと並行
-        //90の時にメッシュと垂直
-        
         let entity = MakeMap_parameta(cameraPosition:
                                         Vector3Entity(x: cameraPosition.x,
                                                       y: cameraPosition.y,
@@ -398,9 +377,9 @@ final class depth_Renderer {
                                                       y: cameraEulerAngles.y,
                                                       z: cameraEulerAngles.z),
                                       cameraVector:
-                                        Vector3Entity(x: tani_out_vec.x,
-                                                      y: tani_out_vec.y,
-                                                      z: tani_out_vec.z),
+                                        Vector3Entity(x: 0,
+                                                      y: 0,
+                                                      z: 0),
                                       Intrinsics:
                                         Vector33Entity(x: cameraIntrinsics.columns.0,
                                                        y: cameraIntrinsics.columns.1,
@@ -424,6 +403,31 @@ final class depth_Renderer {
         json_data = try! JSONEncoder().encode(entity)
         
         return (json_data, true)
+    }
+    
+    func get_deviceVec() -> SCNVector3 {
+        let worldPosi1 = sceneView.unprojectPoint(SCNVector3(0, 0, 0.996)) //左上
+        let worldPosi2 = sceneView.unprojectPoint(SCNVector3(834, 0, 0.996)) //右上
+        let worldPosi3 = sceneView.unprojectPoint(SCNVector3(0, 1150, 0.996)) //左下
+        
+        let vec_a = SCNVector3(worldPosi2.x - worldPosi1.x, worldPosi2.y - worldPosi1.y, worldPosi2.z - worldPosi1.z)
+        let vec_b = SCNVector3(worldPosi3.x - worldPosi1.x, worldPosi3.y - worldPosi1.y, worldPosi3.z - worldPosi1.z)
+        
+        //let mesh_vec = SCNVector3(0.0, 0.0, 1.0)
+        
+        let a = vec_a.y * vec_b.z - vec_a.z * vec_b.y
+        let b = vec_a.z * vec_b.x - vec_a.x * vec_b.z
+        let c = vec_a.x * vec_b.y - vec_a.y * vec_b.x
+        let out_vec_size: Float = sqrt(a * a + b * b + c * c)
+        
+        let tani_out_vec = SCNVector3(a/out_vec_size, b/out_vec_size, c/out_vec_size)
+        
+        //let inner = acos(tani_out_vec.x * mesh_vec.x + tani_out_vec.y * mesh_vec.y + tani_out_vec.z * mesh_vec.z)
+        //print(inner * 180.0 / .pi )
+        //180の時にメッシュと並行
+        //90の時にメッシュと垂直
+        
+        return tani_out_vec
     }
     
     //MARK: - 点群用

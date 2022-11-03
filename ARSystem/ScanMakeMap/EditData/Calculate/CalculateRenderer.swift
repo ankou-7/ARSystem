@@ -18,7 +18,6 @@ class CalculateRenderer {
     
     private let models_dayString: String
     var modelID: Int
-    private let anchors: [ARMeshAnchor]
     private let calcuUniforms: [float4x4]
     private let depth: [depthPosition]
     private let calculateParameta: calculateParameta
@@ -40,11 +39,10 @@ class CalculateRenderer {
     var sumPolygon = 0
     var texCount = 0
     
-    init(models_dayString: String, modelID: Int, anchor: [ARMeshAnchor], calcuUniforms: [float4x4], depth: [depthPosition], calculateParameta: calculateParameta) {
+    init(models_dayString: String, modelID: Int, calcuUniforms: [float4x4], depth: [depthPosition], calculateParameta: calculateParameta) {
         
         self.models_dayString = models_dayString
         self.modelID = modelID
-        self.anchors = anchor
         self.calcuUniforms = calcuUniforms
         self.depth = depth
         self.calculateParameta = calculateParameta
@@ -88,7 +86,7 @@ class CalculateRenderer {
         return picNum
     }
     
-    func calcu5(num: Int) -> Int {
+    func calcu5(num: Int, anchor: ARMeshAnchor) -> Int {
         let commandBuffer = commandQueue.makeCommandBuffer()!
         let encoder = commandBuffer.makeComputeCommandEncoder()!
         
@@ -100,18 +98,18 @@ class CalculateRenderer {
         }
         
         encoder.setComputePipelineState(pipeline)
-        face_count = anchors[num].geometry.faces.count
-        print("\(num):頂点数(面の数×3):\(anchors[num].geometry.faces.count * 3)")
-//        print("id数(面の数:ポリゴン数)：\(anchors[num].geometry.faces.count)")
-        sumPolygon += anchors[num].geometry.faces.count
+        face_count = anchor.geometry.faces.count
+        print("\(num):頂点数(面の数×3):\(anchor.geometry.faces.count * 3)")
+//        print("id数(面の数:ポリゴン数)：\(anchor.geometry.faces.count)")
+        sumPolygon += anchor.geometry.faces.count
         
         //入力
-        encoder.setBuffer(anchors[num].geometry.vertices.buffer, offset: 0, index: 0)
-        encoder.setBuffer(anchors[num].geometry.normals.buffer, offset: 0, index: 1)
-        encoder.setBuffer(anchors[num].geometry.faces.buffer, offset: 0, index: 2)
+        encoder.setBuffer(anchor.geometry.vertices.buffer, offset: 0, index: 0)
+        encoder.setBuffer(anchor.geometry.normals.buffer, offset: 0, index: 1)
+        encoder.setBuffer(anchor.geometry.faces.buffer, offset: 0, index: 2)
         
-//        for offset in 0..<anchors[num].geometry.faces.indexCountPerPrimitive {
-//            let vertexIndexAddress = anchors[num].geometry.faces.buffer.contents().advanced(by: (1 * anchors[num].geometry.faces.indexCountPerPrimitive + offset) * MemoryLayout<UInt32>.size)
+//        for offset in 0..<anchor.geometry.faces.indexCountPerPrimitive {
+//            let vertexIndexAddress = anchor.geometry.faces.buffer.contents().advanced(by: (1 * anchor.geometry.faces.indexCountPerPrimitive + offset) * MemoryLayout<UInt32>.size)
 //            let per_face_index = Int32(vertexIndexAddress.assumingMemoryBound(to: UInt32.self).pointee)
 //            print(per_face_index)
 //        }
@@ -141,12 +139,12 @@ class CalculateRenderer {
         encoder.setBuffer(picNumBuffer, offset: 0, index: 12)
         
         //計算に必要なその他
-        anchorUniformsBuffer[0].transform = anchors[num].transform
+        anchorUniformsBuffer[0].transform = anchor.transform
         anchorUniformsBuffer[0].calcuCount = Int32(calcuUniforms.count)
         anchorUniformsBuffer[0].tate = Int32(calculateParameta.tate)
         anchorUniformsBuffer[0].yoko = Int32(calculateParameta.yoko)
-        anchorUniformsBuffer[0].maxCount = Int32(anchors[num].geometry.faces.count)
-        anchorUniformsBuffer[0].arrayCount = Int32(anchors[num].geometry.faces.count * 3)
+        anchorUniformsBuffer[0].maxCount = Int32(anchor.geometry.faces.count)
+        anchorUniformsBuffer[0].arrayCount = Int32(anchor.geometry.faces.count * 3)
         anchorUniformsBuffer[0].depthCount = Int32(128*96)
         anchorUniformsBuffer[0].screenWidth = Int32(calculateParameta.screenWidth)
         anchorUniformsBuffer[0].screenHeight = Int32(calculateParameta.screenHeight)
@@ -163,7 +161,7 @@ class CalculateRenderer {
         
         let width = 1//32
         let threadsPerGroup = MTLSize(width: width, height: 1, depth: 1)
-        let numThreadgroups = MTLSize(width: (anchors[num].geometry.faces.count + width - 1) / width, height: 1, depth: 1)
+        let numThreadgroups = MTLSize(width: (anchor.geometry.faces.count + width - 1) / width, height: 1, depth: 1)
         encoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerGroup)
         
         encoder.endEncoding()
@@ -171,51 +169,49 @@ class CalculateRenderer {
         commandBuffer.waitUntilCompleted()
         
         let vertexData = Data(bytesNoCopy: new_verticesBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count! * 3, deallocator: .none)
-        vertices = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
-        vertices = vertexData.withUnsafeBytes {
-            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
-        }
-        
         let normalsData = Data(bytesNoCopy: new_normalsBuffer!.contents(), count: MemoryLayout<SIMD3<Float>>.stride * face_count! * 3, deallocator: .none)
-        normals = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
-        normals = normalsData.withUnsafeBytes {
-            Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: normalsData.count/MemoryLayout<SIMD3<Float>>.size))
-        }
-        
         let facesData = Data(bytesNoCopy: new_facesBuffer!.contents(), count: MemoryLayout<Int32>.stride * face_count! * 3, deallocator: .none)
-        faces = [Int32](repeating: Int32(0), count: face_count! * 3)
-        faces = facesData.withUnsafeBytes {
-            Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))
-        }
-        
-        print("facesData.count:\(facesData.count / MemoryLayout<Int32>.stride)")
-        print("face_count:\(face_count! * 3)")
-        
         let texcoordsData = Data(bytesNoCopy: texcoordsBuffer!.contents(), count: MemoryLayout<SIMD2<Float>>.stride * face_count! * 3, deallocator: .none)
-        texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count! * 3)
-        texcoords = texcoordsData.withUnsafeBytes {
-            Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
-        }
+        
+//        print("facesData.count:\(facesData.count / MemoryLayout<Int32>.stride)")
+//        print("face_count:\(face_count! * 3)")
         
         let tryData = Data(bytesNoCopy: tryBuffer!.contents(), count: MemoryLayout<Int32>.stride * picNum.count, deallocator: .none)
         var tryCount = [Int32](repeating: Int32(0), count: picNum.count)
         tryCount = tryData.withUnsafeBytes{
             Array(UnsafeBufferPointer<Int32>(start: $0, count: tryData.count/MemoryLayout<Int32>.size))}
-        print("trys：\(tryCount)")
+        //print("trys：\(tryCount)")
+        
         //print(texcoords)
-        
-        for t in texcoords {
-            if t == SIMD2<Float>(0.0, 0.0) {
-                texCount += 1
-            }
-        }
-        
-        print("\(num):出力数:\(texcoords.count)")
-        
         
         if calculateParameta.funcString == "choicePic_textureCalculate" {
             save_allData(num: num, texcoordsData: texcoordsData, vertexData: vertexData, normalsData: normalsData, facesData: facesData)
         } else {
+            //変換
+            vertices = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
+            vertices = vertexData.withUnsafeBytes {
+                Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: vertexData.count/MemoryLayout<SIMD3<Float>>.size))
+            }
+            normals = [SIMD3<Float>](repeating: SIMD3<Float>(0,0,0), count: face_count! * 3)
+            normals = normalsData.withUnsafeBytes {
+                Array(UnsafeBufferPointer<SIMD3<Float>>(start: $0, count: normalsData.count/MemoryLayout<SIMD3<Float>>.size))
+            }
+            faces = [Int32](repeating: Int32(0), count: face_count! * 3)
+            faces = facesData.withUnsafeBytes {
+                Array(UnsafeBufferPointer<Int32>(start: $0, count: facesData.count/MemoryLayout<Int32>.size))
+            }
+            texcoords = [SIMD2<Float>](repeating: SIMD2<Float>(0,0), count: face_count! * 3)
+            texcoords = texcoordsData.withUnsafeBytes {
+                Array(UnsafeBufferPointer<SIMD2<Float>>(start: $0, count: texcoordsData.count/MemoryLayout<SIMD2<Float>>.size))
+            }
+            
+            for t in texcoords {
+                if t == SIMD2<Float>(0.0, 0.0) {
+                    texCount += 1
+                }
+            }
+            print("\(num):出力数:\(texcoords.count)")
+            
             save_model(num: num)
         }
     
