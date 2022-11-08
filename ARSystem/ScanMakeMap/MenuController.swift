@@ -36,12 +36,6 @@ class MenuController: UIViewController {
         
     }
     
-    @IBAction func ExpandButtonTapped(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TitleViewController") as! TitleViewController
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-    
     @IBAction func to_MakeNavigationController(_ sender: Any) {
         let storyboard = UIStoryboard(name: "MakeNavigation", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "MakeNavigationController") as! MakeNavigationController

@@ -47,18 +47,21 @@ class DataManagement {
     }
     
     //データ数取得
-    static func getDataCount(name: String) {
+    static func getDataCount(name: String) -> Int {
+        var count = 0
         if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let dataPath = url.appendingPathComponent("\(name)")
             do {
                 let contentUrls = try FileManager.default.contentsOfDirectory(at: dataPath, includingPropertiesForKeys: nil)
                 print(contentUrls.count)
+                count = contentUrls.count
 //                let files = contentUrls.map{$0.lastPathComponent}
 //                print(files)
             } catch {
                 print(error)
             }
         }
+        return count
     }
     
 }

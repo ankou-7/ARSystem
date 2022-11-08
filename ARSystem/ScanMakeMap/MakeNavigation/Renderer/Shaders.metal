@@ -7,6 +7,7 @@
 
 #include <metal_stdlib>
 #include <simd/simd.h>
+
 #import "ShaderTypes.h"
 
 using namespace metal;
@@ -663,86 +664,218 @@ kernel void choicePic_textureCalculate(constant float *vertices [[ buffer(0) ]],
                                        constant float *depth [[ buffer(10) ]],
                                        device int *trys [[ buffer(11) ]],
                                        constant int *picNum [[ buffer(12) ]],
+                                       device int *idArray [[ buffer(13) ]],
                                        uint id [[ thread_position_in_grid ]])
-                   {
-                       if (int(id) > anchorUnifoms.maxCount) {
-                           return;
-                       }
-                       
-                       float yoko = anchorUnifoms.yoko;
-                       float tate = anchorUnifoms.tate;
-                       float screenWidth = anchorUnifoms.screenWidth;
-                       float screenHeight = anchorUnifoms.screenHeight;
-                       
-                       float3x3 kari_faces;
-                       float3x3 kari_vertices;
-                       float3x3 kari_normals;
-                       float3x2 kari_texcoords;
-                       
-                       for (int num = 0; num < anchorUnifoms.picNumCount; num++) {
-                           int i = picNum[num];
-                           trys[num] = i;
-                           
-                           int count = 0;
-                           for (int j = 0; j < 3; j++) {
-                               kari_faces[j] = int(id*3 + j);
-                               kari_vertices[j] = mul(float3(vertices[faces[int(id*3 + j)]*3 + 0],
-                                                             vertices[faces[int(id*3 + j)]*3 + 1],
-                                                             vertices[faces[int(id*3 + j)]*3 + 2]),
-                                                      anchorUnifoms.transform);
-                               kari_normals[j] = float3(normals[faces[int(id*3 + j)]*3 + 0],
-                                                        normals[faces[int(id*3 + j)]*3 + 1],
-                                                        normals[faces[int(id*3 + j)]*3 + 2]);
-                               
-                               const auto normalizedDeviceCoordinate = clipPoint(kari_vertices[j],
-                                                                                 matrix_float4x4(uniforms[i*4],
-                                                                                                 uniforms[i*4+1],
-                                                                                                 uniforms[i*4+2],
-                                                                                                 uniforms[i*4+3]));
-                               const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
-                                                      (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
-                                                      (1 - (-normalizedDeviceCoordinate.z + 1)));
-                               if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
-                                   const auto du = int(round((1 - pt.x / screenWidth) * 95));
-                                   const auto dv = int(round((pt.y / screenHeight) * 127));
-                                   const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
-                                   const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
-                                   const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
-                                   const auto diff = pow(kari_vertices[j].x - deptPosi_x, 2) + pow(kari_vertices[j].y - deptPosi_y, 2) + pow(kari_vertices[j].z - deptPosi_z, 2);
-                                   if (diff < 0.04) {
-                                       count += 1;
-                                       const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
-                                       const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
-                                       kari_texcoords[j] = float2(u, v);
-                                   } else {
-                                       count = 0;
-                                       break;
-                                   }
-                               }
-                           }
-                           
-                           if (count == 3) {
-                               texcoords[id*3 + 0] = kari_texcoords[0];
-                               texcoords[id*3 + 1] = kari_texcoords[1];
-                               texcoords[id*3 + 2] = kari_texcoords[2];
-                               
-                               new_vertices[id*3 + 0] = kari_vertices[0];
-                               new_vertices[id*3 + 1] = kari_vertices[1];
-                               new_vertices[id*3 + 2] = kari_vertices[2];
-                               
-                               new_normals[id*3 + 0] = kari_normals[0];
-                               new_normals[id*3 + 1] = kari_normals[1];
-                               new_normals[id*3 + 2] = kari_normals[2];
-                               
-                               new_faces[id*3 + 0] = id*3 + 0;
-                               new_faces[id*3 + 1] = id*3 + 1;
-                               new_faces[id*3 + 2] = id*3 + 2;
-                               
-                               break;
-                           }
-                       }
-                       
-                   }
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    float yoko = anchorUnifoms.yoko;
+    float tate = anchorUnifoms.tate;
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
+    
+    float3x3 temp_faces;
+    float3x3 temp_vertices;
+    float3x3 temp_normals;
+    float3x2 temp_texcoords;
+    
+    //画像の枚数分繰り返し
+    for (int num = 0; num < anchorUnifoms.picNumCount; num++) {
+        int i = picNum[num];
+        trys[num] = i;
+        
+        if (idArray[id] == 0) {
+            
+            //ポリゴンの３点について調べる
+            int count = 0;
+            for (int j = 0; j < 3; j++) {
+                temp_faces[j] = int(id*3 + j);
+                float4 worldPoint4 = anchorUnifoms.transform * float4(vertices[faces[int(id*3 + j)]*3 + 0],
+                                                                      vertices[faces[int(id*3 + j)]*3 + 1],
+                                                                      vertices[faces[int(id*3 + j)]*3 + 2],
+                                                                      1.0);
+                temp_vertices[j] = float3(worldPoint4.x, worldPoint4.y, worldPoint4.z);
+                temp_normals[j] = float3(normals[faces[int(id*3 + j)]*3 + 0],
+                                         normals[faces[int(id*3 + j)]*3 + 1],
+                                         normals[faces[int(id*3 + j)]*3 + 2]);
+                
+                const auto clipSpacePosition = matrix_float4x4(uniforms[i*4],
+                                                               uniforms[i*4+1],
+                                                               uniforms[i*4+2],
+                                                               uniforms[i*4+3]) * simd_float4(temp_vertices[j], 1.0);
+                const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
+                
+                const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                       (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
+                                       (1 - (-normalizedDeviceCoordinate.z + 1)));
+                
+                if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
+                    const auto du = int(round((1 - pt.x / screenWidth) * 95));
+                    const auto dv = int(round((pt.y / screenHeight) * 127));
+                    const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
+                    const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
+                    const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
+                    const auto diff = pow(temp_vertices[j].x - deptPosi_x, 2) + pow(temp_vertices[j].y - deptPosi_y, 2) + pow(temp_vertices[j].z - deptPosi_z, 2);
+                    if (diff < 0.04) {
+                        count += 1;
+                        const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                        const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
+                        temp_texcoords[j] = float2(u, v);
+                    } else {
+                        count = 0;
+                        break;
+                    }
+                }
+            }
+            
+            //調べた３点が条件を満たせば計算結果を格納
+            if (count == 3) {
+                
+                texcoords[id*3 + 0] = temp_texcoords[0];
+                texcoords[id*3 + 1] = temp_texcoords[1];
+                texcoords[id*3 + 2] = temp_texcoords[2];
+                
+                new_vertices[id*3 + 0] = temp_vertices[0];
+                new_vertices[id*3 + 1] = temp_vertices[1];
+                new_vertices[id*3 + 2] = temp_vertices[2];
+                
+                new_normals[id*3 + 0] = temp_normals[0];
+                new_normals[id*3 + 1] = temp_normals[1];
+                new_normals[id*3 + 2] = temp_normals[2];
+                
+                new_faces[id*3 + 0] = id*3 + 0;
+                new_faces[id*3 + 1] = id*3 + 1;
+                new_faces[id*3 + 2] = id*3 + 2;
+                
+                idArray[id] = 1;
+                
+                break;
+            }
+        }
+    }
+    
+}
+
+//メッシュを結合したバッファで計算
+kernel void all_textureCalculate(constant float3 *vertices [[ buffer(0) ]],
+                                 constant float3 *normals [[ buffer(1) ]],
+                                 constant int *faces [[ buffer(2) ]],
+                                 constant int *sepaVertices [[ buffer(3) ]],
+                                 constant int *sepaFaces [[ buffer(4) ]],
+                                 device float2 *texcoords [[buffer(5)]],
+                                 device float3 *new_vertices [[ buffer(6) ]],
+                                 device float3 *new_normals [[ buffer(7) ]],
+                                 device int *new_faces [[ buffer(8)]],
+                                 constant anchorUniforms &anchorUnifoms [[ buffer(9) ]],
+                                 constant float4x4 &uniforms [[ buffer(10) ]],
+                                 constant float4x4 &transforms [[ buffer(11) ]],
+                                 constant float *depth [[ buffer(12) ]],
+                                 constant int *picNum [[ buffer(13) ]],
+                                 constant int *sepaPicNum [[ buffer(14) ]],
+                                 uint id [[ thread_position_in_grid ]])
+{
+    if (int(id) > anchorUnifoms.maxCount) {
+        return;
+    }
+    
+    float yoko = anchorUnifoms.yoko;
+    float tate = anchorUnifoms.tate;
+    float screenWidth = anchorUnifoms.screenWidth;
+    float screenHeight = anchorUnifoms.screenHeight;
+    
+    float3x3 temp_faces;
+    float3x3 temp_vertices;
+    float3x3 temp_normals;
+    float3x2 temp_texcoords;
+    
+    //idに対応するメッシュ番号
+    int meshID = sepaFaces[id];
+    int min = 0;
+
+    //画像の枚数分繰り返し
+    if (meshID != 0) {
+        min = sepaPicNum[meshID-1];
+    }
+    
+    for (int picID = min; picID < sepaPicNum[meshID]; picID++) {
+        int i = picNum[picID]; //パラメータ番号
+        
+        //ポリゴンの３点について調べる
+        int count = 0;
+        for (int j = 0; j < 3; j++) {
+            temp_faces[j] = int(id*3 + j);
+            
+            if (meshID != 0) {
+                float4 worldPoint4 = matrix_float4x4(transforms[meshID*4],
+                                                     transforms[meshID*4+1],
+                                                     transforms[meshID*4+2],
+                                                     transforms[meshID*4+3]) * float4(vertices[sepaVertices[meshID-1] + faces[int(id*3 + j)]], 1.0);
+                temp_vertices[j] = float3(worldPoint4.x, worldPoint4.y, worldPoint4.z);
+                //new_vertices[id*3 + j] = float3(worldPoint4.x, worldPoint4.y, worldPoint4.z);
+                temp_normals[j] = float3(normals[sepaVertices[meshID-1] + faces[int(id*3 + j)]]);
+            } else {
+                float4 worldPoint4 = matrix_float4x4(transforms[meshID*4],
+                                                     transforms[meshID*4+1],
+                                                     transforms[meshID*4+2],
+                                                     transforms[meshID*4+3]) * float4(vertices[faces[int(id*3 + j)]], 1.0);
+                temp_vertices[j] = float3(worldPoint4.x, worldPoint4.y, worldPoint4.z);
+                //new_vertices[id*3 + j] = float3(worldPoint4.x, worldPoint4.y, worldPoint4.z);
+                temp_normals[j] = float3(normals[faces[int(id*3 + j)]]);
+            }
+            
+            const auto clipSpacePosition = matrix_float4x4(uniforms[i*4],
+                                                           uniforms[i*4+1],
+                                                           uniforms[i*4+2],
+                                                           uniforms[i*4+3]) * simd_float4(temp_vertices[j], 1.0);
+            const auto normalizedDeviceCoordinate = clipSpacePosition / clipSpacePosition.w;
+            const auto pt = float3((normalizedDeviceCoordinate.x + 1) * (screenWidth / 2),
+                                   (-normalizedDeviceCoordinate.y + 1) * (screenHeight / 2),
+                                   (1 - (-normalizedDeviceCoordinate.z + 1)));
+            if (pt.x >= 0 && pt.x <= screenWidth && pt.y >= 0 && pt.y <= screenHeight && pt.z < 1.0) {
+                const auto du = int(round((1 - pt.x / screenWidth) * 95));
+                const auto dv = int(round((pt.y / screenHeight) * 127));
+                const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j)];
+                const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 1];
+                const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + j) + 2];
+                const auto diff = pow(temp_vertices[j].x - deptPosi_x, 2) + pow(temp_vertices[j].y - deptPosi_y, 2) + pow(temp_vertices[j].z - deptPosi_z, 2);
+                if (diff < 0.04) {
+                    count += 1;
+                    const auto u = ((pt.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
+                    temp_texcoords[j] = float2(u, v);
+                } else {
+                    count = 0;
+                    break;
+                }
+            }
+        }
+
+        //調べた３点が条件を満たせば計算結果を格納
+        if (count == 3) {
+
+            texcoords[id*3 + 0] = temp_texcoords[0];
+            texcoords[id*3 + 1] = temp_texcoords[1];
+            texcoords[id*3 + 2] = temp_texcoords[2];
+
+            new_vertices[id*3 + 0] = temp_vertices[0];
+            new_vertices[id*3 + 1] = temp_vertices[1];
+            new_vertices[id*3 + 2] = temp_vertices[2];
+
+            new_normals[id*3 + 0] = temp_normals[0];
+            new_normals[id*3 + 1] = temp_normals[1];
+            new_normals[id*3 + 2] = temp_normals[2];
+
+            new_faces[id*3 + 0] = id*3 + 0;
+            new_faces[id*3 + 1] = id*3 + 1;
+            new_faces[id*3 + 2] = id*3 + 2;
+
+            break;
+        }
+    }
+
+}
 
 
 static simd_float3 make_naisin(simd_float3 A, simd_float3 B, simd_float3 C) {
@@ -932,6 +1065,7 @@ kernel void calcu500(constant float *vertices [[ buffer(0) ]],
     //画像の枚数分繰り返し
     for (int i = 0; i < anchorUnifoms.calcuCount; i++) {
         int count = 0;
+        bool meshFlag = false;
         
         //0番目の面
         kari_faces[0] = int(id*3 + 0);
@@ -959,107 +1093,111 @@ kernel void calcu500(constant float *vertices [[ buffer(0) ]],
             const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 0) + 2];
             const auto diff = pow(kari_vertices[0].x - deptPosi_x, 2) + pow(kari_vertices[0].y - deptPosi_y, 2) + pow(kari_vertices[0].z - deptPosi_z, 2);
             if (diff < 0.04) {
-                count += 1;
                 const auto u = ((pt0.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
                 const auto v = ((pt0.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
                 kari_texcoords[0] = float2(u, v);
-            } else {
-                count = 0;
-                continue;
-            }
-        }
-        
-        //1番目の面
-        kari_faces[1] = int(id*3 + 1);
-        kari_vertices[1] = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
-                                      vertices[faces[int(id*3 + 1)]*3 + 1],
-                                      vertices[faces[int(id*3 + 1)]*3 + 2]),
-                               anchorUnifoms.transform);
-        kari_normals[1] = float3(normals[faces[int(id*3 + 1)]*3 + 0],
-                                 normals[faces[int(id*3 + 1)]*3 + 1],
-                                 normals[faces[int(id*3 + 1)]*3 + 2]);
-        
-        const auto normalizedDeviceCoordinate1 = clipPoint(kari_vertices[1],
-                                                          matrix_float4x4(uniforms[i*4],
-                                                                          uniforms[i*4+1],
-                                                                          uniforms[i*4+2],
-                                                                          uniforms[i*4+3]));
-        const auto pt1 = float3((normalizedDeviceCoordinate1.x + 1) * (screenWidth / 2),
-                               (-normalizedDeviceCoordinate1.y + 1) * (screenHeight / 2),
-                               (1 - (-normalizedDeviceCoordinate1.z + 1)));
-        if (pt1.x >= 0 && pt1.x <= screenWidth && pt1.y >= 0 && pt1.y <= screenHeight && pt1.z < 1.0) {
-            const auto du = int(round((1 - pt1.x / screenWidth) * 95));
-            const auto dv = int(round((pt1.y / screenHeight) * 127));
-            const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 1)];
-            const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 1) + 1];
-            const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 1) + 2];
-            const auto diff = pow(kari_vertices[1].x - deptPosi_x, 2) + pow(kari_vertices[1].y - deptPosi_y, 2) + pow(kari_vertices[1].z - deptPosi_z, 2);
-            if (diff < 0.04) {
+                
                 count += 1;
-                const auto u = ((pt1.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
-                const auto v = ((pt1.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
-                kari_texcoords[1] = float2(u, v);
+                meshFlag = true;
             } else {
                 count = 0;
                 continue;
             }
         }
         
-        //2番目の面
-        kari_faces[2] = int(id*3 + 2);
-        kari_vertices[2] = mul(float3(vertices[faces[int(id*3 + 2)]*3 + 0],
-                                      vertices[faces[int(id*3 + 2)]*3 + 1],
-                                      vertices[faces[int(id*3 + 2)]*3 + 2]),
-                               anchorUnifoms.transform);
-        kari_normals[2] = float3(normals[faces[int(id*3 + 2)]*3 + 0],
-                                 normals[faces[int(id*3 + 2)]*3 + 1],
-                                 normals[faces[int(id*3 + 2)]*3 + 2]);
-        
-        const auto normalizedDeviceCoordinate2 = clipPoint(kari_vertices[2],
-                                                          matrix_float4x4(uniforms[i*4],
-                                                                          uniforms[i*4+1],
-                                                                          uniforms[i*4+2],
-                                                                          uniforms[i*4+3]));
-        const auto pt2 = float3((normalizedDeviceCoordinate2.x + 1) * (screenWidth / 2),
-                               (-normalizedDeviceCoordinate2.y + 1) * (screenHeight / 2),
-                               (1 - (-normalizedDeviceCoordinate2.z + 1)));
-        if (pt2.x >= 0 && pt2.x <= screenWidth && pt2.y >= 0 && pt2.y <= screenHeight && pt2.z < 1.0) {
-            const auto du = int(round((1 - pt2.x / screenWidth) * 95));
-            const auto dv = int(round((pt2.y / screenHeight) * 127));
-            const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 2)];
-            const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 2) + 1];
-            const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 2) + 2];
-            const auto diff = pow(kari_vertices[2].x - deptPosi_x, 2) + pow(kari_vertices[2].y - deptPosi_y, 2) + pow(kari_vertices[2].z - deptPosi_z, 2);
-            if (diff < 0.04) {
-                count += 1;
-                const auto u = ((pt2.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
-                const auto v = ((pt2.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
-                kari_texcoords[2] = float2(u, v);
-            } else {
-                count = 0;
-                continue;
+        if (meshFlag == true) {
+            //1番目の面
+            kari_faces[1] = int(id*3 + 1);
+            kari_vertices[1] = mul(float3(vertices[faces[int(id*3 + 1)]*3 + 0],
+                                          vertices[faces[int(id*3 + 1)]*3 + 1],
+                                          vertices[faces[int(id*3 + 1)]*3 + 2]),
+                                   anchorUnifoms.transform);
+            kari_normals[1] = float3(normals[faces[int(id*3 + 1)]*3 + 0],
+                                     normals[faces[int(id*3 + 1)]*3 + 1],
+                                     normals[faces[int(id*3 + 1)]*3 + 2]);
+            
+            const auto normalizedDeviceCoordinate1 = clipPoint(kari_vertices[1],
+                                                               matrix_float4x4(uniforms[i*4],
+                                                                               uniforms[i*4+1],
+                                                                               uniforms[i*4+2],
+                                                                               uniforms[i*4+3]));
+            const auto pt1 = float3((normalizedDeviceCoordinate1.x + 1) * (screenWidth / 2),
+                                    (-normalizedDeviceCoordinate1.y + 1) * (screenHeight / 2),
+                                    (1 - (-normalizedDeviceCoordinate1.z + 1)));
+            if (pt1.x >= 0 && pt1.x <= screenWidth && pt1.y >= 0 && pt1.y <= screenHeight && pt1.z < 1.0) {
+                const auto du = int(round((1 - pt1.x / screenWidth) * 95));
+                const auto dv = int(round((pt1.y / screenHeight) * 127));
+                const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 1)];
+                const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 1) + 1];
+                const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 1) + 2];
+                const auto diff = pow(kari_vertices[1].x - deptPosi_x, 2) + pow(kari_vertices[1].y - deptPosi_y, 2) + pow(kari_vertices[1].z - deptPosi_z, 2);
+                if (diff < 0.04) {
+                    count += 1;
+                    const auto u = ((pt1.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt1.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
+                    kari_texcoords[1] = float2(u, v);
+                } else {
+                    count = 0;
+                    continue;
+                }
             }
-        }
-        
-        
-        if (count == 3) {
-            texcoords[id*3 + 0] = kari_texcoords[0];
-            texcoords[id*3 + 1] = kari_texcoords[1];
-            texcoords[id*3 + 2] = kari_texcoords[2];
             
-            new_vertices[id*3 + 0] = kari_vertices[0];
-            new_vertices[id*3 + 1] = kari_vertices[1];
-            new_vertices[id*3 + 2] = kari_vertices[2];
+            //2番目の面
+            kari_faces[2] = int(id*3 + 2);
+            kari_vertices[2] = mul(float3(vertices[faces[int(id*3 + 2)]*3 + 0],
+                                          vertices[faces[int(id*3 + 2)]*3 + 1],
+                                          vertices[faces[int(id*3 + 2)]*3 + 2]),
+                                   anchorUnifoms.transform);
+            kari_normals[2] = float3(normals[faces[int(id*3 + 2)]*3 + 0],
+                                     normals[faces[int(id*3 + 2)]*3 + 1],
+                                     normals[faces[int(id*3 + 2)]*3 + 2]);
             
-            new_normals[id*3 + 0] = kari_normals[0];
-            new_normals[id*3 + 1] = kari_normals[1];
-            new_normals[id*3 + 2] = kari_normals[2];
+            const auto normalizedDeviceCoordinate2 = clipPoint(kari_vertices[2],
+                                                               matrix_float4x4(uniforms[i*4],
+                                                                               uniforms[i*4+1],
+                                                                               uniforms[i*4+2],
+                                                                               uniforms[i*4+3]));
+            const auto pt2 = float3((normalizedDeviceCoordinate2.x + 1) * (screenWidth / 2),
+                                    (-normalizedDeviceCoordinate2.y + 1) * (screenHeight / 2),
+                                    (1 - (-normalizedDeviceCoordinate2.z + 1)));
+            if (pt2.x >= 0 && pt2.x <= screenWidth && pt2.y >= 0 && pt2.y <= screenHeight && pt2.z < 1.0) {
+                const auto du = int(round((1 - pt2.x / screenWidth) * 95));
+                const auto dv = int(round((pt2.y / screenHeight) * 127));
+                const auto deptPosi_x = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 2)];
+                const auto deptPosi_y = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 2) + 1];
+                const auto deptPosi_z = depth[i*anchorUnifoms.depthCount*3 + 3*(du*128 + dv + 2) + 2];
+                const auto diff = pow(kari_vertices[2].x - deptPosi_x, 2) + pow(kari_vertices[2].y - deptPosi_y, 2) + pow(kari_vertices[2].z - deptPosi_z, 2);
+                if (diff < 0.04) {
+                    count += 1;
+                    const auto u = ((pt2.x / (screenWidth * yoko))  + (fmod(i,yoko) / yoko));
+                    const auto v = ((pt2.y / (screenHeight * tate)) + (floor(i / yoko) / tate));
+                    kari_texcoords[2] = float2(u, v);
+                } else {
+                    count = 0;
+                    continue;
+                }
+            }
             
-            new_faces[id*3 + 0] = id*3 + 0;
-            new_faces[id*3 + 1] = id*3 + 1;
-            new_faces[id*3 + 2] = id*3 + 2;
             
-            break;
+            if (count == 3) {
+                texcoords[id*3 + 0] = kari_texcoords[0];
+                texcoords[id*3 + 1] = kari_texcoords[1];
+                texcoords[id*3 + 2] = kari_texcoords[2];
+                
+                new_vertices[id*3 + 0] = kari_vertices[0];
+                new_vertices[id*3 + 1] = kari_vertices[1];
+                new_vertices[id*3 + 2] = kari_vertices[2];
+                
+                new_normals[id*3 + 0] = kari_normals[0];
+                new_normals[id*3 + 1] = kari_normals[1];
+                new_normals[id*3 + 2] = kari_normals[2];
+                
+                new_faces[id*3 + 0] = id*3 + 0;
+                new_faces[id*3 + 1] = id*3 + 1;
+                new_faces[id*3 + 2] = id*3 + 2;
+                
+                break;
+            }
         }
     }
 }

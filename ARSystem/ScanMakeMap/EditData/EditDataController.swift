@@ -31,7 +31,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
     @IBOutlet weak var ExChangeButton: UIButton!
     var cameraNode = SCNNode()
     
-    let num: CGFloat = 2.0 //画像のサイズの縮尺率 //266枚
+    let num: CGFloat = 3.0 //画像のサイズの縮尺率 //266枚
     var current_model_num = 0 //現在表示しているモデルの番号を格納
     var database_model_num = 1 //読み込んだcellの中に格納されているモデル数
 
@@ -667,7 +667,7 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
         if sender.isOn == true {
             texString = "calcu50" //"textureCalculate"
         } else if sender.isOn == false {
-            texString = "choicePic_textureCalculate"//"calcu5" "calcu500" //
+            texString = "all_textureCalculate" //"choicePic_textureCalculate"//"calcu5" "calcu500" //
         }
     }
     
@@ -709,12 +709,26 @@ class EditDataController: UIViewController, ARSCNViewDelegate, UIGestureRecogniz
 //                                                          modelID: ModelManagement.modelID)
 //            GPUCalculateTexture.make_calcuParameta()
 
-            GPUCalculateTexture.makeGPUTexture { [self] in
+            GPUCalculateTexture.noLog_makeGPUTexture { [self] (flag, texsData, verticesData, normalData, facesData, faces, texcoords) in
                 delete_mesh()
                 let realm = try! Realm()
                 try! realm.write {
                     models.texture_bool = 3
                 }
+                
+                
+//                if flag != 0 {
+//                    print("build")
+//                    texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
+//                    sceneView.scene?.rootNode.addChildNode(texmeshNode)
+//                } else {
+//                    print("New_build")
+//
+//                    texmeshNode = NewBuildTextureMeshNode(models: models, texImage: new_uiimage, texcoordsData: texsData, verticesData: verticesData, normalsData: normalData, facesData: facesData, faces: faces, texcoords: texcoords)
+//                    //sceneView.scene?.rootNode.addChildNode(texmeshNode)
+//                }
+                
+                print("build")
                 texmeshNode = BuildTextureMeshNode(models: models, texImage: new_uiimage)
                 sceneView.scene?.rootNode.addChildNode(texmeshNode)
                 SVProgressHUD.dismiss()

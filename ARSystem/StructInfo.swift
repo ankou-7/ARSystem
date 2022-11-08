@@ -4,6 +4,7 @@
 //
 //  Created by yasue kouki on 2021/11/06.
 //
+import MetalKit
 
 struct Vector33Entity: Codable {
     let x: SIMD3<Float>

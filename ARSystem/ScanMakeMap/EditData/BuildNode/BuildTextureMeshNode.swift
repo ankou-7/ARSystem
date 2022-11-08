@@ -31,7 +31,8 @@ class BuildTextureMeshNode: SCNNode {
     
     func buildTexMesh() {
         
-        for i in 0..<models.meshNum {
+//        for i in 0..<models.meshNum {
+        for i in 0..<DataManagement.getDataCount(name: "\(models.dayString)/\(ModelManagement.modelID)/texcoords") {
             let texcoordsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/texcoords/texcoords\(i).data")
             let vertexPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/vertex/vertex\(i).data")
             let normalsPath = url.appendingPathComponent("\(models.dayString)/\(ModelManagement.modelID)/normals/normals\(i).data")
